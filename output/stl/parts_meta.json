@@ -47,7 +47,7 @@
   "orientation": "plusX_down",
   "material": "PETG",
   "note": "rear (+X) face down: pocket arch bridges 10.6",
-  "volume_mm3": 12870.1,
+  "volume_mm3": 12861.9,
   "print_bbox": [
    30.9,
    19.9,
@@ -212,7 +212,7 @@
   "orientation": "plusX_down",
   "material": "PETG",
   "note": "rear (+X) face down: pocket arch bridges 10.6",
-  "volume_mm3": 13336.7,
+  "volume_mm3": 13328.5,
   "print_bbox": [
    30.9,
    19.9,
