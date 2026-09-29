@@ -29,7 +29,7 @@ import math
 # §8.2 Tolerance rules
 # =============================================================================
 CLR_SLIDE = 0.30        # PARAM DEFAULT  sliding clearance per side - set from fit_coupon
-CLR_PRESS = 0.10        # PARAM DEFAULT  press clearance (the spec's Ø1.9 press / Ø2.1 snug holes below)
+CLR_PRESS = 0.10        # spec §8.2 table value only - NOT used by the model; set the PIN_*_D holes below
 PIN_D = 2.0             # Ø2 steel pins / music wire (§8.3)
 # Pin holes are set ONE BY ONE from the fit coupon's pin-hole row (README §2): a printer that
 # prints holes small needs every one of them larger, which no single clearance can express.

@@ -27,7 +27,7 @@ next bite slides on.
 | `CHANGES.md` | Every place the model differs from the spec, and why. |
 | `OPEN_ISSUES.md` | Problems in the spec and decisions the team still has to make. **Read this.** |
 
-## 2. Print the fit coupon FIRST, then set `CLR_SLIDE`
+## 2. Print the fit coupon FIRST, then set `CLR_SLIDE` and the pin holes
 
 1. Print `stl/fit_coupon.stl` (PETG, same settings as below). It has a plate with four square sleeves, five
    pin-hole sizes, and a separate 10 × 10 slider bar.
@@ -36,7 +36,9 @@ next bite slides on.
    wobbling**. That number is your `CLR_SLIDE`.
 3. **Pin holes** (1 dot = Ø1.9 … 5 dots = Ø2.3; top row vertical, side row horizontal). Try a piece of your
    Ø2 steel rod in each. You want one that **presses in and stays** (press), one that **pushes in snugly**
-   (snug) and one that **spins freely** (free). The defaults are 1.9 / 2.1 / 2.3.
+   (snug), the smallest one it **spins freely in without wobble** (run) and one it **turns loosely** in
+   (free). The defaults are 1.9 / 2.1 / 2.1 / 2.3: run = snug because you ream the lever hole (section 5,
+   step 4). If you won't ream, type the coupon's run hole instead (it costs 0.1-0.2 of lift, still ≥ 13.5).
 4. Edit `cad/params.py` if your printer needs different values, then rebuild (section 7). `CLR_SLIDE` sets every
    sliding fit. Each pin hole is its **own** number, typed straight from the coupon: `PIN_PRESS_D` (presses in),
    `PIN_SNUG_D` (snug), `PIN_RUN_D` (smallest hole the rod *spins freely* in without wobble: the lever pivot)
@@ -96,7 +98,7 @@ bite channel and scrape any sag on that bridged wall. Why supports are needed: O
 | 4 + 4 | **M2 × 20 socket head** (ISO 4762 / DIN 912; a pan head is too wide for the Ø4.2 counterbore) + M2 nuts (a drop of medium threadlocker) | Receiver halves |
 | 2 | M2 × 8 **countersunk** self-tapping | Ring hook |
 | 2 + 2 | M3 thumb screws + M3 nuts | Bench base |
-| - | **Adhesive-backed** PTFE film 0.08 mm, industrial Velcro 2″, CA glue, Ø2 drill in a pin vise, 1.5 mm hex key, cut-off wheel for music wire (or buy Ø2 × 10 dowel pins) | |
+| - | **Adhesive-backed** PTFE film 0.08 mm, industrial Velcro 2″, CA glue, Ø2.1 and Ø2.4 drills in a pin vise (reaming the lever pivot and any tight M2 hole), 1.5 mm hex key, cut-off wheel for music wire (or buy Ø2 × 10 dowel pins) | |
 
 ## 5. Assembly order
 

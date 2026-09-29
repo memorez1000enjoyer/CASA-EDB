@@ -163,3 +163,5 @@ handle this. `verify.py` checks states C and D-taken with the clip moved ±0.3 i
   kinematics re-check, and print/assembly/FOD re-check. Fixes are in CHANGES.md section D.
 - **Round 3:** one reviewer re-checked every round-2 fix. No blocker or major finding; four minor/nit items
   (pin-hole parameters, follower relief, screw head type, stale numbers) fixed in CHANGES.md section E.
+- **Round 4:** convergence check of the round-3 fixes. No geometry finding; four documentation fixes
+  (CHANGES.md section F). The loop stopped here: the last two rounds found nothing structural.

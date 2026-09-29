@@ -74,7 +74,7 @@ decision are in `OPEN_ISSUES.md`.
 | `CLR_PRESS` unused | `PIN_PRESS_D = Ø2 − CLR_PRESS`, `PIN_SNUG_D = Ø2 + CLR_PRESS`, `PIN_FREE_D = Ø2 + CLR_SLIDE` (superseded in E: each hole is now its own coupon value) |
 | Loading procedure left the stack unheld between bites | README: use the gate as a ratchet, one bite at a time |
 | Stale docs (CHANGES rows, docstrings, OPEN_ISSUES numbering) | Rewritten |
-| Clip sitting 0.3 low: the follower's square bottom-front edge had to climb the bridge lead-in, then had no clearance under the clip roof (last bite could jam, esp. spring B) | Follower underside **relieved 0.4 over its front 2.0** (`FOLLOWER_FRONT_RELIEF`): at its stop that part sits over the bridge and never touches it. `verify.py` now also checks states C and D-taken with the clip shifted ±0.3 in Y and in Z. |
+| Clip sitting 0.3 low: the follower's square bottom-front edge had to climb the bridge lead-in, then had no clearance under the clip roof (last bite could jam, esp. spring B) | Follower underside **relieved 0.4 over its front 2.0** (`FOLLOWER_FRONT_RELIEF`) (raised to 0.7 in E): at its stop that part sits over the bridge and never touches it. `verify.py` now also checks states C and D-taken with the clip shifted ±0.3 in Y and in Z. |
 | Tightened lever pivot left no free-running joint (binding risk against ~15–27 N·mm of return torque) | Lever pivot hole is a **running fit** `PIN_RUN_D` (2.1): ream it with a Ø2.1 drill so the lever spins freely without wobble; the pin itself is pressed into receiver_left |
 | Pad rims 1.8 deep sat only 0.2 above the top at the hard stop (a deflected pad would land first) | `PAD_RIM_H` **1.2** (0.8 clear) |
 
@@ -90,3 +90,9 @@ clip-float poses, the enforcer alignment, the counterbore/nut stack and the READ
 | BOM allowed pan-head M2 × 20; an ISO 7045 pan head (up to Ø4.0) may not seat in a printed Ø4.2 counterbore | BOM: **socket head only** (ISO 4762, head Ø3.8) |
 | Stale numbers: README "13.7 mm" lift; params comments (≈13.7 lift, ~0.3 play, flange 47.8, pin Z −12.35, "M2 x 16", "0.7 wall"); verify.py mass note "M2x16" | Corrected to 13.9, 0.2, 48.2, −12.75, M2 × 20, ≥ 0.8 |
 
+## F. Review round 4 (convergence check)
+
+No geometry finding: the round-3 fixes check out (STL volumes unchanged at the defaults apart from the follower
+relief). Four documentation fixes: the BOM now lists the Ø2.1 and Ø2.4 reaming drills the procedures use;
+README §2 names the fourth ("run") pin fit and why its default equals snug; `CLR_PRESS` is marked as a spec
+table value the model doesn't use; the section-D relief row points to E.
