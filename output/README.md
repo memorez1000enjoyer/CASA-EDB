@@ -7,7 +7,7 @@ Team: Jessyn, Clayton, Esther. Built from `EBD_Build_Spec.md` Rev B (the spec wi
 
 The Clip is a hands-free bite dispenser that sits inside the suit just below the helmet ring. A
 constant-force spring pushes 8 bites along a tube (the **clip**) into a small head (the **receiver**).
-Tuck your chin onto the **paddle** and a 1:1 **lever** lifts the front bite about 13.7 mm, so about 10 mm of
+Tuck your chin onto the **paddle** and a 1:1 **lever** lifts the front bite about 13.9 mm, so about 10 mm of
 it sticks up through the **window** for your teeth. Let go and a return spring drops the cup back, and the
 next bite slides on.
 
@@ -38,9 +38,11 @@ next bite slides on.
    Ø2 steel rod in each. You want one that **presses in and stays** (press), one that **pushes in snugly**
    (snug) and one that **spins freely** (free). The defaults are 1.9 / 2.1 / 2.3.
 4. Edit `cad/params.py` if your printer needs different values, then rebuild (section 7). `CLR_SLIDE` sets every
-   sliding fit and the free pin hole (Ø2 + `CLR_SLIDE`); `CLR_PRESS` sets the press (Ø2 − `CLR_PRESS`), snug and
-   running (both Ø2 + `CLR_PRESS`) pin holes. The lever's pivot hole must be a *running* fit: the pin spins
-   freely without wobble. The follower's axle holes print horizontal: use the coupon's side row for them.
+   sliding fit. Each pin hole is its **own** number, typed straight from the coupon: `PIN_PRESS_D` (presses in),
+   `PIN_SNUG_D` (snug), `PIN_RUN_D` (smallest hole the rod *spins freely* in without wobble: the lever pivot)
+   and `PIN_FREE_D` (loose: the drum bore). The follower's axle holes print horizontal: if the side row differs,
+   set `AXLE_HOLE_D` from it. Screw holes (`M2_CLEAR_D` = 2.3) don't follow any of these; if an M2 screw
+   threads into one, ream it with a Ø2.4 drill.
 
 ## 3. Print settings and orientation
 
@@ -91,7 +93,7 @@ bite channel and scrape any sag on that bridged wall. Why supports are needed: O
 | ~1 m | Ø2.0 steel rod / music wire, cut to: pivot **26.0**, cup-end **19.4**, plunger-end **11.4**, drum axle **19.9**, dowels **3 × 10** | Pins (file the ends flat and deburr) |
 | 2 | M2 × 4 countersunk self-tapping | Ribbon clamp |
 | 2 | M2 × 6 pan-head self-tapping | End cap |
-| 4 + 4 | **M2 × 20** socket or pan head + M2 nuts (a drop of medium threadlocker) | Receiver halves |
+| 4 + 4 | **M2 × 20 socket head** (ISO 4762 / DIN 912; a pan head is too wide for the Ø4.2 counterbore) + M2 nuts (a drop of medium threadlocker) | Receiver halves |
 | 2 | M2 × 8 **countersunk** self-tapping | Ring hook |
 | 2 + 2 | M3 thumb screws + M3 nuts | Bench base |
 | - | **Adhesive-backed** PTFE film 0.08 mm, industrial Velcro 2″, CA glue, Ø2 drill in a pin vise, 1.5 mm hex key, cut-off wheel for music wire (or buy Ø2 × 10 dowel pins) | |

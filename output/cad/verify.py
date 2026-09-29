@@ -174,7 +174,7 @@ def envelope_mass():
     steel = pin_len * math.pi * (P.PIN_D / 2) ** 2 * P.RHO_STEEL
     s = P.SPRINGS["A"]
     steel += s.L * s.W * s.T * P.RHO_STEEL
-    steel += 4 * 0.45 + 4 * 0.05 + 6 * 0.15  # M2x16 + nuts + small screws (g)
+    steel += 4 * 0.55 + 4 * 0.05 + 6 * 0.15  # M2x20 + nuts + small screws (g)
     return dict(bbox=(bb.xmin, bb.xmax, bb.ymin, bb.ymax, bb.zmin, bb.zmax), parts=vols, steel_g=steel)
 
 

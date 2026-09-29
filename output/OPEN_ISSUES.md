@@ -161,3 +161,5 @@ handle this. `verify.py` checks states C and D-taken with the clip moved ±0.3 i
   findings were fixed (CHANGES.md section C).
 - **Round 2:** geometry vs spec (full audit, about 190 point probes: no dimensional mismatch found),
   kinematics re-check, and print/assembly/FOD re-check. Fixes are in CHANGES.md section D.
+- **Round 3:** one reviewer re-checked every round-2 fix. No blocker or major finding; four minor/nit items
+  (pin-hole parameters, follower relief, screw head type, stale numbers) fixed in CHANGES.md section E.

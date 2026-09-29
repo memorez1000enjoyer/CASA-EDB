@@ -71,9 +71,22 @@ decision are in `OPEN_ISSUES.md`.
 | Ring hook didn't follow `PADDLE_X` (second pilot left the bracket) | `RING_HOOK_X` derived from the pilots ± 4.0 |
 | Clip-tube orientation change not justified by a failed check | Reverted to the spec's −Z (see C) |
 | Sharp stripper-wall outer corners; pockets under the lip and wall ends | Receiver top long edges chamfered only between the lip and the wall; stripper wall's outer vertical corners chamfered 0.5 |
-| `CLR_PRESS` unused | `PIN_PRESS_D = Ø2 − CLR_PRESS`, `PIN_SNUG_D = Ø2 + CLR_PRESS`, `PIN_FREE_D = Ø2 + CLR_SLIDE` |
+| `CLR_PRESS` unused | `PIN_PRESS_D = Ø2 − CLR_PRESS`, `PIN_SNUG_D = Ø2 + CLR_PRESS`, `PIN_FREE_D = Ø2 + CLR_SLIDE` (superseded in E: each hole is now its own coupon value) |
 | Loading procedure left the stack unheld between bites | README: use the gate as a ratchet, one bite at a time |
 | Stale docs (CHANGES rows, docstrings, OPEN_ISSUES numbering) | Rewritten |
 | Clip sitting 0.3 low: the follower's square bottom-front edge had to climb the bridge lead-in, then had no clearance under the clip roof (last bite could jam, esp. spring B) | Follower underside **relieved 0.4 over its front 2.0** (`FOLLOWER_FRONT_RELIEF`): at its stop that part sits over the bridge and never touches it. `verify.py` now also checks states C and D-taken with the clip shifted ±0.3 in Y and in Z. |
-| Tightened lever pivot left no free-running joint (binding risk against ~15–27 N·mm of return torque) | Lever pivot hole is a **running fit** `PIN_RUN_D` (Ø2 + `CLR_PRESS` = 2.1): ream it with a Ø2.1 drill so the lever spins freely without wobble; the pin itself is pressed into receiver_left |
+| Tightened lever pivot left no free-running joint (binding risk against ~15–27 N·mm of return torque) | Lever pivot hole is a **running fit** `PIN_RUN_D` (2.1): ream it with a Ø2.1 drill so the lever spins freely without wobble; the pin itself is pressed into receiver_left |
 | Pad rims 1.8 deep sat only 0.2 above the top at the hard stop (a deflected pad would land first) | `PAD_RIM_H` **1.2** (0.8 clear) |
+
+## E. Adversarial review round 3 (one reviewer re-checking round 2), fixes applied
+
+Round 3 confirmed the round-2 fixes: the hole-play derivation (checked sign by sign), the follower relief and
+clip-float poses, the enforcer alignment, the counterbore/nut stack and the README. It found nothing blocking.
+
+| Finding | Fix |
+|---|---|
+| One `CLR_PRESS` drove the press hole down and the snug/running holes up; a printer that prints holes small needs all of them larger. `M2_CLEAR_D` followed `CLR_SLIDE`, so a 0.20 coupon result gave Ø2.2 screw holes that an M2 would thread into. | Pin holes are **separate numbers read straight off the coupon**: `PIN_PRESS_D` 1.9, `PIN_SNUG_D` 2.1, `PIN_RUN_D` 2.1, `PIN_FREE_D` 2.3 (spec §8.2 values, unchanged). `M2_CLEAR_D` is its own 2.3 (spec §5.2). No geometry changed at the defaults. README §2 step 4 rewritten. |
+| Follower relief left 0.1 over the bridge with the clip 0.3 low | `FOLLOWER_FRONT_RELIEF` 0.4 → **0.7** (push ribs start at Z 9.75, so it costs nothing) |
+| BOM allowed pan-head M2 × 20; an ISO 7045 pan head (up to Ø4.0) may not seat in a printed Ø4.2 counterbore | BOM: **socket head only** (ISO 4762, head Ø3.8) |
+| Stale numbers: README "13.7 mm" lift; params comments (≈13.7 lift, ~0.3 play, flange 47.8, pin Z −12.35, "M2 x 16", "0.7 wall"); verify.py mass note "M2x16" | Corrected to 13.9, 0.2, 48.2, −12.75, M2 × 20, ≥ 0.8 |
+

@@ -17,7 +17,7 @@ Tags used in the comments:
   CHANGED  a DEFAULT that was changed; see CHANGES.md for old -> new -> reason
   ADDED    a value the spec left to the CAD agent; see ASSUMPTIONS in CHANGES.md
 
-Students: the numbers you are expected to touch are CLR_SLIDE (from fit_coupon),
+Students: the numbers you are expected to touch are CLR_SLIDE and the PIN_*_D holes (from fit_coupon),
 the SPRINGS table (measure your real spring), BITES (Esther's food trials),
 PADDLE_X (reach test) and the RING_* values (measure the HUT neck ring).
 After any change run  `python build_all.py`  and read VERIFICATION.md.
@@ -29,13 +29,15 @@ import math
 # §8.2 Tolerance rules
 # =============================================================================
 CLR_SLIDE = 0.30        # PARAM DEFAULT  sliding clearance per side - set from fit_coupon
-CLR_PRESS = 0.10        # PARAM DEFAULT  press clearance
+CLR_PRESS = 0.10        # PARAM DEFAULT  press clearance (the spec's Ø1.9 press / Ø2.1 snug holes below)
 PIN_D = 2.0             # Ø2 steel pins / music wire (§8.3)
-PIN_PRESS_D = PIN_D - CLR_PRESS   # DERIVED 1.9 press-fit hole for a Ø2 pin
-PIN_SNUG_D = PIN_D + CLR_PRESS    # DERIVED 2.1 snug hole
-PIN_FREE_D = PIN_D + CLR_SLIDE    # DERIVED 2.3 free-running hole
-PIN_RUN_D = PIN_D + CLR_PRESS     # ADDED 2.1 running fit: turns freely without wobble (ream after printing;
-                                  # set from the smallest coupon hole a Ø2 pin spins freely in)
+# Pin holes are set ONE BY ONE from the fit coupon's pin-hole row (README §2): a printer that
+# prints holes small needs every one of them larger, which no single clearance can express.
+PIN_PRESS_D = 1.9       # DEFAULT (§8.2) the coupon hole a Ø2 rod presses into and stays
+PIN_SNUG_D = 2.1        # DEFAULT (§8.2) the coupon hole a rod pushes into snugly
+PIN_FREE_D = 2.3        # DEFAULT (§8.2) the coupon hole a rod turns loosely in
+PIN_RUN_D = 2.1         # ADDED running fit: the smallest coupon hole a rod spins freely in without wobble
+                        # (lever pivot; ream after printing)
 MIN_WALL = 1.2          # DEFAULT  minimum structural wall
 MIN_WALL_ABS = 0.8      # MUST     absolute minimum wall
 MIN_HOLE_D = 1.6        # DEFAULT  smallest printed hole
@@ -101,7 +103,8 @@ GATE_SLOT_HW = BORE_W / 2 + GATE_SLOT_WALL_CUT  # DERIVED 11.25
 
 CLAMP_SCREW_X = 5.0     # DEFAULT
 CLAMP_SCREW_Y = 6.0     # DEFAULT (±)
-M2_CLEAR_D = PIN_FREE_D  # 2.3 clearance hole for M2
+M2_CLEAR_D = 2.3        # DEFAULT (§5.2) M2 clearance - its own value, NOT tied to the pin fits or CLR_SLIDE
+                        # (if an M2 threads into it, ream to 2.4 or raise this)
 M2_CSK_HEAD_D = 3.8     # M2 countersunk head (DIN 965)
 M2_CSK_CUT_D = 4.0      # ADDED countersink cut Ø (head recessed ~0.1)
 CLAMP_NOTCH_X = 3.5     # DEFAULT centre
@@ -264,9 +267,9 @@ CUP_PIN_L = 19.4        # DEFAULT (ends at ±9.7)
 # =============================================================================
 # §4 / §6.4 Lever and paddle
 # =============================================================================
-LIFT = 14.0             # PARAM nominal lift (≈13.7 effective after slot play)
+LIFT = 14.0             # PARAM nominal lift (model 14.1; ≈13.9 real after pin-hole play - see HOLE_LOST_MOTION)
 PADDLE_X = -36.2        # PARAM plunger / paddle centre (reach test may move it ±10)
-PADDLE_STROKE = 14.7    # CHANGED 14.3 -> 14.7: pin-hole play (pivot + end holes) costs ~0.3 of lift; keeps lift >= 13.5
+PADDLE_STROKE = 14.7    # CHANGED 14.3 -> 14.7: pin-hole play (pivot + end holes) costs 0.2 of lift; keeps lift >= 13.5
 LEVER_R = (ELEV_CX - PADDLE_X) / 2     # DERIVED 14.0
 PIVOT_X = (ELEV_CX + PADDLE_X) / 2     # DERIVED -22.2
 PIVOT_Z = LEDGE_Z + SLOT_Z + LIFT / 2  # DERIVED -5.5
@@ -299,7 +302,7 @@ PLUNGER_LY = 12.0       # DEFAULT (Y)
 FLANGE_LX = 16.0        # DEFAULT
 FLANGE_LY = 18.0        # DEFAULT
 FLANGE_T = 2.0          # DEFAULT
-FLANGE_UNDERSIDE_REST_Z = TOP_Z + PADDLE_STROKE  # DERIVED 47.8
+FLANGE_UNDERSIDE_REST_Z = TOP_Z + PADDLE_STROKE  # DERIVED 48.2 (spec 47.8 with stroke 14.3; 48.4 with hole play)
 PLUNGER_SLOT_DX_SPEC = (-1.3, 3.2)   # DEFAULT rel PADDLE_X  (X -37.5 -> -33.0)
 PLUNGER_SLOT_DX = (min(PLUNGER_SLOT_DX_SPEC[0], -SLOT_END_MARGIN),
                    max(PLUNGER_SLOT_DX_SPEC[1], PIN_WANDER + SLOT_END_MARGIN))  # DERIVED (-1.3, 3.2)
@@ -363,7 +366,7 @@ PIVOT_HOLE_SKIN = 1.0   # DEFAULT blind hole stops 1.0 short of each outer skin
 RING_HOOK_PILOTS = [(-19.0, 20.0), (PADDLE_X - 0.8, 26.0)]   # DEFAULT (X, Z) on -Y face
 RING_HOOK_PILOT_DEPTH = 7.0
 
-# receiver screws M2 x 16 along Y  (§6.1)
+# receiver screws along Y (§6.1: M2 x 16; changed to M2 x 20 socket head, see RCV_SCREW_L)
 RCV_SCREWS = [
     ((PADDLE_X + PLUNGER_CH_HW_X + FRONT_WALL_X0) / 2, 12.0),  # -23.6 (midway channel/front wall)
     ((PADDLE_X + PLUNGER_CH_HW_X + FRONT_WALL_X0) / 2, 26.0),  # -23.6
@@ -377,7 +380,7 @@ NUT_AF = 4.3            # CHANGED 4.1 -> 4.3: a printed 4.1 hex will not take a 
 NUT_TRAP_DEPTH = 6.6    # DEFAULT (screws are M2 x 20 - an M2 x 16 only reaches 0.1 into the nut)
 RCV_SCREW_L = 20.0      # CHANGED BOM M2 x 16 -> M2 x 20
 LUG_X = (8.0, 16.0)
-LUG_Z0 = -10.5          # CHANGED -10.0 -> -10.5 (0.7 wall under the counterbore)
+LUG_Z0 = -10.5          # CHANGED -10.0 -> -10.5 (>= 0.8 wall round the counterbore; -10.0 left 0.7)
 # dowels 3 x Ø2 x 10: ADDED positions (spec: "CAD agent places them")
 DOWEL_L = 10.0
 DOWEL_HOLE_DEPTH = 5.3  # each half -> 0.6 total axial play
@@ -461,7 +464,7 @@ PLUNGER_REST_BOT_Z = (2 * PIVOT_Z - _REST_CUP_PIN_Z) - (SLOT_Z - PIN_SLOT_PLAY) 
 # PADDLE_STROKE at rest (spec 47.8) with the real rest position (-1.2, not -1.5).
 FLANGE_OFFSET = FLANGE_UNDERSIDE_REST_Z - PLUNGER_REST_BOT_Z  # 49.4 with PADDLE_STROKE 14.7 (spec implied 49.3)
 PLUNGER_PRESSED_BOT_Z = TOP_Z - FLANGE_OFFSET                 # -15.9 (channel floor -16.5)
-_PRESS_PLUNGER_PIN_Z = PLUNGER_PRESSED_BOT_Z + SLOT_Z + PIN_SLOT_PLAY  # -12.35
+_PRESS_PLUNGER_PIN_Z = PLUNGER_PRESSED_BOT_Z + SLOT_Z + PIN_SLOT_PLAY  # -12.75
 PHI_PRESS = math.degrees(math.asin((PIVOT_Z - _PRESS_PLUNGER_PIN_Z) / LEVER_R))  # +31.19
 
 
@@ -491,6 +494,7 @@ _RCV_PIVOT_RADIAL = 0.0   # pin pressed into receiver_left - it cannot move in t
 HOLE_LOST_MOTION = (2 * ((LEVER_PIVOT_HOLE_D - PIN_D) / 2 + _RCV_PIVOT_RADIAL)
                     + 2 * (LEVER_END_HOLE_D - PIN_D) / 2)       # DERIVED 0.2
 FOLLOWER_FRONT_CHAMFER = 0.6   # ADDED vertical front edges: the clip can float 0.3 in its socket
-FOLLOWER_FRONT_RELIEF = (2.0, 0.4)  # ADDED underside raised 0.4 over the front 2.0: at F_STOP that part sits
+FOLLOWER_FRONT_RELIEF = (2.0, 0.7)  # ADDED underside raised 0.7 over the front 2.0: at F_STOP that part sits
                                     # over the receiver bridge, which it must not have to climb if the clip sits low
+                                    # (0.4 left only 0.1 with the clip 0.3 low; push ribs start at Z 9.75)
 BORE_LEADIN = 0.4              # ADDED on the receiver bore opening's vertical edges at X 0
