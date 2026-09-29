@@ -1,0 +1,1685 @@
+{
+ "checks": [
+  [
+   "9.1",
+   "Interference (all states + lever sweep)",
+   true,
+   "28 poses checked, 0 unintended overlaps > 0.01 mm\u00b3"
+  ],
+  [
+   "9.2",
+   "One-bite rule",
+   true,
+   "bite-2-top to roof min 1.81 (\u2265 0.6); elevator top never under bite 2"
+  ],
+  [
+   "9.3",
+   "Exposure",
+   true,
+   "min exposure 10.10 (\u2265 8.0), min retained 15.30 (\u2265 12)"
+  ],
+  [
+   "9.4",
+   "Window",
+   true,
+   "X clearance min 0.80, Y/side min 0.75, bite 2 under window max 1.90 (\u2264 1.9)"
+  ],
+  [
+   "9.5",
+   "Follower",
+   true,
+   "stops at F = -1.60 on the clamp back edge; ribbon max Z 1.33 (< 2.0)"
+  ],
+  [
+   "9.6",
+   "Spring extension",
+   true,
+   "min with \u2265 2 bites 21.5 (\u2265 18); last bite 9.2-9.2; max 114.1"
+  ],
+  [
+   "9.7",
+   "Kinematics",
+   true,
+   "lift 13.70 (\u2265 13.5), stroke 14.30, pins inside slots (min margin 0.24 at nominal X)"
+  ],
+  [
+   "9.8",
+   "Printability",
+   true,
+   "21 STLs all watertight, walls \u2265 0.8 except listed spec features; NEEDS SUPPORT: receiver_left, receiver_right, plunger (OPEN_ISSUES #2)"
+  ],
+  [
+   "9.9",
+   "Envelope / mass report",
+   true,
+   "reported below"
+  ],
+  [
+   "9.10",
+   "Force report",
+   true,
+   "A 4.9-7.8 N (> 6 N flagged), B 1.7-3.4 N"
+  ]
+ ],
+ "per": [
+  {
+   "cfg": "A/nom",
+   "roof_gap": 1.809000000000001,
+   "roof_gap_Bp": 1.6000000000000014,
+   "bite2_seat_A": 4.291,
+   "m_nom": 0.7999999999999998,
+   "m_worst": 0.5,
+   "expo": 10.099999999999994,
+   "below": 15.3,
+   "raised_bot": 18.2,
+   "win_x": 0.8000000000000007,
+   "win_y": 0.75,
+   "under_win": 1.9000000000000001,
+   "F_A": 87.3,
+   "F_C": -1.5999999999999996,
+   "F_E": 104.0,
+   "F_Bp": 86.19999999999999,
+   "back_gap_E": 4.800000000000011,
+   "ext_A": 97.3954216643096,
+   "ext_2": 21.452199255921396,
+   "ext_C": 9.217819838200729,
+   "ext_E": 114.08491248401295,
+   "ext_max": 114.08491248401295,
+   "ext_limit": 457.0,
+   "ribbon_maxz": 1.3337442649058278,
+   "coil_od_E": 15.33332882013786,
+   "pocket": 17.06379474475369,
+   "lift": 13.7,
+   "elev_rest": 4.5,
+   "push_rib_gap_Dt": 0.8000000000000003,
+   "push_rib_gap_Dt_worst": 0.5000000000000004,
+   "time": 43.27164101600647
+  }
+ ],
+ "clearance": {
+  "('clip_tube', 'follower')": [
+   0.0,
+   "A/nom A",
+   "clip_tube",
+   "follower"
+  ],
+  "('clip_tube', 'drum')": [
+   2.6,
+   "A/nom E",
+   "clip_tube",
+   "drum"
+  ],
+  "('clip_tube', 'pin_axle')": [
+   0.3,
+   "A/nom A",
+   "clip_tube",
+   "pin_axle"
+  ],
+  "('cf_spring', 'clip_tube')": [
+   0.0,
+   "A/nom A",
+   "clip_tube",
+   "cf_spring"
+  ],
+  "('bite', 'clip_tube')": [
+   0.0,
+   "A/nom A",
+   "clip_tube",
+   "bite2"
+  ],
+  "('cf_spring', 'ribbon_clamp')": [
+   0.0,
+   "A/nom A",
+   "ribbon_clamp",
+   "cf_spring"
+  ],
+  "('cf_spring', 'screw_clamp')": [
+   0.175,
+   "A/nom E",
+   "screw_clamp_n",
+   "cf_spring"
+  ],
+  "('drum', 'follower')": [
+   0.6,
+   "A/nom E",
+   "follower",
+   "drum"
+  ],
+  "('follower', 'pin_axle')": [
+   0.05,
+   "A/nom E",
+   "follower",
+   "pin_axle"
+  ],
+  "('cf_spring', 'follower')": [
+   0.475,
+   "A/nom E",
+   "follower",
+   "cf_spring"
+  ],
+  "('bite', 'follower')": [
+   0.0,
+   "A/nom A",
+   "follower",
+   "bite8"
+  ],
+  "('drum', 'pin_axle')": [
+   0.15,
+   "A/nom Dt",
+   "drum",
+   "pin_axle"
+  ],
+  "('cf_spring', 'drum')": [
+   0.0,
+   "A/nom A",
+   "drum",
+   "cf_spring"
+  ],
+  "('cf_spring', 'pin_axle')": [
+   5.25,
+   "A/nom E",
+   "pin_axle",
+   "cf_spring"
+  ],
+  "('cf_spring', 'receiver_left')": [
+   2.0,
+   "A/nom A",
+   "cf_spring",
+   "receiver_left"
+  ],
+  "('cf_spring', 'receiver_right')": [
+   2.0,
+   "A/nom A",
+   "cf_spring",
+   "receiver_right"
+  ],
+  "('bite', 'cf_spring')": [
+   3.1655,
+   "A/nom E",
+   "cf_spring",
+   "bite8"
+  ],
+  "('elevator', 'receiver_left')": [
+   0.0,
+   "A/nom A",
+   "receiver_left",
+   "elevator"
+  ],
+  "('lever', 'receiver_left')": [
+   0.5,
+   "A/nom A",
+   "receiver_left",
+   "lever"
+  ],
+  "('pin_cup', 'receiver_left')": [
+   0.55,
+   "A/nom A",
+   "receiver_left",
+   "pin_cup"
+  ],
+  "('pin_plunger', 'receiver_left')": [
+   0.6,
+   "A/nom D@+21.8",
+   "receiver_left",
+   "pin_plunger"
+  ],
+  "('plunger', 'receiver_left')": [
+   0.0,
+   "A/nom B",
+   "receiver_left",
+   "plunger"
+  ],
+  "('receiver_left', 'return_spring')": [
+   0.0,
+   "A/nom A",
+   "receiver_left",
+   "return_spring"
+  ],
+  "('bite', 'receiver_left')": [
+   0.0,
+   "A/nom A",
+   "receiver_left",
+   "bite1"
+  ],
+  "('elevator', 'receiver_right')": [
+   0.0,
+   "A/nom A",
+   "receiver_right",
+   "elevator"
+  ],
+  "('lever', 'receiver_right')": [
+   0.5,
+   "A/nom A",
+   "receiver_right",
+   "lever"
+  ],
+  "('pin_cup', 'receiver_right')": [
+   0.55,
+   "A/nom A",
+   "receiver_right",
+   "pin_cup"
+  ],
+  "('pin_plunger', 'receiver_right')": [
+   0.6,
+   "A/nom D@+21.8",
+   "receiver_right",
+   "pin_plunger"
+  ],
+  "('plunger', 'receiver_right')": [
+   0.0,
+   "A/nom B",
+   "receiver_right",
+   "plunger"
+  ],
+  "('receiver_right', 'return_spring')": [
+   0.0,
+   "A/nom A",
+   "receiver_right",
+   "return_spring"
+  ],
+  "('bite', 'receiver_right')": [
+   0.0,
+   "A/nom A",
+   "receiver_right",
+   "bite1"
+  ],
+  "('dowel', 'plunger')": [
+   2.7,
+   "A/nom A",
+   "dowel2",
+   "plunger"
+  ],
+  "('lever', 'pin_pivot')": [
+   0.15,
+   "A/nom D@+21.8",
+   "pin_pivot",
+   "lever"
+  ],
+  "('elevator', 'lever')": [
+   0.3,
+   "A/nom D@+21.8",
+   "elevator",
+   "lever"
+  ],
+  "('elevator', 'pin_cup')": [
+   0.0,
+   "A/nom A",
+   "elevator",
+   "pin_cup"
+  ],
+  "('bite', 'elevator')": [
+   0.0,
+   "A/nom A",
+   "elevator",
+   "bite1"
+  ],
+  "('lever', 'pin_cup')": [
+   0.05,
+   "A/nom D@+21.8",
+   "lever",
+   "pin_cup"
+  ],
+  "('lever', 'pin_plunger')": [
+   0.05,
+   "A/nom D@+21.8",
+   "lever",
+   "pin_plunger"
+  ],
+  "('lever', 'plunger')": [
+   0.3,
+   "A/nom D@+21.8",
+   "lever",
+   "plunger"
+  ],
+  "('bite', 'lever')": [
+   10.8731,
+   "A/nom C",
+   "lever",
+   "bite8"
+  ],
+  "('pin_plunger', 'plunger')": [
+   0.0,
+   "A/nom A",
+   "pin_plunger",
+   "plunger"
+  ],
+  "('paddle_pad', 'plunger')": [
+   0.0,
+   "A/nom A",
+   "plunger",
+   "paddle_pad"
+  ],
+  "('plunger', 'return_spring')": [
+   0.0,
+   "A/nom A",
+   "plunger",
+   "return_spring"
+  ],
+  "('bite', 'bite')": [
+   0.0,
+   "A/nom A",
+   "bite1",
+   "bite2"
+  ],
+  "('paddle_pad', 'receiver_left')": [
+   1.0,
+   "A/nom B",
+   "receiver_left",
+   "paddle_pad"
+  ],
+  "('paddle_pad', 'receiver_right')": [
+   1.0,
+   "A/nom B",
+   "receiver_right",
+   "paddle_pad"
+  ],
+  "('follower', 'ribbon_clamp')": [
+   0.0,
+   "A/nom C",
+   "ribbon_clamp",
+   "follower"
+  ],
+  "('follower', 'screw_clamp')": [
+   2.0,
+   "A/nom C",
+   "screw_clamp_p",
+   "follower"
+  ],
+  "('follower', 'receiver_left')": [
+   0.0,
+   "A/nom C",
+   "follower",
+   "receiver_left"
+  ],
+  "('follower', 'receiver_right')": [
+   0.0,
+   "A/nom C",
+   "follower",
+   "receiver_right"
+  ],
+  "('elevator', 'follower')": [
+   0.8,
+   "A/nom D",
+   "follower",
+   "elevator"
+  ],
+  "('drum', 'receiver_left')": [
+   4.9,
+   "A/nom Dt",
+   "drum",
+   "receiver_left"
+  ],
+  "('drum', 'receiver_right')": [
+   4.9,
+   "A/nom Dt",
+   "drum",
+   "receiver_right"
+  ],
+  "('pin_axle', 'receiver_left')": [
+   2.6,
+   "A/nom C",
+   "pin_axle",
+   "receiver_left"
+  ],
+  "('pin_axle', 'receiver_right')": [
+   2.6,
+   "A/nom C",
+   "pin_axle",
+   "receiver_right"
+  ],
+  "('cf_spring', 'gate')": [
+   1.85,
+   "A/nom E",
+   "gate",
+   "cf_spring"
+  ],
+  "('bite', 'gate')": [
+   0.0,
+   "A/nom E",
+   "gate",
+   "bite1"
+  ]
+ },
+ "forces": {
+  "A": {
+   "F": 6.6,
+   "friction": 3.3,
+   "rs_rest": 1.64,
+   "rs_pressed": 4.5,
+   "paddle_start": 4.9399999999999995,
+   "paddle_end": 7.8,
+   "bite_returns": false,
+   "elevator_returns": true,
+   "L_rest": 26.8,
+   "L_press": 12.500000000000002
+  },
+  "B": {
+   "F": 1.47,
+   "friction": 0.735,
+   "rs_rest": 0.9839999999999999,
+   "rs_pressed": 2.6999999999999997,
+   "paddle_start": 1.7189999999999999,
+   "paddle_end": 3.4349999999999996,
+   "bite_returns": true,
+   "elevator_returns": true,
+   "L_rest": 26.8,
+   "L_press": 12.500000000000002
+  }
+ },
+ "printability": [
+  {
+   "name": "clip_tube",
+   "orient": "bottom_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 33730.924408588726,
+   "min_wall": 0.8415602143368858,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [
+    "spec feature: top corner of the 1.2 mouth lip with the spec 0.5 mouth chamfer 0.72",
+    "spec feature: clamp notch (X 3.1-3.9) meets the \u00d82.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall 0.08",
+    "longest bridge 20.5"
+   ],
+   "regions": [
+    {
+     "area": 24.6,
+     "bad_frac": 0.0,
+     "bridge": 20.5,
+     "z": 33.5,
+     "bbox": [
+      -70.4,
+      -69.2,
+      -10.2,
+      10.2
+     ]
+    },
+    {
+     "area": 3.6,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 19.8,
+     "bbox": [
+      67.6,
+      69.2,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 3.6,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 19.8,
+     "bbox": [
+      67.6,
+      69.2,
+      -12.2,
+      -10.2
+     ]
+    },
+    {
+     "area": 2829.0,
+     "bad_frac": 0.0,
+     "bridge": 20.5,
+     "z": 33.5,
+     "bbox": [
+      -67.6,
+      70.4,
+      -10.2,
+      10.2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "clip_tube_viewslots",
+   "orient": "bottom_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 33010.92440668137,
+   "min_wall": 0.8078726517427566,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [
+    "spec feature: rail stub in front of the gate slot: 1.2 lip with the spec 0.5 rail chamfer 0.79",
+    "spec feature: top corner of the 1.2 mouth lip with the spec 0.5 mouth chamfer 0.77",
+    "spec feature: clamp notch (X 3.1-3.9) meets the \u00d82.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall 0.36",
+    "longest bridge 20.5"
+   ],
+   "regions": [
+    {
+     "area": 24.6,
+     "bad_frac": 0.0,
+     "bridge": 20.5,
+     "z": 33.5,
+     "bbox": [
+      -70.4,
+      -69.2,
+      -10.2,
+      10.2
+     ]
+    },
+    {
+     "area": 3.6,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 19.8,
+     "bbox": [
+      67.6,
+      69.2,
+      -12.2,
+      -10.2
+     ]
+    },
+    {
+     "area": 20.0,
+     "bad_frac": 0.0,
+     "bridge": 10.0,
+     "z": 22.0,
+     "bbox": [
+      -58.4,
+      -48.4,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 20.0,
+     "bad_frac": 0.0,
+     "bridge": 10.0,
+     "z": 22.0,
+     "bbox": [
+      -45.8,
+      -35.8,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 20.0,
+     "bad_frac": 0.0,
+     "bridge": 10.0,
+     "z": 22.0,
+     "bbox": [
+      -33.3,
+      -23.3,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 20.0,
+     "bad_frac": 0.0,
+     "bridge": 10.0,
+     "z": 22.0,
+     "bbox": [
+      -20.8,
+      -10.8,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 20.0,
+     "bad_frac": 0.0,
+     "bridge": 10.0,
+     "z": 22.0,
+     "bbox": [
+      -8.2,
+      1.8,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 3.6,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 19.8,
+     "bbox": [
+      67.6,
+      69.2,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 20.0,
+     "bad_frac": 0.0,
+     "bridge": 10.0,
+     "z": 22.0,
+     "bbox": [
+      4.3,
+      14.4,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 20.0,
+     "bad_frac": 0.0,
+     "bridge": 10.0,
+     "z": 22.0,
+     "bbox": [
+      16.9,
+      26.9,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 20.0,
+     "bad_frac": 0.0,
+     "bridge": 10.0,
+     "z": 22.0,
+     "bbox": [
+      29.5,
+      39.5,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 20.0,
+     "bad_frac": 0.0,
+     "bridge": 10.0,
+     "z": 22.0,
+     "bbox": [
+      42.0,
+      52.0,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 2829.0,
+     "bad_frac": 0.0,
+     "bridge": 20.5,
+     "z": 33.5,
+     "bbox": [
+      -67.6,
+      70.4,
+      -10.2,
+      10.2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "gate",
+   "orient": "plusX_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 875.9880494799609,
+   "min_wall": 1.1998999999999997,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [],
+   "regions": []
+  },
+  {
+   "name": "end_cap",
+   "orient": "plusX_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 2390.1982116403437,
+   "min_wall": 1.0982830746280268,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [],
+   "regions": [
+    {
+     "area": 6.4,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 2.7,
+     "bbox": [
+      0.4,
+      1.6,
+      -10.1,
+      -5.1
+     ]
+    },
+    {
+     "area": 6.4,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 2.7,
+     "bbox": [
+      0.4,
+      1.6,
+      5.1,
+      10.1
+     ]
+    }
+   ]
+  },
+  {
+   "name": "follower",
+   "orient": "plusX_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 12891.906740561657,
+   "min_wall": 1.4680026276231537,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [
+    "spec feature: push rib (spec: 0.5 tall x 0.6) 0.50",
+    "spec feature: push rib (spec: 0.5 tall x 0.6) 0.50",
+    "longest bridge 10.6"
+   ],
+   "regions": [
+    {
+     "area": 7.8,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 11.0,
+     "bbox": [
+      -7.7,
+      -6.1,
+      -9.9,
+      -5.3
+     ]
+    },
+    {
+     "area": 7.8,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 11.0,
+     "bbox": [
+      -7.7,
+      -6.1,
+      5.3,
+      9.9
+     ]
+    },
+    {
+     "area": 115.3,
+     "bad_frac": 0.0,
+     "bridge": 10.6,
+     "z": 18.0,
+     "bbox": [
+      -11.2,
+      -1.0,
+      -5.3,
+      5.3
+     ]
+    }
+   ]
+  },
+  {
+   "name": "drum",
+   "orient": "plusY_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 1110.5606658620616,
+   "min_wall": 4.806582631747904,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [],
+   "regions": []
+  },
+  {
+   "name": "ribbon_clamp",
+   "orient": "top_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 108.36651459389428,
+   "min_wall": 0.9001486543993478,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [
+    "spec feature: clamp ridge (spec: 0.3 tall; 0.5 wide to fit the 0.8 notch around the ribbon) 0.50"
+   ],
+   "regions": []
+  },
+  {
+   "name": "receiver_left",
+   "orient": "plusY_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 32212.712055540116,
+   "min_wall": 0.7999000000000007,
+   "wall_ok": true,
+   "overhang_ok": false,
+   "flags": [
+    "SUPPORT: 165 mm\u00b2 unsupported at print Z 10.2 (x -1.8..12.5, y -24.7..24.0)",
+    "SUPPORT: 620 mm\u00b2 unsupported at print Z 12.6 (x 12.5..40.0, y -11.5..24.6)",
+    "longest bridge 25.0"
+   ],
+   "regions": [
+    {
+     "area": 60.4,
+     "bad_frac": 0.0,
+     "bridge": 4.7,
+     "z": 3.1,
+     "bbox": [
+      -36.4,
+      -31.6,
+      -27.2,
+      -15.7
+     ]
+    },
+    {
+     "area": 712.7,
+     "bad_frac": 0.0,
+     "bridge": 19.3,
+     "z": 6.3,
+     "bbox": [
+      -37.7,
+      -18.4,
+      -25.7,
+      24.3
+     ]
+    },
+    {
+     "area": 303.3,
+     "bad_frac": 0.002,
+     "bridge": 24.2,
+     "z": 3.6,
+     "bbox": [
+      -18.4,
+      -3.8,
+      -25.2,
+      -4.2
+     ]
+    },
+    {
+     "area": 33.8,
+     "bad_frac": 0.0,
+     "bridge": 17.0,
+     "z": 3.5,
+     "bbox": [
+      -3.8,
+      -1.8,
+      -23.2,
+      -6.2
+     ]
+    },
+    {
+     "area": 13.9,
+     "bad_frac": 0.0,
+     "bridge": 9.3,
+     "z": 3.6,
+     "bbox": [
+      -1.8,
+      7.5,
+      -26.2,
+      -24.7
+     ]
+    },
+    {
+     "area": 653.3,
+     "bad_frac": 0.253,
+     "bridge": 24.9,
+     "z": 10.2,
+     "bbox": [
+      -1.8,
+      12.5,
+      -24.7,
+      24.0
+     ]
+    },
+    {
+     "area": 992.8,
+     "bad_frac": 0.624,
+     "bridge": 25.0,
+     "z": 12.6,
+     "bbox": [
+      12.5,
+      40.0,
+      -11.5,
+      24.6
+     ]
+    },
+    {
+     "area": 2.0,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 8.2,
+     "bbox": [
+      15.5,
+      19.5,
+      -12.0,
+      -11.5
+     ]
+    },
+    {
+     "area": 2.8,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 5.3,
+     "bbox": [
+      -34.5,
+      -32.5,
+      7.9,
+      9.7
+     ]
+    },
+    {
+     "area": 2.8,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 5.3,
+     "bbox": [
+      8.9,
+      10.8,
+      -27.9,
+      -26.0
+     ]
+    },
+    {
+     "area": 3.2,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 11.2,
+     "bbox": [
+      13.7,
+      15.3,
+      24.6,
+      26.6
+     ]
+    },
+    {
+     "area": 26.0,
+     "bad_frac": 0.0,
+     "bridge": 13.0,
+     "z": 4.5,
+     "bbox": [
+      23.5,
+      36.5,
+      24.6,
+      26.6
+     ]
+    },
+    {
+     "area": 2.8,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 5.3,
+     "bbox": [
+      -16.0,
+      -14.1,
+      8.9,
+      10.7
+     ]
+    },
+    {
+     "area": 3.5,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 13.6,
+     "bbox": [
+      -10.8,
+      -8.7,
+      -15.7,
+      -13.7
+     ]
+    }
+   ]
+  },
+  {
+   "name": "receiver_right",
+   "orient": "minusY_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 31750.326725027295,
+   "min_wall": 0.7999000000000007,
+   "wall_ok": true,
+   "overhang_ok": false,
+   "flags": [
+    "SUPPORT: 152 mm\u00b2 unsupported at print Z 10.2 (x -1.8..12.5, y -25.0..23.8)",
+    "SUPPORT: 631 mm\u00b2 unsupported at print Z 12.6 (x 12.5..40.0, y -25.5..10.6)",
+    "SUPPORT: 50 mm\u00b2 unsupported at print Z 10.8 (x 15.3..40.5, y -27.5..-25.5)",
+    "longest bridge 25.0"
+   ],
+   "regions": [
+    {
+     "area": 60.4,
+     "bad_frac": 0.0,
+     "bridge": 4.7,
+     "z": 3.1,
+     "bbox": [
+      -36.4,
+      -31.6,
+      14.8,
+      26.2
+     ]
+    },
+    {
+     "area": 712.7,
+     "bad_frac": 0.0,
+     "bridge": 19.3,
+     "z": 6.3,
+     "bbox": [
+      -37.7,
+      -18.4,
+      -25.2,
+      24.8
+     ]
+    },
+    {
+     "area": 303.3,
+     "bad_frac": 0.003,
+     "bridge": 22.3,
+     "z": 3.6,
+     "bbox": [
+      -18.4,
+      -3.8,
+      3.2,
+      24.2
+     ]
+    },
+    {
+     "area": 33.8,
+     "bad_frac": 0.0,
+     "bridge": 17.0,
+     "z": 3.5,
+     "bbox": [
+      -3.8,
+      -1.8,
+      5.2,
+      22.2
+     ]
+    },
+    {
+     "area": 653.3,
+     "bad_frac": 0.232,
+     "bridge": 25.0,
+     "z": 10.2,
+     "bbox": [
+      -1.8,
+      12.5,
+      -25.0,
+      23.8
+     ]
+    },
+    {
+     "area": 14.0,
+     "bad_frac": 0.0,
+     "bridge": 9.3,
+     "z": 3.6,
+     "bbox": [
+      -1.8,
+      7.5,
+      23.8,
+      25.2
+     ]
+    },
+    {
+     "area": 992.7,
+     "bad_frac": 0.636,
+     "bridge": 25.0,
+     "z": 12.6,
+     "bbox": [
+      12.5,
+      40.0,
+      -25.5,
+      10.6
+     ]
+    },
+    {
+     "area": 2.0,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 8.2,
+     "bbox": [
+      15.5,
+      19.5,
+      10.6,
+      11.1
+     ]
+    },
+    {
+     "area": 50.1,
+     "bad_frac": 1.0,
+     "bridge": 0.0,
+     "z": 10.8,
+     "bbox": [
+      15.3,
+      40.5,
+      -27.5,
+      -25.5
+     ]
+    },
+    {
+     "area": 3.5,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 5.3,
+     "bbox": [
+      -34.5,
+      -32.5,
+      -10.8,
+      -8.7
+     ]
+    },
+    {
+     "area": 3.5,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 5.3,
+     "bbox": [
+      8.8,
+      10.9,
+      25.0,
+      27.0
+     ]
+    },
+    {
+     "area": 3.5,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 13.6,
+     "bbox": [
+      -10.8,
+      -8.7,
+      12.7,
+      14.8
+     ]
+    },
+    {
+     "area": 3.5,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 5.3,
+     "bbox": [
+      -16.0,
+      -13.9,
+      -11.8,
+      -9.7
+     ]
+    },
+    {
+     "area": 3.2,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 11.2,
+     "bbox": [
+      13.7,
+      15.3,
+      -27.5,
+      -25.5
+     ]
+    }
+   ]
+  },
+  {
+   "name": "elevator",
+   "orient": "bottom_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 3934.054061367036,
+   "min_wall": 1.8498999999999999,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [
+    "longest bridge 6.6"
+   ],
+   "regions": [
+    {
+     "area": 31.3,
+     "bad_frac": 0.0,
+     "bridge": 4.7,
+     "z": 4.2,
+     "bbox": [
+      -3.3,
+      1.4,
+      -9.9,
+      -3.3
+     ]
+    },
+    {
+     "area": 31.3,
+     "bad_frac": 0.0,
+     "bridge": 4.7,
+     "z": 4.2,
+     "bbox": [
+      -3.3,
+      1.4,
+      3.3,
+      9.9
+     ]
+    },
+    {
+     "area": 59.4,
+     "bad_frac": 0.0,
+     "bridge": 6.6,
+     "z": 9.0,
+     "bbox": [
+      -5.8,
+      3.2,
+      -3.3,
+      3.3
+     ]
+    }
+   ]
+  },
+  {
+   "name": "lever",
+   "orient": "plusY_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 891.2966531164016,
+   "min_wall": 1.3502574406990613,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [],
+   "regions": []
+  },
+  {
+   "name": "plunger",
+   "orient": "top_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 6323.226867938815,
+   "min_wall": 1.7998999999999938,
+   "wall_ok": true,
+   "overhang_ok": false,
+   "flags": [
+    "SUPPORT: 86 mm\u00b2 unsupported at print Z 36.0 (x -10.4..-2.3, y -6.0..6.0)",
+    "longest bridge 4.5"
+   ],
+   "regions": [
+    {
+     "area": 96.0,
+     "bad_frac": 0.898,
+     "bridge": 0.0,
+     "z": 36.0,
+     "bbox": [
+      -10.4,
+      -2.3,
+      -6.0,
+      6.0
+     ]
+    },
+    {
+     "area": 12.1,
+     "bad_frac": 0.0,
+     "bridge": 4.5,
+     "z": 49.2,
+     "bbox": [
+      1.4,
+      5.8,
+      3.3,
+      6.0
+     ]
+    },
+    {
+     "area": 12.1,
+     "bad_frac": 0.0,
+     "bridge": 4.5,
+     "z": 49.2,
+     "bbox": [
+      1.4,
+      5.8,
+      -6.0,
+      -3.3
+     ]
+    }
+   ]
+  },
+  {
+   "name": "paddle_pad",
+   "orient": "bottom_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 1325.890314589985,
+   "min_wall": 2.3613853924992227,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [
+    "longest bridge 16.4"
+   ],
+   "regions": [
+    {
+     "area": 295.2,
+     "bad_frac": 0.0,
+     "bridge": 16.4,
+     "z": 1.0,
+     "bbox": [
+      -8.2,
+      8.2,
+      -9.0,
+      9.0
+     ]
+    }
+   ]
+  },
+  {
+   "name": "ring_hook",
+   "orient": "minusX_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 3317.3878136463404,
+   "min_wall": 2.065669968661446,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [],
+   "regions": [
+    {
+     "area": 4.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 23.1,
+     "bbox": [
+      8.9,
+      10.6,
+      2.5,
+      5.3
+     ]
+    },
+    {
+     "area": 4.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 5.1,
+     "bbox": [
+      2.9,
+      4.6,
+      2.5,
+      5.3
+     ]
+    }
+   ]
+  },
+  {
+   "name": "bench_base",
+   "orient": "bottom_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 51743.254890634744,
+   "min_wall": 2.6998999999999995,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [
+    "longest bridge 2.4"
+   ],
+   "regions": [
+    {
+     "area": 7.1,
+     "bad_frac": 0.0,
+     "bridge": 2.4,
+     "z": 12.6,
+     "bbox": [
+      -79.1,
+      -76.7,
+      14.9,
+      17.5
+     ]
+    },
+    {
+     "area": 7.1,
+     "bad_frac": 0.0,
+     "bridge": 2.4,
+     "z": 12.6,
+     "bbox": [
+      -52.1,
+      -49.7,
+      14.9,
+      17.5
+     ]
+    },
+    {
+     "area": 7.1,
+     "bad_frac": 0.0,
+     "bridge": 2.4,
+     "z": 12.6,
+     "bbox": [
+      -79.1,
+      -76.7,
+      20.1,
+      22.9
+     ]
+    },
+    {
+     "area": 7.1,
+     "bad_frac": 0.0,
+     "bridge": 2.4,
+     "z": 12.6,
+     "bbox": [
+      -52.1,
+      -49.7,
+      20.1,
+      22.9
+     ]
+    }
+   ]
+  },
+  {
+   "name": "fit_coupon",
+   "orient": "bottom_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 2,
+   "volume": 19583.27970719525,
+   "min_wall": 0.8008817823964854,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [],
+   "regions": [
+    {
+     "area": 11.7,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 4.9,
+     "bbox": [
+      -34.7,
+      -33.3,
+      12.0,
+      20.0
+     ]
+    },
+    {
+     "area": 12.4,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 4.9,
+     "bbox": [
+      -22.2,
+      -20.8,
+      12.0,
+      20.0
+     ]
+    },
+    {
+     "area": 13.0,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 5.0,
+     "bbox": [
+      -9.7,
+      -8.3,
+      12.0,
+      20.0
+     ]
+    },
+    {
+     "area": 13.6,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 5.0,
+     "bbox": [
+      2.7,
+      4.3,
+      12.0,
+      20.0
+     ]
+    },
+    {
+     "area": 14.2,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 5.1,
+     "bbox": [
+      15.2,
+      16.8,
+      12.0,
+      20.0
+     ]
+    }
+   ]
+  },
+  {
+   "name": "bite_nominal",
+   "orient": "plusX_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 5943.388567890596,
+   "min_wall": 12.6999,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [],
+   "regions": [
+    {
+     "area": 92.5,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 0.64,
+     "bbox": [],
+     "note": "bed-edge fillet"
+    }
+   ]
+  },
+  {
+   "name": "bite_min",
+   "orient": "plusX_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 5181.205270875912,
+   "min_wall": 12.1999,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [],
+   "regions": [
+    {
+     "area": 87.8,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 0.64,
+     "bbox": [],
+     "note": "bed-edge fillet"
+    }
+   ]
+  },
+  {
+   "name": "bite_max",
+   "orient": "plusX_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 6775.371862026185,
+   "min_wall": 13.1999,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [],
+   "regions": [
+    {
+     "area": 97.2,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 0.64,
+     "bbox": [],
+     "note": "bed-edge fillet"
+    }
+   ]
+  },
+  {
+   "name": "follower_springB",
+   "orient": "plusX_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 13209.09143126604,
+   "min_wall": 1.8998999999999988,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [
+    "spec feature: push rib (spec: 0.5 tall x 0.6) 0.50",
+    "spec feature: push rib (spec: 0.5 tall x 0.6) 0.50",
+    "longest bridge 10.6"
+   ],
+   "regions": [
+    {
+     "area": 7.8,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 11.0,
+     "bbox": [
+      -7.7,
+      -6.1,
+      -9.9,
+      -5.3
+     ]
+    },
+    {
+     "area": 7.8,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 11.0,
+     "bbox": [
+      -7.7,
+      -6.1,
+      5.3,
+      9.9
+     ]
+    },
+    {
+     "area": 46.1,
+     "bad_frac": 0.0,
+     "bridge": 10.6,
+     "z": 18.4,
+     "bbox": [
+      -11.2,
+      -6.9,
+      -5.3,
+      5.3
+     ]
+    },
+    {
+     "area": 64.7,
+     "bad_frac": 0.0,
+     "bridge": 10.6,
+     "z": 16.8,
+     "bbox": [
+      -6.9,
+      -1.4,
+      -5.3,
+      5.3
+     ]
+    }
+   ]
+  },
+  {
+   "name": "drum_spacer_springB",
+   "orient": "plusY_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 57.43140552382757,
+   "min_wall": 0.9043449715231723,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [],
+   "regions": []
+  }
+ ]
+}

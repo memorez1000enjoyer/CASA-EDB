@@ -1,0 +1,233 @@
+{
+ "clip_tube": {
+  "orientation": "bottom_down",
+  "material": "PETG (translucent)",
+  "note": "-Z face down; roof bridges 20.5. If roof sags > 0.2 see README.",
+  "volume_mm3": 33730.9,
+  "print_bbox": [
+   140.8,
+   24.5,
+   35.5
+  ]
+ },
+ "clip_tube_viewslots": {
+  "orientation": "bottom_down",
+  "material": "PETG (opaque)",
+  "note": "Only if printing opaque: 9 short viewing windows in the +Y wall.",
+  "volume_mm3": 33010.9,
+  "print_bbox": [
+   140.8,
+   24.5,
+   35.5
+  ]
+ },
+ "gate": {
+  "orientation": "plusX_down",
+  "material": "PETG",
+  "note": "flat",
+  "volume_mm3": 876.0,
+  "print_bbox": [
+   40.0,
+   22.1,
+   1.2
+  ]
+ },
+ "end_cap": {
+  "orientation": "plusX_down",
+  "material": "PETG",
+  "note": "flat, outer face down",
+  "volume_mm3": 2390.2,
+  "print_bbox": [
+   31.1,
+   20.1,
+   4.0
+  ]
+ },
+ "follower": {
+  "orientation": "plusX_down",
+  "material": "PETG",
+  "note": "rear (+X) face down: pocket arch bridges 10.6",
+  "volume_mm3": 12891.4,
+  "print_bbox": [
+   30.9,
+   19.9,
+   28.0
+  ]
+ },
+ "drum": {
+  "orientation": "plusY_down",
+  "material": "PETG",
+  "note": "on its end",
+  "volume_mm3": 1111.0,
+  "print_bbox": [
+   12.5,
+   12.5,
+   9.4
+  ]
+ },
+ "ribbon_clamp": {
+  "orientation": "top_down",
+  "material": "PETG",
+  "note": "flat, top face down, ridge up",
+  "volume_mm3": 108.4,
+  "print_bbox": [
+   6.0,
+   15.4,
+   1.5
+  ]
+ },
+ "receiver_left": {
+  "orientation": "plusY_down",
+  "material": "PETG",
+  "note": "split face (Y=0) down",
+  "volume_mm3": 32212.5,
+  "print_bbox": [
+   81.3,
+   58.4,
+   14.7
+  ]
+ },
+ "receiver_right": {
+  "orientation": "minusY_down",
+  "material": "PETG",
+  "note": "split face (Y=0) down",
+  "volume_mm3": 31750.0,
+  "print_bbox": [
+   81.3,
+   56.5,
+   14.7
+  ]
+ },
+ "elevator": {
+  "orientation": "bottom_down",
+  "material": "PETG",
+  "note": "bottom down: notch roof bridges 6.6",
+  "volume_mm3": 3934.1,
+  "print_bbox": [
+   11.6,
+   19.9,
+   20.0
+  ]
+ },
+ "lever": {
+  "orientation": "plusY_down",
+  "material": "PETG",
+  "note": "on its side: all holes vertical",
+  "volume_mm3": 891.3,
+  "print_bbox": [
+   33.0,
+   5.0,
+   6.0
+  ]
+ },
+ "plunger": {
+  "orientation": "top_down",
+  "material": "PETG",
+  "note": "upside down (flange on the bed); support under the ear only",
+  "volume_mm3": 6323.2,
+  "print_bbox": [
+   21.3,
+   18.0,
+   51.0
+  ]
+ },
+ "paddle_pad": {
+  "orientation": "bottom_down",
+  "material": "TPU 95A",
+  "note": "dome up; channel roof bridges 16.4",
+  "volume_mm3": 1344.6,
+  "print_bbox": [
+   25.1,
+   18.1,
+   4.0
+  ]
+ },
+ "ring_hook": {
+  "orientation": "minusX_down",
+  "material": "PETG",
+  "note": "on its end (J profile on the bed)",
+  "volume_mm3": 3317.4,
+  "print_bbox": [
+   29.5,
+   10.6,
+   26.0
+  ]
+ },
+ "bench_base": {
+  "orientation": "bottom_down",
+  "material": "PETG/PLA",
+  "note": "flat",
+  "volume_mm3": 51743.3,
+  "print_bbox": [
+   195.8,
+   52.0,
+   21.4
+  ]
+ },
+ "fit_coupon": {
+  "orientation": "bottom_down",
+  "material": "PETG",
+  "note": "flat - print this first",
+  "volume_mm3": 19583.2,
+  "print_bbox": [
+   80.0,
+   40.0,
+   10.0
+  ]
+ },
+ "bite_nominal": {
+  "orientation": "plusX_down",
+  "material": "PETG/PLA",
+  "note": "print 8",
+  "volume_mm3": 5943.7,
+  "print_bbox": [
+   25.4,
+   19.0,
+   12.7
+  ]
+ },
+ "bite_min": {
+  "orientation": "plusX_down",
+  "material": "PETG/PLA",
+  "note": "print 8",
+  "volume_mm3": 5181.5,
+  "print_bbox": [
+   24.4,
+   18.0,
+   12.2
+  ]
+ },
+ "bite_max": {
+  "orientation": "plusX_down",
+  "material": "PETG/PLA",
+  "note": "print 8",
+  "volume_mm3": 6775.7,
+  "print_bbox": [
+   26.4,
+   20.0,
+   13.2
+  ]
+ },
+ "follower_springB": {
+  "orientation": "plusX_down",
+  "material": "PETG",
+  "note": "rear (+X) face down: pocket arch bridges 10.6",
+  "volume_mm3": 13208.7,
+  "print_bbox": [
+   30.9,
+   19.9,
+   28.0
+  ]
+ },
+ "drum_spacer_springB": {
+  "orientation": "plusY_down",
+  "material": "PETG",
+  "note": "spring B only - print 2",
+  "volume_mm3": 57.5,
+  "print_bbox": [
+   14.6,
+   14.6,
+   1.5
+  ]
+ }
+}

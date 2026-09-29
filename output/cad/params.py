@@ -1,0 +1,441 @@
+"""
+EBD "Clip" v1 -- every dimension in one place.
+
+Source of truth: EBD_Build_Spec.md Rev B.  "§" numbers below refer to that spec.
+Units: mm, degrees, N, g.
+
+Coordinate frame (§2), shared by every part, defined with the clip docked:
+  X = 0  clip mouth face = receiver socket stop face.  +X runs back into the clip.
+         The cup, lever and paddle are at -X.
+  Y = 0  mid-plane (everything is centred in Y).
+  Z = 0  bottom of the ribbon groove in the clip floor.  +Z is up (toward the mouth).
+
+Tags used in the comments:
+  MUST     functional requirement from the spec - do not change without flagging
+  DEFAULT  chosen value from the spec - change only if a §9 check fails (log in CHANGES.md)
+  DERIVED  computed from other values here - never type it twice
+  CHANGED  a DEFAULT that was changed; see CHANGES.md for old -> new -> reason
+  ADDED    a value the spec left to the CAD agent; see ASSUMPTIONS in CHANGES.md
+
+Students: the numbers you are expected to touch are CLR_SLIDE (from fit_coupon),
+the SPRINGS table (measure your real spring), BITES (Esther's food trials),
+PADDLE_X (reach test) and the RING_* values (measure the HUT neck ring).
+After any change run  `python build_all.py`  and read VERIFICATION.md.
+"""
+from dataclasses import dataclass
+import math
+
+# =============================================================================
+# §8.2 Tolerance rules
+# =============================================================================
+CLR_SLIDE = 0.30        # PARAM DEFAULT  sliding clearance per side - set from fit_coupon
+CLR_PRESS = 0.10        # PARAM DEFAULT  press clearance
+PIN_D = 2.0             # Ø2 steel pins / music wire (§8.3)
+PIN_PRESS_D = 1.9       # DEFAULT  press-fit hole for a Ø2 pin
+PIN_SNUG_D = 2.1        # DEFAULT  snug hole
+PIN_FREE_D = 2.3        # DEFAULT  free-running hole
+MIN_WALL = 1.2          # DEFAULT  minimum structural wall
+MIN_WALL_ABS = 0.8      # MUST     absolute minimum wall
+MIN_HOLE_D = 1.6        # DEFAULT  smallest printed hole
+EDGE_CHAMFER = 0.5      # DEFAULT  chamfer on bite/face-touchable edges (0.3-0.5)
+SMALL_CHAMFER = 0.3
+PTFE_T = 0.08           # PTFE tape thickness (clearances already allow for it; not modelled)
+
+# =============================================================================
+# §3 Bite envelope (design envelope, not a printed part - dummies are §8.4)
+# =============================================================================
+BITE_T = 12.7           # PARAM  X  stacking thickness
+BITE_W = 19.0           # PARAM  Y  width
+BITE_H = 25.4           # PARAM  Z  height
+BITE_R = 2.0            # PARAM  edge radius
+BITE_T_TOL = 0.5        # MUST   ±0.5 on the stacking face
+BITE_W_TOL = 1.0
+BITE_H_TOL = 1.0
+N_BITES = 8             # PARAM
+BITE_MASS_G = 8.0       # §9.9 loaded-mass estimate
+
+
+@dataclass(frozen=True)
+class Bite:
+    name: str
+    T: float  # X
+    W: float  # Y
+    H: float  # Z
+    R: float = BITE_R
+
+
+BITES = {
+    "min": Bite("min", BITE_T - BITE_T_TOL, BITE_W - BITE_W_TOL, BITE_H - BITE_H_TOL),
+    "nom": Bite("nom", BITE_T, BITE_W, BITE_H),
+    "max": Bite("max", BITE_T + BITE_T_TOL, BITE_W + BITE_W_TOL, BITE_H + BITE_H_TOL),
+}
+
+# =============================================================================
+# §4 / §5.2 Clip tube
+# =============================================================================
+WALL = 2.0              # PARAM  wall / floor / roof
+GROOVE_W = 16.0         # PARAM  ribbon groove width  (Y ±8.0)
+GROOVE_D = 2.0          # PARAM  ribbon groove depth  (Z 0 -> 2.0)
+BORE_W = 20.5           # PARAM  bore width           (Y ±10.25)
+BORE_TOP_Z = 31.5       # PARAM
+BORE_BOT_Z = GROOVE_D   # DERIVED 2.0
+RAIL_TOP_Z = 4.5        # PARAM
+RAIL_IN_Y = GROOVE_W / 2    # DERIVED 8.0  rail inner face
+RAIL_OUT_Y = 9.75       # DEFAULT rail outer face
+RAIL_EDGE_R = 0.5       # DEFAULT R0.5 top edges
+RAIL_FRONT_CHAMFER = 0.5
+CLIP_L = 140.8          # PARAM
+GROOVE_X0 = 2.0         # DEFAULT solid floor X 0 -> 2.0 at the mouth
+TOP_Z = BORE_TOP_Z + WALL          # DERIVED 33.5  clip roof top = receiver top surface (PARAM TOP_Z)
+CLIP_BOT_Z = -WALL                 # DERIVED -2.0
+CLIP_HW = BORE_W / 2 + WALL        # DERIVED 12.25 half width
+MOUTH_CHAMFER = 0.5     # DEFAULT outside chamfer at the mouth (never on the bore edge)
+TUBE_EDGE_CHAMFER = 0.5 # ADDED   other outer tube edges
+
+GATE_SLOT_X0 = 1.2      # DEFAULT
+GATE_SLOT_X1 = 2.8      # DEFAULT
+GATE_SLOT_WALL_CUT = 1.0                      # DEFAULT depth into each side wall
+GATE_SLOT_HW = BORE_W / 2 + GATE_SLOT_WALL_CUT  # DERIVED 11.25
+
+CLAMP_SCREW_X = 5.0     # DEFAULT
+CLAMP_SCREW_Y = 6.0     # DEFAULT (±)
+M2_CLEAR_D = PIN_FREE_D  # 2.3 clearance hole for M2
+M2_CSK_HEAD_D = 3.8     # M2 countersunk head (DIN 965)
+M2_CSK_CUT_D = 4.0      # ADDED countersink cut Ø (head recessed ~0.1)
+CLAMP_NOTCH_X = 3.5     # DEFAULT centre
+CLAMP_NOTCH_W = 0.8     # DEFAULT (X)
+CLAMP_NOTCH_D = 0.3     # DEFAULT
+
+LATCH_NOTCH_X0 = 12.0   # DEFAULT vertical catch face
+LATCH_NOTCH_X1 = 16.0   # DEFAULT ramp meets roof top
+LATCH_NOTCH_W = 8.6     # DEFAULT (Y ±4.3)
+LATCH_NOTCH_D = 1.0     # DEFAULT (leaves a 1.0 roof)
+LATCH_RAMP_DEG = 30.0   # DEFAULT
+
+ENDCAP_L = 4.0          # DEFAULT plug length
+ENDCAP_CLR = 0.2        # DEFAULT per side
+ENDCAP_X0 = CLIP_L - ENDCAP_L                  # DERIVED 136.8 inner face
+ENDCAP_SCREW_X = CLIP_L - ENDCAP_L / 2         # DERIVED 138.8
+ENDCAP_SCREW_Z = (BORE_BOT_Z + BORE_TOP_Z) / 2  # DERIVED 16.75
+ENDCAP_PILOT_DEPTH = 5.0                       # ADDED (M2 x 6 through a 2.0 wall)
+
+# Optional viewing windows for an opaque tube (§5.2). CHANGED from one 113-long slot
+# to short windows so every window top is a <=10 mm bridge (see CHANGES.md).
+VIEW_SLOT = False       # set True if you print the tube in opaque filament
+VIEW_Z0, VIEW_Z1 = 16.0, 20.0
+VIEW_X0, VIEW_X1 = 12.0, 125.0
+VIEW_WIN_L = 10.0       # CHANGED (was one continuous slot)
+VIEW_WEB = 2.55         # CHANGED
+
+# =============================================================================
+# §5.1 Constant-force springs (purchased).  Only these rows change between configs.
+# =============================================================================
+@dataclass(frozen=True)
+class Spring:
+    name: str
+    F: float        # SPRING_F  N
+    W: float        # SPRING_W  ribbon width
+    T: float        # SPRING_T  ribbon thickness
+    L: float        # SPRING_L  total ribbon length
+    max_ext: float  # rated extension
+    # return (compression) spring paired with this config (§6.6)
+    rs_k: float     # N/mm
+    rs_free: float  # free length
+
+
+SPRINGS = {
+    # A: 1.48 lb, 0.38" wide, 0.0059" thick, 20.98" total, 17.99" extended
+    "A": Spring("A", F=6.6, W=9.65, T=0.15, L=533.0, max_ext=457.0, rs_k=0.20, rs_free=35.0),
+    # B: 0.33 lb, 0.25" wide, 0.0039" thick, 15" total, 12" extended.
+    # §6.6: with B a lighter return spring (~1.0 N at rest) is enough -> k 0.12 N/mm
+    "B": Spring("B", F=1.47, W=6.35, T=0.10, L=381.0, max_ext=305.0, rs_k=0.12, rs_free=35.0),
+}
+DEFAULT_SPRING = "A"
+
+# convenience names for the default config (spec PARAM names)
+SPRING_F = SPRINGS[DEFAULT_SPRING].F
+SPRING_W = SPRINGS[DEFAULT_SPRING].W
+SPRING_T = SPRINGS[DEFAULT_SPRING].T
+SPRING_L = SPRINGS[DEFAULT_SPRING].L
+
+# =============================================================================
+# §5.4 Drum
+# =============================================================================
+DRUM_D = 12.5           # DEFAULT
+DRUM_L = 9.4            # DEFAULT (Y)
+DRUM_BORE_D = PIN_FREE_D  # 2.3 free on the axle
+DRUM_CHAMFER = 0.3
+# spacer rings for a narrow ribbon (see CHANGES.md: spec said "Ø10 x 1.5 washers",
+# which cannot fit - they are rings that slip over the drum instead)
+SPACER_ID_CLR = 0.15    # ADDED radial clearance on the drum
+SPACER_OD_OVER_COIL = 0.3  # ADDED spacer OD = max coil OD + this
+SPACER_AXIAL_CLR = 0.05    # ADDED gap to the ribbon edge
+
+
+def coil_od(spring: Spring, extension: float = 0.0) -> float:
+    """Coil OD wound on the drum: sqrt(D^2 + 4*L_wound*T/pi)  (§5.1)."""
+    wound = max(spring.L - extension, 0.0)
+    return math.sqrt(DRUM_D ** 2 + 4.0 * wound * spring.T / math.pi)
+
+
+# =============================================================================
+# §5.3 Follower  (all X values relative to F = push-rib crest plane)
+# =============================================================================
+FOLLOWER_L = 28.0                       # DEFAULT
+FOLLOWER_HW = BORE_W / 2 - CLR_SLIDE    # DERIVED 9.95
+FOLLOWER_TOP_Z = BORE_TOP_Z - CLR_SLIDE  # DERIVED 31.2
+FOLLOWER_BOT_Z = RAIL_TOP_Z             # DERIVED 4.5 (rides on the rail tops)
+PUSH_RIB_D = 0.6        # DEFAULT rib depth (face recessed to F+0.6)
+PUSH_RIB_H = 0.5        # DEFAULT
+PUSH_RIB_Z = (10.0, 24.0)  # DEFAULT centres
+KEEL_X0 = 9.6           # DEFAULT
+KEEL_GROOVE_CLR = 0.8   # DEFAULT
+KEEL_HW = GROOVE_W / 2 - KEEL_GROOVE_CLR  # DERIVED 7.2
+KEEL_BOT_Z = 0.3        # DEFAULT
+POCKET_CX = 18.0        # DEFAULT (rel F)
+POCKET_CZ = 8.85        # DEFAULT
+POCKET_HW = 5.3         # DEFAULT (also the open-bottom slot half width)
+POCKET_CLR = 1.0        # DEFAULT pocket Ø = coil OD + 1.0
+FOLLOWER_CHAMFER = 0.5  # DEFAULT top edges
+AXLE_HOLE_D = PIN_SNUG_D  # 2.1
+AXLE_L = 2 * FOLLOWER_HW  # DERIVED 19.9 (ends flush with the body sides)
+
+
+def pocket_d(spring: Spring) -> float:
+    return coil_od(spring, 0.0) + POCKET_CLR   # DERIVED A 17.06, B 15.31
+
+
+# =============================================================================
+# §5.5 Ribbon clamp
+# =============================================================================
+CLAMP_X0 = GROOVE_X0    # DERIVED 2.0
+CLAMP_X1 = 8.0          # DEFAULT back edge = follower stop face
+CLAMP_HW = GROOVE_W / 2 - CLR_SLIDE  # DERIVED 7.7
+CLAMP_T = 1.2           # DEFAULT
+CLAMP_RIDGE_H = CLAMP_NOTCH_D   # DERIVED 0.3
+CLAMP_RIDGE_W = 0.5     # ADDED = notch 0.8 - 2 x ribbon A 0.15
+CLAMP_PILOT_D = MIN_HOLE_D  # 1.6
+F_STOP = CLAMP_X1 - KEEL_X0    # DERIVED -1.6 empty stop (keel legs hit the clamp)
+
+# =============================================================================
+# §5.6 Gate
+# =============================================================================
+GATE_T = 1.2
+GATE_HW = GATE_SLOT_HW - 0.2   # DERIVED 11.05 (spec 22.1 wide)
+GATE_TAB_Y0, GATE_TAB_Y1 = 6.5, 10.5   # DEFAULT
+GATE_TAB_TOP_Z = 42.0          # DEFAULT
+STACK_X0_UNDOCKED = GATE_SLOT_X0 + GATE_T  # DERIVED 2.4 (stack starts here, gate in)
+
+# =============================================================================
+# §6.3 Elevator / cup and the bite path in the receiver (§6.1)
+# =============================================================================
+STOP_X = -14.3          # DEFAULT front-wall stop face (inner face of the front wall)
+BRIDGE_X0 = -2.1        # DEFAULT bridge -X face = elevator channel rear face
+ELEV_X0 = STOP_X + CLR_SLIDE      # DERIVED -14.0
+ELEV_X1 = BRIDGE_X0 - CLR_SLIDE   # DERIVED -2.4
+ELEV_CX = (ELEV_X0 + ELEV_X1) / 2  # DERIVED -8.2
+ELEV_HW = BORE_W / 2 - CLR_SLIDE  # DERIVED 9.95
+ELEV_H = 20.0           # DEFAULT
+LEDGE_Z = RAIL_TOP_Z - ELEV_H     # DERIVED -15.5 (elevator top flush with the bridge at rest)
+ELEV_REAR_CHAMFER = 0.5
+ELEV_FRONT_CHAMFER = 0.3
+ELEV_SIDE_CHAMFER = 0.3  # ADDED (bite-touchable)
+LEVER_NOTCH_HW = 3.3    # DEFAULT (elevator and plunger)
+LEVER_NOTCH_H = 9.0     # DEFAULT
+ELEV_NOTCH_X1 = -5.0    # DEFAULT
+SLOT_H = 2.3            # DEFAULT pin slots, horizontal
+SLOT_Z = 3.0            # DEFAULT slot centre above the part bottom
+ELEV_SLOT_X = (-11.5, -6.8)    # DEFAULT
+CUP_PIN_L = 19.4        # DEFAULT (ends at ±9.7)
+
+# =============================================================================
+# §4 / §6.4 Lever and paddle
+# =============================================================================
+LIFT = 14.0             # PARAM nominal lift (≈13.7 effective after slot play)
+PADDLE_X = -36.2        # PARAM plunger / paddle centre (reach test may move it ±10)
+PADDLE_STROKE = 14.3    # PARAM hard-stop stroke
+LEVER_R = (ELEV_CX - PADDLE_X) / 2     # DERIVED 14.0
+PIVOT_X = (ELEV_CX + PADDLE_X) / 2     # DERIVED -22.2
+PIVOT_Z = LEDGE_Z + SLOT_Z + LIFT / 2  # DERIVED -5.5
+LEVER_SWING = math.degrees(math.asin((LIFT / 2) / LEVER_R))  # DERIVED 30.0 (nominal)
+LEVER_T = 6.0           # DEFAULT (Y ±3.0)
+LEVER_H = 5.0           # DEFAULT (ends full round R2.5)
+LEVER_PIVOT_HOLE_D = PIN_FREE_D   # 2.3
+LEVER_END_HOLE_D = PIN_SNUG_D     # 2.1
+PIVOT_PIN_L = 26.0      # DEFAULT
+PLUNGER_PIN_L = 11.4    # DEFAULT
+PIN_SLOT_PLAY = (SLOT_H - PIN_D) / 2   # DERIVED 0.15
+
+# =============================================================================
+# §6.5 Plunger + paddle pad
+# =============================================================================
+PLUNGER_LX = 10.0       # DEFAULT (X)
+PLUNGER_LY = 12.0       # DEFAULT (Y)
+FLANGE_LX = 16.0        # DEFAULT
+FLANGE_LY = 18.0        # DEFAULT
+FLANGE_T = 2.0          # DEFAULT
+FLANGE_UNDERSIDE_REST_Z = TOP_Z + PADDLE_STROKE  # DERIVED 47.8
+PLUNGER_SLOT_DX = (-1.3, 3.2)   # DEFAULT rel PADDLE_X  (X -37.5 -> -33.0)
+EAR_H = 5.0             # DEFAULT
+EAR_UNDERSIDE = 10.0    # DEFAULT above the plunger bottom
+EAR_X_END = PADDLE_X - 13.3     # DEFAULT -49.5
+SPIGOT_D = 3.0
+SPIGOT_L = 3.0
+SPRING_WELL_X = PADDLE_X - 10.3  # DEFAULT -46.5
+PAD_LX, PAD_LY, PAD_T = 25.0, 18.0, 3.0   # DEFAULT (TPU 95A)
+PAD_DOME = 1.0          # DEFAULT
+PAD_RIM_H = 1.0         # DEFAULT
+PAD_RIM_CLR = 0.2       # ADDED gap between the rim and the flange ends
+PAD_CORNER_R = 2.0      # ADDED
+
+# =============================================================================
+# §6.6 Return spring (purchased) - geometry for the model
+# =============================================================================
+RS_OD = 6.0             # 5.5-6.5
+RS_WIRE = 0.6
+RS_SOLID_MAX = 10.0     # must not go solid above ≈10
+RS_WELL_D = 6.8         # DEFAULT
+
+# =============================================================================
+# §6.1 Receiver body
+# =============================================================================
+SOCKET_WALL = 2.0       # DEFAULT
+RCV_HW = CLIP_HW + CLR_SLIDE + SOCKET_WALL   # DERIVED 14.55
+RCV_X0 = PADDLE_X - 16.8  # DEFAULT -53.0
+RCV_BOT_Z = -20.0       # DEFAULT
+RCV_EDGE_CHAMFER = 0.5  # ADDED outer edges
+BRIDGE_LEADIN = 0.6     # DEFAULT 0.6 x 45° on the bridge +X top edge
+BRIDGE_REAR_CHAMFER = 0.3  # DEFAULT -X top edge
+RELIEF_X1 = -5.0        # DEFAULT lever-tip relief pocket in the ledge
+RELIEF_HW = 3.6
+RELIEF_Z0 = -17.0
+FRONT_WALL_T = 2.0      # DEFAULT -> front wall X -16.3 -> -14.3
+FRONT_WALL_X0 = STOP_X - FRONT_WALL_T  # DERIVED -16.3
+LEVER_SLOT_HW = 3.5     # DEFAULT through the front wall
+LEVER_SLOT_Z = (-14.0, 3.0)
+LEVER_CHAMBER_X0 = PADDLE_X - 4.8   # DEFAULT -41.0
+LEVER_CHAMBER_HW = 3.6
+LEVER_CHAMBER_Z = (-16.0, 5.0)
+PLUNGER_CH_HW_X = PLUNGER_LX / 2 + CLR_SLIDE   # DERIVED 5.3 (X -41.5 -> -30.9)
+PLUNGER_CH_HW_Y = PLUNGER_LY / 2 + CLR_SLIDE   # DERIVED 6.3
+PLUNGER_CH_Z0 = -16.5   # DEFAULT
+EAR_SLOT_X0 = PADDLE_X - 14.0   # DEFAULT -50.2
+EAR_SLOT_Z = (-6.5, 14.5)       # DEFAULT
+SPRING_WELL_Z0 = -18.0          # DEFAULT (top = ear slot bottom)
+STRIPPER_X = -0.8       # MUST (sharp, 0.2 chamfer max) window rear edge
+WINDOW_TOP_CHAMFER = 0.3  # ADDED on the window side edges only
+BACKSTOP_H = 3.0        # DEFAULT raised lip Z 33.5 -> 36.5
+PIVOT_HOLE_SKIN = 1.0   # DEFAULT blind hole stops 1.0 short of each outer skin
+RING_HOOK_PILOTS = [(-19.0, 20.0), (PADDLE_X - 0.8, 26.0)]   # DEFAULT (X, Z) on -Y face
+RING_HOOK_PILOT_DEPTH = 7.0
+
+# receiver screws M2 x 16 along Y  (§6.1)
+RCV_SCREWS = [
+    ((PADDLE_X + PLUNGER_CH_HW_X + FRONT_WALL_X0) / 2, 12.0),  # -23.6 (midway channel/front wall)
+    ((PADDLE_X + PLUNGER_CH_HW_X + FRONT_WALL_X0) / 2, 26.0),  # -23.6
+    (PADDLE_X - 9.6, 24.0),                                     # -45.8
+    (12.0, -7.2),                                               # through the socket lug
+]
+CBORE_D = 4.2           # DEFAULT head counterbore (+Y)
+CBORE_DEPTH = 6.6       # DEFAULT
+NUT_AF = 4.1            # DEFAULT nut trap across flats (-Y)
+NUT_TRAP_DEPTH = 8.1    # CHANGED 6.6 -> 8.1 (M2 x 16 only reached 0.1 into the nut)
+LUG_X = (8.0, 16.0)
+LUG_Z0 = -10.5          # CHANGED -10.0 -> -10.5 (0.7 wall under the counterbore)
+# dowels 3 x Ø2 x 10: ADDED positions (spec: "CAD agent places them")
+DOWEL_L = 10.0
+DOWEL_HOLE_DEPTH = 5.3  # each half -> 0.6 total axial play
+DOWELS = [(-2.6, -17.75), (-27.5, 19.0), (PADDLE_X - 9.8, 18.0)]
+
+# =============================================================================
+# §6.2 Socket and latch (part of the receiver halves)
+# =============================================================================
+SOCKET_L = 28.0         # DEFAULT
+SOCKET_IN_HW = CLIP_HW + CLR_SLIDE          # DERIVED 12.55
+SOCKET_IN_Z0 = CLIP_BOT_Z - CLR_SLIDE       # DERIVED -2.3
+SOCKET_IN_Z1 = TOP_Z + CLR_SLIDE            # DERIVED 33.8
+SOCKET_OUT_Z0 = SOCKET_IN_Z0 - SOCKET_WALL  # DERIVED -4.3
+SOCKET_OUT_Z1 = SOCKET_IN_Z1 + SOCKET_WALL  # DERIVED 35.8
+SOCKET_ENTRY_CHAMFER = 0.5  # ADDED lead-in at X 28
+TONGUE_HW = 4.0         # DEFAULT
+TONGUE_T = 1.6          # DEFAULT (Z 33.8 -> 35.4)
+TONGUE_CUT_W = 0.5      # DEFAULT side cuts
+TONGUE_X0 = 11.5        # DEFAULT tip
+TONGUE_ROOT_X = 24.0    # DEFAULT
+TONGUE_TIP_CUT = 0.5    # ADDED transverse cut that frees the tip (X 11.0 -> 11.5)
+TOOTH_X0, TOOTH_X1 = 12.1, 15.7  # DEFAULT
+TOOTH_H = 1.0           # DEFAULT (bottom Z 32.8)
+TOOTH_RAMP_DEG = 30.0   # DEFAULT +X lead-in
+LIFT_TAB = (11.5, 15.5, 4.0, 3.0)  # DEFAULT X0, X1, width Y, height
+# CHANGED (OPEN_ISSUES #1): tongue, tooth and lift tab exist only in the -Y half.
+# The +Y half of the roof centre is an island once the receiver is split at Y = 0.
+LATCH_Y = (-TONGUE_HW, 0.0)
+TAB_CHANNEL_Y = (6.2, 10.8)        # DEFAULT gate-tab channel (open at the back)
+FLOOR_RELIEF = (3.0, 7.0, 8.2, 0.5)  # DEFAULT X0, X1, half width, depth
+
+# =============================================================================
+# §6.7 Mounting parts and bench base
+# =============================================================================
+RING_FLANGE_T = 4.0     # PARAM placeholder - measure HUT - Largest.stl
+RING_HOOK_REACH = 6.0   # PARAM
+RING_HOOK_Z = 8.0       # PARAM hook seat height above the top surface
+RING_HOOK_T = 3.0       # DEFAULT
+RING_HOOK_CLR = 0.3     # ADDED flange gap clearance per side
+RING_HOOK_X = (-41.0, -15.0)  # CHANGED width 20 -> 26 (the two pilots are 18 apart; 2.0 edge wall)
+RING_HOOK_Z0 = 15.0     # ADDED bottom of the screw leg
+VELCRO_X = (-51.0, -1.0)  # DEFAULT two 25 x 50 pads
+VELCRO_H = 50.0
+
+# bench base (dimensioned by the CAD agent)
+BASE_T = 4.0
+BASE_CLR = 0.3
+M3_CLEAR_D = 3.4
+M3_NUT_AF = 5.6
+M3_NUT_T = 2.6
+
+# =============================================================================
+# §8.2 fit coupon, §8.4 dummy bites
+# =============================================================================
+COUPON_CLEARANCES = (0.20, 0.25, 0.30, 0.35)
+COUPON_PIN_HOLES = (1.9, 2.0, 2.1, 2.2, 2.3)
+COUPON_SLIDER = 10.0
+
+# =============================================================================
+# §9 materials and friction
+# =============================================================================
+RHO_PETG = 1.27e-3      # g/mm^3
+RHO_TPU = 1.21e-3
+RHO_STEEL = 7.9e-3
+MU_WALL = 0.1           # PTFE-taped wall
+MU_BITE = 0.4           # bite on bite
+
+# =============================================================================
+# Kinematics derived from the above (slot play taken up in the loaded direction)
+# =============================================================================
+# At rest the return spring pushes the plunger up, the lever pushes the elevator
+# down onto its ledge: both pins sit on the lower slot faces.
+_REST_CUP_PIN_Z = LEDGE_Z + SLOT_Z - PIN_SLOT_PLAY           # -12.65
+PHI_REST = math.degrees(math.asin((_REST_CUP_PIN_Z - PIVOT_Z) / LEVER_R))  # -30.71
+PLUNGER_REST_BOT_Z = (2 * PIVOT_Z - _REST_CUP_PIN_Z) - (SLOT_Z - PIN_SLOT_PLAY)  # -1.20
+# CHANGED/derived: body length chosen so the flange underside sits at TOP_Z +
+# PADDLE_STROKE at rest (spec 47.8) with the real rest position (-1.2, not -1.5).
+FLANGE_OFFSET = FLANGE_UNDERSIDE_REST_Z - PLUNGER_REST_BOT_Z  # 49.0 (spec implied 49.3)
+PLUNGER_PRESSED_BOT_Z = TOP_Z - FLANGE_OFFSET                 # -15.5
+_PRESS_PLUNGER_PIN_Z = PLUNGER_PRESSED_BOT_Z + SLOT_Z + PIN_SLOT_PLAY  # -12.35
+PHI_PRESS = math.degrees(math.asin((PIVOT_Z - _PRESS_PLUNGER_PIN_Z) / LEVER_R))  # +29.29
+
+
+def summary():
+    rows = [
+        ("LEVER_R", LEVER_R), ("PIVOT_X", PIVOT_X), ("PIVOT_Z", PIVOT_Z),
+        ("LEVER_SWING nominal", LEVER_SWING), ("PHI_REST", PHI_REST), ("PHI_PRESS", PHI_PRESS),
+        ("PLUNGER_REST_BOT_Z", PLUNGER_REST_BOT_Z), ("FLANGE_OFFSET", FLANGE_OFFSET),
+        ("F_STOP", F_STOP), ("pocket_d A", pocket_d(SPRINGS["A"])), ("pocket_d B", pocket_d(SPRINGS["B"])),
+        ("coil_od A", coil_od(SPRINGS["A"])), ("coil_od B", coil_od(SPRINGS["B"])),
+    ]
+    for k, v in rows:
+        print(f"{k:24s} {v:9.3f}")
+
+
+if __name__ == "__main__":
+    summary()
