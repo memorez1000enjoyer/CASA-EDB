@@ -183,7 +183,7 @@ def main():
         st = A.build(sn, "A", "nom")
         nice = {"A": "State A - rest, full (docked, gate out)", "Bp": "State B' - pressed, bite 1 taken"}[sn]
         render(st.bodies, f"state_{label}_iso.png", "iso", f"{nice}  |  spring A, nominal bites",
-               opacity=TRANSLUCENT, zoom=1.75)
+               opacity=TRANSLUCENT, zoom=1.3)
         render(st.bodies, f"state_{label}_top.png", "top", f"{nice}  |  top view", opacity=TRANSLUCENT,
                size=(1900, 700), zoom=1.9)
         plot_section(st, f"state_{label}_section_Y0.png", f"{nice} - section at Y = 0")
@@ -195,9 +195,9 @@ def main():
                      ("E", "State E - undocked, full, gate in")):
         st = A.build(sn, "A", "nom")
         plot_section(st, f"state_{sn}_section_Y0.png", nice)
-    render(exploded_bodies(), "exploded.png", "iso", "Exploded view  |  EBD Clip v1", size=(2000, 1300), zoom=1.6)
+    render(exploded_bodies(), "exploded.png", "iso", "Exploded view  |  EBD Clip v1", size=(2000, 1300), zoom=1.3)
     render(A.build("A", "A", "nom").bodies, "state_A_rest_full_iso_back.png", "iso_back",
-           "State A - mount (-Y) side with ring hook", opacity=TRANSLUCENT, zoom=1.75)
+           "State A - mount (-Y) side with ring hook", opacity=TRANSLUCENT, zoom=1.3)
 
 
 if __name__ == "__main__":
