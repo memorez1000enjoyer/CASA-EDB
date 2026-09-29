@@ -14,12 +14,16 @@ def elevator() -> cq.Workplane:
     x0, x1, hw = P.ELEV_X0, P.ELEV_X1, P.ELEV_HW
     z0, z1 = P.LEDGE_Z, P.RAIL_TOP_Z
     cf, cr = P.ELEV_FRONT_CHAMFER, P.ELEV_REAR_CHAMFER
-    prof = [(x0, z0), (x1, z0), (x1, z1 - cr), (x1 - cr, z1), (x0 + cf, z1), (x0, z1 - cf)]
+    b = P.SMALL_CHAMFER          # bottom (bed) edges: elephant-foot relief
+    prof = [(x0 + b, z0), (x1 - b, z0), (x1, z0 + b), (x1, z1 - cr), (x1 - cr, z1), (x0 + cf, z1),
+            (x0, z1 - cf), (x0, z0 + b)]
     e = prism_xz(prof, -hw, hw)
     cs = P.ELEV_SIDE_CHAMFER
     for s in (+1, -1):
         e = e.cut(prism_yz([(s * (hw + 0.01), z1 - cs - 0.01), (s * (hw + 0.01), z1 + 0.01),
                             (s * (hw - cs - 0.01), z1 + 0.01)], x0 - 1, x1 + 1))
+        e = e.cut(prism_yz([(s * (hw + 0.01), z0 + b + 0.01), (s * (hw + 0.01), z0 - 0.01),
+                            (s * (hw - b - 0.01), z0 - 0.01)], x0 - 1, x1 + 1))
     # lever notch in the front face, open at the bottom
     e = e.cut(box(x0 - 1, P.ELEV_NOTCH_X1, -P.LEVER_NOTCH_HW, P.LEVER_NOTCH_HW, z0 - 1, z0 + P.LEVER_NOTCH_H))
     # horizontal pin slots through both cheeks (square ends: the full X length is usable,
@@ -46,13 +50,19 @@ def plunger() -> cq.Workplane:
     with spigot.  Built with the plunger bottom at Z = 0."""
     px = P.PADDLE_X
     hx, hy = P.PLUNGER_LX / 2, P.PLUNGER_LY / 2
-    body = box(px - hx, px + hx, -hy, hy, 0, P.FLANGE_OFFSET + 0.01)
+    body = box(px - hx, px + hx, -hy, hy, 0, P.FLANGE_OFFSET + 0.01).edges("|Z").chamfer(P.EDGE_CHAMFER)
     fl = box(px - P.FLANGE_LX / 2, px + P.FLANGE_LX / 2, -P.FLANGE_LY / 2, P.FLANGE_LY / 2,
              P.FLANGE_OFFSET, P.FLANGE_OFFSET + P.FLANGE_T)
     fl = fl.edges("|Z").chamfer(P.EDGE_CHAMFER)
     ear = box(P.EAR_X_END, px - hx + 0.01, -hy, hy, P.EAR_UNDERSIDE, P.EAR_UNDERSIDE + P.EAR_H)
     ear = ear.edges("<X and |Y").chamfer(P.SMALL_CHAMFER)
     spig = cyl_z(P.SPRING_WELL_X, 0, P.SPIGOT_D, P.EAR_UNDERSIDE - P.SPIGOT_L, P.EAR_UNDERSIDE + 0.01)
+    # snap grooves in the flange's X-end faces for the TPU pad beads
+    zb, hb, db = P.PAD_SNAP
+    zg = P.FLANGE_OFFSET + P.FLANGE_T - zb
+    for s in ((+1, -1) if db > 0 else ()):
+        xe = px + s * P.FLANGE_LX / 2
+        fl = fl.cut(box(xe - s * (db + 0.05), xe + s * 1, -P.FLANGE_LY, P.FLANGE_LY, zg - hb / 2 - 0.05, zg + hb / 2 + 0.05))
     p = body.union(fl).union(ear).union(spig)
     p = p.cut(box(px - hx - 1, px + hx + 1, -P.LEVER_NOTCH_HW, P.LEVER_NOTCH_HW, -1, P.LEVER_NOTCH_H))
     p = p.cut(box(px + P.PLUNGER_SLOT_DX[0], px + P.PLUNGER_SLOT_DX[1], -hy - 1, hy + 1,
@@ -61,20 +71,32 @@ def plunger() -> cq.Workplane:
 
 
 def paddle_pad() -> cq.Workplane:
-    """§6.5  TPU 95A pad 25 x 18 x 3.0, top domed 1.0, a 1.0-tall rim at each X end
-    locates it over the flange.  Built with the plunger bottom at Z = 0."""
+    """§6.5  TPU 95A pad 25 x 18 x 3.0 with a 1.0 dome (curved along X).  End rims hang
+    1.8 down over the flange's X ends and snap into its grooves with a 0.3 bead, so the
+    pad is held mechanically (CA optional) and comes off for washing.  Built with the
+    plunger bottom at Z = 0.  A pure Y-extrusion, so it prints on its side with no
+    overhangs or bridges."""
     px = P.PADDLE_X
     zf = P.FLANGE_OFFSET + P.FLANGE_T          # flange top
-    blank = (cq.Workplane("XY", origin=(px, 0, zf - P.PAD_RIM_H))
-             .rect(P.PAD_LX, P.PAD_LY).extrude(P.PAD_RIM_H + P.PAD_T)
-             .edges("|Z").fillet(P.PAD_CORNER_R))
-    # channel that fits over the flange (leaves a rim at each X end)
-    gx = P.FLANGE_LX / 2 + P.PAD_RIM_CLR
-    blank = blank.cut(box(px - gx, px + gx, -P.PAD_LY, P.PAD_LY, zf - P.PAD_RIM_H - 1, zf))
-    # dome: sphere through the top centre with PAD_DOME drop at the corners
-    a = math.hypot(P.PAD_LX / 2, P.PAD_LY / 2)
-    R = (a * a + P.PAD_DOME ** 2) / (2 * P.PAD_DOME)
-    # sphere axis along Y so its poles (tessellation singularities) are far outside the pad
-    sph = cq.Workplane("XY").add(cq.Solid.makeSphere(R, cq.Vector(px, 0, zf + P.PAD_T - R), cq.Vector(0, 1, 0),
-                                                     angleDegrees1=-90, angleDegrees2=90))
-    return blank.intersect(sph)
+    L2 = P.PAD_LX / 2
+    gx = P.FLANGE_LX / 2 + P.PAD_RIM_CLR       # rim inner face
+    zb, hb, db = P.PAD_SNAP
+    z_edge = zf + P.PAD_T - P.PAD_DOME
+    zr = zf - P.PAD_RIM_H
+    zc = zf - zb
+    wp = cq.Workplane("XZ", origin=(px, 0, 0)).moveTo(-L2, zr).lineTo(-gx, zr)
+    if db > 0:
+        wp = wp.lineTo(-gx, zc - hb / 2).lineTo(-gx + db, zc).lineTo(-gx, zc + hb / 2)     # bead
+    wp = wp.lineTo(-gx, zf).lineTo(gx, zf)
+    if db > 0:
+        wp = wp.lineTo(gx, zc + hb / 2).lineTo(gx - db, zc).lineTo(gx, zc - hb / 2)
+    wp = (wp.lineTo(gx, zr).lineTo(L2, zr).lineTo(L2, z_edge)
+          .threePointArc((0, zf + P.PAD_T), (-L2, z_edge)).close()
+          .extrude(-P.PAD_LY).translate((0, -P.PAD_LY / 2, 0)))
+    c = P.PAD_CORNER_C
+    for sx in (+1, -1):
+        for sy in (+1, -1):
+            x, y = px + sx * L2, sy * P.PAD_LY / 2
+            tri = [(x + sx * 0.01, y - sy * (c + 0.01)), (x + sx * 0.01, y + sy * 0.01), (x - sx * (c + 0.01), y + sy * 0.01)]
+            wp = wp.cut(cq.Workplane("XY", origin=(0, 0, zr - 1)).polyline(tri).close().extrude(P.PAD_T + P.PAD_RIM_H + 3))
+    return wp

@@ -107,6 +107,12 @@ def _bridge_top(x):
     return top
 
 
+# Bites sit 0.1 µm above their support.  Exact fillet-on-fillet tangency (R2 bite edge
+# on the R0.5 rail edge) crashes the OpenCascade boolean kernel; 1e-4 mm is far below
+# any tolerance and still reports as "contact".
+CONTACT_EPS = 1e-4
+
+
 def bite_seat(b: P.Bite, x_front: float, docked=True, cup_top=None) -> float:
     """Bottom Z of an upright bite whose front face is at x_front.
     Supports: rails (X >= 0.5), receiver bridge, and the cup floor (elevator top) when
@@ -127,7 +133,7 @@ def bite_seat(b: P.Bite, x_front: float, docked=True, cup_top=None) -> float:
             cm = (xs >= P.ELEV_X0) & (xs <= P.ELEV_X1)
             if cm.any():
                 req = max(req, float(np.max(cup_top - raise_[cm])))
-    return req
+    return req + CONTACT_EPS
 
 
 @dataclass

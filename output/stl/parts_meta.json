@@ -1,31 +1,31 @@
 {
  "clip_tube": {
-  "orientation": "bottom_down",
+  "orientation": "plusX_down",
   "material": "PETG (translucent)",
-  "note": "-Z face down; roof bridges 20.5. If roof sags > 0.2 see README.",
-  "volume_mm3": 33730.9,
+  "note": "standing on its back end (+X): the roof is a wall, no bridge to sag into the 0.3 follower clearance; brim",
+  "volume_mm3": 34093.7,
   "print_bbox": [
-   140.8,
+   35.5,
    24.5,
-   35.5
+   140.8
   ]
  },
  "clip_tube_viewslots": {
-  "orientation": "bottom_down",
+  "orientation": "plusX_down",
   "material": "PETG (opaque)",
   "note": "Only if printing opaque: 9 short viewing windows in the +Y wall.",
-  "volume_mm3": 33010.9,
+  "volume_mm3": 33373.7,
   "print_bbox": [
-   140.8,
+   35.5,
    24.5,
-   35.5
+   140.8
   ]
  },
  "gate": {
   "orientation": "plusX_down",
   "material": "PETG",
   "note": "flat",
-  "volume_mm3": 876.0,
+  "volume_mm3": 872.2,
   "print_bbox": [
    40.0,
    22.1,
@@ -47,7 +47,7 @@
   "orientation": "plusX_down",
   "material": "PETG",
   "note": "rear (+X) face down: pocket arch bridges 10.6",
-  "volume_mm3": 12891.4,
+  "volume_mm3": 12881.1,
   "print_bbox": [
    30.9,
    19.9,
@@ -69,7 +69,7 @@
   "orientation": "top_down",
   "material": "PETG",
   "note": "flat, top face down, ridge up",
-  "volume_mm3": 108.4,
+  "volume_mm3": 107.9,
   "print_bbox": [
    6.0,
    15.4,
@@ -80,7 +80,7 @@
   "orientation": "plusY_down",
   "material": "PETG",
   "note": "split face (Y=0) down",
-  "volume_mm3": 32212.5,
+  "volume_mm3": 32262.7,
   "print_bbox": [
    81.3,
    58.4,
@@ -91,7 +91,7 @@
   "orientation": "minusY_down",
   "material": "PETG",
   "note": "split face (Y=0) down",
-  "volume_mm3": 31750.0,
+  "volume_mm3": 31795.8,
   "print_bbox": [
    81.3,
    56.5,
@@ -102,7 +102,7 @@
   "orientation": "bottom_down",
   "material": "PETG",
   "note": "bottom down: notch roof bridges 6.6",
-  "volume_mm3": 3934.1,
+  "volume_mm3": 3931.6,
   "print_bbox": [
    11.6,
    19.9,
@@ -113,7 +113,7 @@
   "orientation": "plusY_down",
   "material": "PETG",
   "note": "on its side: all holes vertical",
-  "volume_mm3": 891.3,
+  "volume_mm3": 895.5,
   "print_bbox": [
    33.0,
    5.0,
@@ -124,22 +124,22 @@
   "orientation": "top_down",
   "material": "PETG",
   "note": "upside down (flange on the bed); support under the ear only",
-  "volume_mm3": 6323.2,
+  "volume_mm3": 6346.6,
   "print_bbox": [
    21.3,
    18.0,
-   51.0
+   51.4
   ]
  },
  "paddle_pad": {
-  "orientation": "bottom_down",
+  "orientation": "minusY_down",
   "material": "TPU 95A",
-  "note": "dome up; channel roof bridges 16.4",
-  "volume_mm3": 1344.6,
+  "note": "on its side: a pure extrusion, no overhangs or bridges",
+  "volume_mm3": 1471.3,
   "print_bbox": [
-   25.1,
-   18.1,
-   4.0
+   25.0,
+   4.8,
+   18.0
   ]
  },
  "ring_hook": {
@@ -212,7 +212,7 @@
   "orientation": "plusX_down",
   "material": "PETG",
   "note": "rear (+X) face down: pocket arch bridges 10.6",
-  "volume_mm3": 13208.7,
+  "volume_mm3": 13347.7,
   "print_bbox": [
    30.9,
    19.9,

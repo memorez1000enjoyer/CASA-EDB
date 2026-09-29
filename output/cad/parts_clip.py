@@ -3,7 +3,7 @@ import math
 import cadquery as cq
 from params import *  # noqa: F401,F403  (spec names read better unqualified)
 import params as P
-from geom import box, cyl_y, cyl_z, cone_z, prism_xz, prism_yz
+from geom import box, cyl_x, cyl_y, cyl_z, cone_z, prism_xz, prism_yz
 
 
 def _rail(side: int) -> cq.Workplane:
@@ -12,13 +12,15 @@ def _rail(side: int) -> cq.Workplane:
     y_in, y_out = P.RAIL_IN_Y, P.RAIL_OUT_Y
     r = P.RAIL_EDGE_R
     zb, zt = P.BORE_BOT_Z - 0.01, P.RAIL_TOP_Z   # 0.01 overlap into the floor for a clean union
-    prof = (cq.Workplane("YZ")
-            .moveTo(y_in, zb).lineTo(y_out, zb).lineTo(y_out, zt - r)
-            .threePointArc((y_out - r + r * math.cos(math.radians(45)), zt - r + r * math.sin(math.radians(45))),
-                           (y_out - r, zt))
-            .lineTo(y_in + r, zt)
-            .threePointArc((y_in + r - r * math.cos(math.radians(45)), zt - r + r * math.sin(math.radians(45))),
-                           (y_in, zt - r))
+    c45 = math.cos(math.radians(45))
+    wp = cq.Workplane("YZ").moveTo(y_in, zb)
+    if y_out >= P.BORE_W / 2 - 1e-6:          # rail runs into the side wall: square outer side
+        wp = wp.lineTo(y_out + 0.01, zb).lineTo(y_out + 0.01, zt)
+    else:
+        wp = (wp.lineTo(y_out, zb).lineTo(y_out, zt - r)
+              .threePointArc((y_out - r + r * c45, zt - r + r * c45), (y_out - r, zt)))
+    prof = (wp.lineTo(y_in + r, zt)
+            .threePointArc((y_in + r - r * c45, zt - r + r * c45), (y_in, zt - r))
             .close()
             .extrude(P.CLIP_L))
     if side < 0:
@@ -84,7 +86,10 @@ def gate() -> cq.Workplane:
     g = box(x0, x1, -P.GATE_HW, P.GATE_HW, P.BORE_BOT_Z, P.TOP_Z)
     tab = box(x0, x1, P.GATE_TAB_Y0, P.GATE_TAB_Y1, P.TOP_Z - 0.01, P.GATE_TAB_TOP_Z)
     tab = tab.edges("|X and >Z").chamfer(0.4)
-    return g.union(tab)
+    g = g.union(tab)
+    # lanyard hole so the gate can be tethered after arming (FOD)
+    zc = P.GATE_TAB_TOP_Z - 1.0 - P.GATE_TETHER_D / 2 - 0.5
+    return g.cut(cyl_x((P.GATE_TAB_Y0 + P.GATE_TAB_Y1) / 2, zc, P.GATE_TETHER_D, x0 - 1, x1 + 1))
 
 
 def end_cap() -> cq.Workplane:

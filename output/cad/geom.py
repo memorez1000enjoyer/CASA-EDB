@@ -85,3 +85,22 @@ def rot_about_y(shape, px, pz, deg):
     """Rotate a shape about the axis parallel to Y through (px, 0, pz).
     Positive deg lifts +X-side points (right-hand rotation about -Y)."""
     return shape.rotate(cq.Vector(px, 0, pz), cq.Vector(px, -1, pz), deg)
+
+
+def chamfer_edge_x(x0, x1, y_e, z_e, c, side):
+    """Cut that chamfers a horizontal top edge running along X at (Y=y_e, Z=z_e).
+    side=+1: the material is at Y > y_e; side=-1: at Y < y_e."""
+    e = 0.01
+    return prism_yz([(y_e - side * e, z_e - c), (y_e + side * c, z_e + e), (y_e - side * e, z_e + e)], x0, x1)
+
+
+def chamfer_edge_y(y0, y1, x_e, z_e, c, side):
+    """Same for a top edge running along Y at (X=x_e, Z=z_e); side=+1: material at X > x_e."""
+    e = 0.01
+    return prism_xz([(x_e - side * e, z_e - c), (x_e + side * c, z_e + e), (x_e - side * e, z_e + e)], y0, y1)
+
+
+def rim_chamfer(x0, x1, y0, y1, z, c):
+    """Chamfer all four top edges of a rectangular opening (x0..x1, y0..y1) at height z."""
+    return union_all([chamfer_edge_y(y0 - c, y1 + c, x0, z, c, -1), chamfer_edge_y(y0 - c, y1 + c, x1, z, c, +1),
+                      chamfer_edge_x(x0 - c, x1 + c, y0, z, c, -1), chamfer_edge_x(x0 - c, x1 + c, y1, z, c, +1)])

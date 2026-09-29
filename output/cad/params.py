@@ -81,7 +81,7 @@ BORE_TOP_Z = 31.5       # PARAM
 BORE_BOT_Z = GROOVE_D   # DERIVED 2.0
 RAIL_TOP_Z = 4.5        # PARAM
 RAIL_IN_Y = GROOVE_W / 2    # DERIVED 8.0  rail inner face
-RAIL_OUT_Y = 9.75       # DEFAULT rail outer face
+RAIL_OUT_Y = BORE_W / 2  # CHANGED 9.75 -> 10.25: rails run to the wall (the 0.5 x 2.5 crevices were crumb traps)
 RAIL_EDGE_R = 0.5       # DEFAULT R0.5 top edges
 RAIL_FRONT_CHAMFER = 0.5
 CLIP_L = 140.8          # PARAM
@@ -205,6 +205,16 @@ def pocket_d(spring: Spring) -> float:
     return coil_od(spring, 0.0) + POCKET_CLR   # DERIVED A 17.06, B 15.31
 
 
+# CHANGED (derived): the pocket keeps the spec's BOTTOM height for every spring, so a
+# smaller coil sits lower.  With the centre fixed at Z 8.85 the spring-B ribbon
+# tangent rose to Z 2.08 (§9.5 requires < 2.0).  Spring A is unchanged (centre 8.85).
+POCKET_BOT_Z = POCKET_CZ - (coil_od(Spring("ref", 0, 0, 0.15, 533.0, 0, 0, 0)) + POCKET_CLR) / 2  # 0.318
+
+
+def pocket_cz(spring: Spring) -> float:
+    return POCKET_BOT_Z + pocket_d(spring) / 2   # DERIVED A 8.85, B 7.97
+
+
 # =============================================================================
 # §5.5 Ribbon clamp
 # =============================================================================
@@ -213,7 +223,7 @@ CLAMP_X1 = 8.0          # DEFAULT back edge = follower stop face
 CLAMP_HW = GROOVE_W / 2 - CLR_SLIDE  # DERIVED 7.7
 CLAMP_T = 1.2           # DEFAULT
 CLAMP_RIDGE_H = CLAMP_NOTCH_D   # DERIVED 0.3
-CLAMP_RIDGE_W = 0.5     # ADDED = notch 0.8 - 2 x ribbon A 0.15
+CLAMP_RIDGE_W = 0.4     # ADDED one line width; leaves 0.2 each side of the 0.8 notch for the ribbon
 CLAMP_PILOT_D = MIN_HOLE_D  # 1.6
 F_STOP = CLAMP_X1 - KEEL_X0    # DERIVED -1.6 empty stop (keel legs hit the clamp)
 
@@ -224,6 +234,7 @@ GATE_T = 1.2
 GATE_HW = GATE_SLOT_HW - 0.2   # DERIVED 11.05 (spec 22.1 wide)
 GATE_TAB_Y0, GATE_TAB_Y1 = 6.5, 10.5   # DEFAULT
 GATE_TAB_TOP_Z = 42.0          # DEFAULT
+GATE_TETHER_D = 2.0            # ADDED lanyard hole in the tab (the gate is loose once armed)
 STACK_X0_UNDOCKED = GATE_SLOT_X0 + GATE_T  # DERIVED 2.4 (stack starts here, gate in)
 
 # =============================================================================
@@ -245,7 +256,7 @@ LEVER_NOTCH_H = 9.0     # DEFAULT
 ELEV_NOTCH_X1 = -5.0    # DEFAULT
 SLOT_H = 2.3            # DEFAULT pin slots, horizontal
 SLOT_Z = 3.0            # DEFAULT slot centre above the part bottom
-ELEV_SLOT_X = (-11.5, -6.8)    # DEFAULT
+ELEV_SLOT_X_SPEC = (-11.5, -6.8)   # DEFAULT
 CUP_PIN_L = 19.4        # DEFAULT (ends at ±9.7)
 
 # =============================================================================
@@ -253,18 +264,26 @@ CUP_PIN_L = 19.4        # DEFAULT (ends at ±9.7)
 # =============================================================================
 LIFT = 14.0             # PARAM nominal lift (≈13.7 effective after slot play)
 PADDLE_X = -36.2        # PARAM plunger / paddle centre (reach test may move it ±10)
-PADDLE_STROKE = 14.3    # PARAM hard-stop stroke
+PADDLE_STROKE = 14.7    # CHANGED 14.3 -> 14.7: pin-hole play (pivot + end holes) costs ~0.3 of lift; keeps lift >= 13.5
 LEVER_R = (ELEV_CX - PADDLE_X) / 2     # DERIVED 14.0
 PIVOT_X = (ELEV_CX + PADDLE_X) / 2     # DERIVED -22.2
 PIVOT_Z = LEDGE_Z + SLOT_Z + LIFT / 2  # DERIVED -5.5
 LEVER_SWING = math.degrees(math.asin((LIFT / 2) / LEVER_R))  # DERIVED 30.0 (nominal)
 LEVER_T = 6.0           # DEFAULT (Y ±3.0)
 LEVER_H = 5.0           # DEFAULT (ends full round R2.5)
-LEVER_PIVOT_HOLE_D = PIN_FREE_D   # 2.3
+LEVER_PIVOT_HOLE_D = PIN_SNUG_D   # CHANGED 2.3 -> 2.1: free-hole play doubled on a 1:1 lever
 LEVER_END_HOLE_D = PIN_SNUG_D     # 2.1
 PIVOT_PIN_L = 26.0      # DEFAULT
 PLUNGER_PIN_L = 11.4    # DEFAULT
 PIN_SLOT_PLAY = (SLOT_H - PIN_D) / 2   # DERIVED 0.15
+# Horizontal pin wander over the full swing (slot play included).  The slots below
+# keep the spec's numbers at the default PADDLE_X and grow automatically if a
+# reach-test PADDLE_X (and so LEVER_R) needs more room: pin radius + 0.2 margin.
+SLOT_END_MARGIN = PIN_D / 2 + 0.2
+_PHI_MAX = math.asin(min((LIFT / 2 + PIN_SLOT_PLAY) / LEVER_R, 1.0))
+PIN_WANDER = LEVER_R * (1 - math.cos(_PHI_MAX))            # DERIVED 1.96
+ELEV_SLOT_X = (min(ELEV_SLOT_X_SPEC[0], ELEV_CX - PIN_WANDER - SLOT_END_MARGIN),
+               max(ELEV_SLOT_X_SPEC[1], ELEV_CX + SLOT_END_MARGIN))           # DERIVED (-11.5, -6.8)
 
 # =============================================================================
 # §6.5 Plunger + paddle pad
@@ -275,7 +294,9 @@ FLANGE_LX = 16.0        # DEFAULT
 FLANGE_LY = 18.0        # DEFAULT
 FLANGE_T = 2.0          # DEFAULT
 FLANGE_UNDERSIDE_REST_Z = TOP_Z + PADDLE_STROKE  # DERIVED 47.8
-PLUNGER_SLOT_DX = (-1.3, 3.2)   # DEFAULT rel PADDLE_X  (X -37.5 -> -33.0)
+PLUNGER_SLOT_DX_SPEC = (-1.3, 3.2)   # DEFAULT rel PADDLE_X  (X -37.5 -> -33.0)
+PLUNGER_SLOT_DX = (min(PLUNGER_SLOT_DX_SPEC[0], -SLOT_END_MARGIN),
+                   max(PLUNGER_SLOT_DX_SPEC[1], PIN_WANDER + SLOT_END_MARGIN))  # DERIVED (-1.3, 3.2)
 EAR_H = 5.0             # DEFAULT
 EAR_UNDERSIDE = 10.0    # DEFAULT above the plunger bottom
 EAR_X_END = PADDLE_X - 13.3     # DEFAULT -49.5
@@ -284,9 +305,10 @@ SPIGOT_L = 3.0
 SPRING_WELL_X = PADDLE_X - 10.3  # DEFAULT -46.5
 PAD_LX, PAD_LY, PAD_T = 25.0, 18.0, 3.0   # DEFAULT (TPU 95A)
 PAD_DOME = 1.0          # DEFAULT
-PAD_RIM_H = 1.0         # DEFAULT
 PAD_RIM_CLR = 0.2       # ADDED gap between the rim and the flange ends
-PAD_CORNER_R = 2.0      # ADDED
+PAD_CORNER_C = 1.0      # ADDED 45° plan-corner chamfers (pad prints on its side)
+PAD_RIM_H = 1.8         # CHANGED 1.0 -> 1.8: rims reach down the flange ends to a snap bead
+PAD_SNAP = (1.2, 0.0, 0.0)   # ADDED bead centre below the flange top, height, depth (TPU snaps on/off for washing)
 
 # =============================================================================
 # §6.6 Return spring (purchased) - geometry for the model
@@ -322,9 +344,14 @@ PLUNGER_CH_Z0 = -16.5   # DEFAULT
 EAR_SLOT_X0 = PADDLE_X - 14.0   # DEFAULT -50.2
 EAR_SLOT_Z = (-6.5, 14.5)       # DEFAULT
 SPRING_WELL_Z0 = -18.0          # DEFAULT (top = ear slot bottom)
-STRIPPER_X = -0.8       # MUST (sharp, 0.2 chamfer max) window rear edge
+STRIPPER_X = -0.8       # MUST (sharp, 0.2 chamfer max) window rear edge (its lower, bite-side edge)
+# CHANGED: the 0.8-wide strip behind the window rises to the socket roof top (Z 35.8) and
+# joins the socket front band - split at Y = 0 the flat 0.8 x 2.0 strip was two 10 mm
+# cantilevers that snap at ~1.3 N (OPEN_ISSUES #8).
+STRIPPER_WALL_TOP_Z = None  # set below = SOCKET_OUT_Z1
 WINDOW_TOP_CHAMFER = 0.3  # ADDED on the window side edges only
 BACKSTOP_H = 3.0        # DEFAULT raised lip Z 33.5 -> 36.5
+BACKSTOP_HW = RCV_HW    # CHANGED ±10.25 -> full width: a dropped bite could slide round its ends
 PIVOT_HOLE_SKIN = 1.0   # DEFAULT blind hole stops 1.0 short of each outer skin
 RING_HOOK_PILOTS = [(-19.0, 20.0), (PADDLE_X - 0.8, 26.0)]   # DEFAULT (X, Z) on -Y face
 RING_HOOK_PILOT_DEPTH = 7.0
@@ -338,14 +365,16 @@ RCV_SCREWS = [
 ]
 CBORE_D = 4.2           # DEFAULT head counterbore (+Y)
 CBORE_DEPTH = 6.6       # DEFAULT
-NUT_AF = 4.1            # DEFAULT nut trap across flats (-Y)
-NUT_TRAP_DEPTH = 8.1    # CHANGED 6.6 -> 8.1 (M2 x 16 only reached 0.1 into the nut)
+NUT_AF = 4.3            # CHANGED 4.1 -> 4.3: a printed 4.1 hex will not take a 4.0 AF nut by hand
+NUT_TRAP_DEPTH = 6.6    # DEFAULT (screws are M2 x 20 - an M2 x 16 only reaches 0.1 into the nut)
+RCV_SCREW_L = 20.0      # CHANGED BOM M2 x 16 -> M2 x 20
 LUG_X = (8.0, 16.0)
 LUG_Z0 = -10.5          # CHANGED -10.0 -> -10.5 (0.7 wall under the counterbore)
 # dowels 3 x Ø2 x 10: ADDED positions (spec: "CAD agent places them")
 DOWEL_L = 10.0
 DOWEL_HOLE_DEPTH = 5.3  # each half -> 0.6 total axial play
-DOWELS = [(-2.6, -17.75), (-27.5, 19.0), (PADDLE_X - 9.8, 18.0)]
+DOWELS = [(-2.6, -17.75), ((PADDLE_X + PLUNGER_CH_HW_X + FRONT_WALL_X0) / 2, 19.0), (PADDLE_X - 9.8, 18.0)]
+# (the middle dowel sits between the two X -23.6 screws and follows PADDLE_X)
 
 # =============================================================================
 # §6.2 Socket and latch (part of the receiver halves)
@@ -359,10 +388,10 @@ SOCKET_OUT_Z1 = SOCKET_IN_Z1 + SOCKET_WALL  # DERIVED 35.8
 SOCKET_ENTRY_CHAMFER = 0.5  # ADDED lead-in at X 28
 TONGUE_HW = 4.0         # DEFAULT
 TONGUE_T = 1.6          # DEFAULT (Z 33.8 -> 35.4)
-TONGUE_CUT_W = 0.5      # DEFAULT side cuts
+TONGUE_CUT_W = 1.0      # CHANGED 0.5 -> 1.0: a 0.5 gap under a 13 mm bridge fuses when printed
 TONGUE_X0 = 11.5        # DEFAULT tip
 TONGUE_ROOT_X = 24.0    # DEFAULT
-TONGUE_TIP_CUT = 0.5    # ADDED transverse cut that frees the tip (X 11.0 -> 11.5)
+TONGUE_TIP_CUT = 1.0    # ADDED transverse cut that frees the tip (X 10.5 -> 11.5)
 TOOTH_X0, TOOTH_X1 = 12.1, 15.7  # DEFAULT
 TOOTH_H = 1.0           # DEFAULT (bottom Z 32.8)
 TOOTH_RAMP_DEG = 30.0   # DEFAULT +X lead-in
@@ -371,6 +400,7 @@ LIFT_TAB = (11.5, 15.5, 4.0, 3.0)  # DEFAULT X0, X1, width Y, height
 # The +Y half of the roof centre is an island once the receiver is split at Y = 0.
 LATCH_Y = (-TONGUE_HW, 0.0)
 TAB_CHANNEL_Y = (6.2, 10.8)        # DEFAULT gate-tab channel (open at the back)
+STRIPPER_WALL_TOP_Z = SOCKET_OUT_Z1
 FLOOR_RELIEF = (3.0, 7.0, 8.2, 0.5)  # DEFAULT X0, X1, half width, depth
 
 # =============================================================================
@@ -439,3 +469,9 @@ def summary():
 
 if __name__ == "__main__":
     summary()
+
+# Lost motion from round-hole clearances that the kinematic model (exact pin centres)
+# does not include: lever pivot hole + receiver pivot holes (x2 on a 1:1 lever) + both end holes.
+HOLE_LOST_MOTION = 2 * ((LEVER_PIVOT_HOLE_D - PIN_D) / 2 + (PIN_SNUG_D - PIN_D) / 2) + 2 * (LEVER_END_HOLE_D - PIN_D) / 2
+FOLLOWER_FRONT_CHAMFER = 0.6   # ADDED vertical front edges: the clip can float 0.3 in its socket
+BORE_LEADIN = 0.4              # ADDED on the receiver bore opening's vertical edges at X 0

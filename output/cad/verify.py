@@ -10,7 +10,6 @@ import re
 import json
 import math
 import time
-import multiprocessing as mp
 import numpy as np
 import params as P
 import kinematics as K
@@ -179,12 +178,34 @@ def fmt(x, n=2):
     return f"{x:.{n}f}"
 
 
+def run_parallel(configs, jobs=3):
+    """Each configuration in its own Python process (OpenCascade + multiprocessing
+    pools can deadlock), results passed back as JSON files."""
+    import subprocess
+    import tempfile
+    tmp = tempfile.mkdtemp(prefix="ebd_verify_")
+    procs, pending, done = [], list(configs), {}
+    while pending or procs:
+        while pending and len(procs) < jobs:
+            sp, bk = pending.pop(0)
+            out = os.path.join(tmp, f"{sp}_{bk}.json")
+            procs.append(((sp, bk), out, subprocess.Popen([sys.executable, __file__, "--config", sp, bk, out], cwd=HERE)))
+        time.sleep(1)
+        for item in list(procs):
+            (cfg, out, p) = item
+            if p.poll() is not None:
+                procs.remove(item)
+                if p.returncode != 0:
+                    raise RuntimeError(f"config {cfg} failed ({p.returncode})")
+                done[cfg] = json.load(open(out))
+    return [done[c] for c in configs]
+
+
 def main():
     quick = "--quick" in sys.argv
     configs = [("A", "nom")] if quick else [(s, b) for s in ("A", "B") for b in ("min", "nom", "max")]
     t0 = time.time()
-    with mp.get_context("fork").Pool(min(4, len(configs))) as pool:
-        results = pool.map(run_config, configs)
+    results = run_parallel(configs)
     t_geo = time.time() - t0
     import printability
     pr_rows = printability.check_all()
@@ -278,9 +299,10 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
     rest, prs = K.mech_rest(), K.mech_pressed()
     stroke = rest.plunger_bot - prs.plunger_bot
     nom_m = margins[0.0]
-    c97 = nom_m[0] >= 0 and nom_m[1] >= 0 and abs(stroke - P.PADDLE_STROKE) < 1e-6 and prs.lift >= 13.5 \
+    lift_eff = prs.lift - P.HOLE_LOST_MOTION
+    c97 = lift_eff >= 13.5 and nom_m[0] >= 0 and nom_m[1] >= 0 and abs(stroke - P.PADDLE_STROKE) < 1e-6 \
         and abs(rest.elev_top - P.RAIL_TOP_Z) < 1e-9
-    checks.append(("9.7", "Kinematics", c97, f"lift {prs.lift:.2f} (≥ 13.5), stroke {stroke:.2f}, pins inside slots "
+    checks.append(("9.7", "Kinematics", c97, f"lift {prs.lift:.2f} model / {prs.lift - P.HOLE_LOST_MOTION:.2f} with pin-hole play (≥ 13.5), stroke {stroke:.2f}, pins inside slots "
                    f"(min margin {min(nom_m):.2f} at nominal X)"))
     c98 = all(r["watertight"] and r["winding"] and r["wall_ok"] for r in pr_rows)
     need_sup = [r["name"] for r in pr_rows if not r["overhang_ok"]]
@@ -455,4 +477,10 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
 
 
 if __name__ == "__main__":
-    main()
+    if "--config" in sys.argv:
+        i = sys.argv.index("--config")
+        sp, bk, out = sys.argv[i + 1:i + 4]
+        with open(out, "w") as f:
+            json.dump(run_config((sp, bk)), f, default=list)
+    else:
+        main()

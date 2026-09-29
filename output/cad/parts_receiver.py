@@ -3,7 +3,7 @@ receiver_left (-Y half, mount face) and receiver_right (+Y half)."""
 import math
 import cadquery as cq
 import params as P
-from geom import box, cyl_y, cyl_z, prism_xz, prism_yz, hex_y
+from geom import box, cyl_y, cyl_z, prism_xz, prism_yz, hex_y, chamfer_edge_x, chamfer_edge_y, rim_chamfer, union_all
 
 _CACHE = {}
 
@@ -28,11 +28,16 @@ def receiver_full() -> cq.Workplane:
     main = box(P.RCV_X0, 0, -hw, hw, P.RCV_BOT_Z, P.TOP_Z)
     main = main.edges("<X or |X").chamfer(P.RCV_EDGE_CHAMFER)
     sock = box(0, P.SOCKET_L, -hw, hw, P.SOCKET_OUT_Z0, P.SOCKET_OUT_Z1)
-    sock = sock.edges(">X or |X").chamfer(P.RCV_EDGE_CHAMFER)
+    sock = sock.edges(">X or (|X and >Z)").chamfer(P.RCV_EDGE_CHAMFER)
     lug = box(P.LUG_X[0], P.LUG_X[1], -hw, hw, P.LUG_Z0, P.SOCKET_OUT_Z0 + 0.01)
-    lip = box(P.FRONT_WALL_X0, P.STOP_X, -bw, bw, P.TOP_Z - 0.01, P.TOP_Z + P.BACKSTOP_H)
-    lip = lip.faces(">Z").edges().chamfer(P.EDGE_CHAMFER)
-    r = main.union(sock).union(lug).union(lip)
+    # backstop lip on the paddle side of the window, full width so a fumbled bite can't
+    # slide round its ends toward the neck
+    lip = box(P.FRONT_WALL_X0, P.STOP_X, -P.BACKSTOP_HW, P.BACKSTOP_HW, P.TOP_Z - 0.01, P.TOP_Z + P.BACKSTOP_H)
+    lip = lip.edges("|Z or >Z").chamfer(P.EDGE_CHAMFER)
+    # stripper wall: the 0.8 strip behind the window rises to the socket roof top and
+    # joins the socket's front band (an L-section instead of a flat 0.8 x 2.0 strip)
+    swall = box(P.STRIPPER_X, 0.01, -hw, hw, P.TOP_Z - 0.01, P.STRIPPER_WALL_TOP_Z)
+    r = main.union(sock).union(lug).union(lip).union(swall)
 
     cuts = []
     # bite path: bore continuation above the bridge/elevator, and the elevator channel
@@ -85,6 +90,24 @@ def receiver_full() -> cq.Workplane:
     # M2 x 16 clearance holes along Y
     for (x, z) in P.RCV_SCREWS:
         cuts.append(cyl_y(x, z, P.M2_CLEAR_D, -hw - 1, hw + 1))
+    # chamfers on the face-zone edges of the top surface (§8.2) - never on the stripper edge
+    zs = P.SOCKET_OUT_Z1
+    cuts.append(rim_chamfer(P.PADDLE_X - P.PLUNGER_CH_HW_X, P.PADDLE_X + P.PLUNGER_CH_HW_X,
+                            -P.PLUNGER_CH_HW_Y, P.PLUNGER_CH_HW_Y, P.TOP_Z, P.EDGE_CHAMFER))
+    cuts.append(chamfer_edge_y(-hw - 1, hw + 1, P.STRIPPER_X, zs, P.EDGE_CHAMFER, +1))   # top of the stripper wall
+    sc = P.SMALL_CHAMFER
+    gs = P.GATE_SLOT_HW
+    cuts.append(chamfer_edge_y(-gs - sc, gs + sc, P.GATE_SLOT_X0, zs, sc, -1))           # gate slot, front rim
+    cuts.append(chamfer_edge_y(-gs - sc, 0, P.GATE_SLOT_X1, zs, sc, +1))                 # gate slot, rear rim (-Y)
+    cuts.append(chamfer_edge_y(P.TAB_CHANNEL_Y[1], gs + sc, P.GATE_SLOT_X1, zs, sc, +1))  # (+Y)
+    cuts.append(chamfer_edge_x(P.GATE_SLOT_X0 - sc, P.GATE_SLOT_X1 + sc, -gs, zs, sc, -1))
+    cuts.append(chamfer_edge_x(P.GATE_SLOT_X0 - sc, P.GATE_SLOT_X1 + sc, gs, zs, sc, +1))
+    cuts.append(chamfer_edge_x(P.GATE_SLOT_X1, P.SOCKET_L + 1, P.TAB_CHANNEL_Y[1], zs, sc, +1))  # tab channel rim
+    li2 = P.BORE_LEADIN
+    for s in (+1, -1):   # lead-in on the bore opening's vertical edges at the stop face
+        tri = [(0.01, s * (bw - 0.01)), (0.01, s * (bw + li2)), (-li2, s * (bw - 0.01))]
+        cuts.append(cq.Workplane("XY", origin=(0, 0, P.RAIL_TOP_Z - P.BRIDGE_LEADIN)).polyline(tri).close()
+                    .extrude(P.BORE_TOP_Z - P.RAIL_TOP_Z + P.BRIDGE_LEADIN))
     for c in cuts:
         r = r.cut(c)
 
@@ -97,13 +120,16 @@ def receiver_full() -> cq.Workplane:
                       (P.TOOTH_X1 - ramp, zt - P.TOOTH_H), (P.TOOTH_X1, zt + 0.01)], ty0, ty1)
     lx0, lx1, lw, lh = P.LIFT_TAB
     ztop = P.SOCKET_IN_Z1 + P.TONGUE_T
-    tab = box(lx0, lx1, ty0, ty1, ztop - 0.01, ztop + lh).faces(">Z").edges().chamfer(0.5)
+    tab = box(lx0, lx1, ty0, ty1, ztop - 0.01, ztop + lh).edges("|Z or >Z").chamfer(0.5)
     r = r.union(tooth).union(tab)
     # The gate slot (front) and the gate-tab channel (open at the back) cut the +Y
     # half's roof centre off from everything except the -Y half.  After the Y = 0
     # split it would be a loose island, so it is removed (OPEN_ISSUES #1).
     r = r.cut(box(P.GATE_SLOT_X1 - 0.01, P.SOCKET_L + 1, 0, P.TAB_CHANNEL_Y[0],
                   zt - P.TOOTH_H - 0.1, P.SOCKET_OUT_Z1 + 10))
+    # the -Y half's roof and tongue edges now exposed at Y = 0 get a small chamfer
+    r = r.cut(chamfer_edge_x(P.GATE_SLOT_X1, P.SOCKET_L + 1, 0.0, P.SOCKET_OUT_Z1, P.SMALL_CHAMFER, -1))
+    r = r.cut(chamfer_edge_x(P.LIFT_TAB[1], P.TONGUE_ROOT_X, 0.0, P.SOCKET_IN_Z1 + P.TONGUE_T, P.SMALL_CHAMFER, -1))
     _CACHE["full"] = r
     return r
 

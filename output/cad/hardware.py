@@ -28,7 +28,7 @@ def clamp_screw(y):
 def ribbon_geometry(spring: P.Spring, F: float):
     """Straight free span of the ribbon from the clamp exit to its tangent point on
     the coil.  Returns dict with exit point, tangent point, span length, coil OD."""
-    cx, cz = F + P.POCKET_CX, P.POCKET_CZ
+    cx, cz = F + P.POCKET_CX, P.pocket_cz(spring)
     px, pz = P.CLAMP_X1, spring.T / 2
     od = P.coil_od(spring, 0.0)
     for _ in range(6):  # coil OD depends on how much ribbon is out; iterate

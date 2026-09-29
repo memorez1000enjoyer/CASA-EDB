@@ -4,49 +4,49 @@
    "9.1",
    "Interference (all states + lever sweep)",
    true,
-   "28 poses checked, 0 unintended overlaps > 0.01 mm\u00b3"
+   "168 poses checked, 0 unintended overlaps > 0.01 mm\u00b3"
   ],
   [
    "9.2",
    "One-bite rule",
    true,
-   "bite-2-top to roof min 1.81 (\u2265 0.6); elevator top never under bite 2"
+   "bite-2-top to roof min 0.65 (\u2265 0.6); elevator top never under bite 2"
   ],
   [
    "9.3",
    "Exposure",
    true,
-   "min exposure 10.10 (\u2265 8.0), min retained 15.30 (\u2265 12)"
+   "min exposure 9.50 (\u2265 8.0), min retained 14.90 (\u2265 12)"
   ],
   [
    "9.4",
    "Window",
    true,
-   "X clearance min 0.80, Y/side min 0.75, bite 2 under window max 1.90 (\u2264 1.9)"
+   "X clearance min 0.30, Y/side min 0.25, bite 2 under window max 1.90 (\u2264 1.9)"
   ],
   [
    "9.5",
    "Follower",
    true,
-   "stops at F = -1.60 on the clamp back edge; ribbon max Z 1.33 (< 2.0)"
+   "stops at F = -1.60 on the clamp back edge; ribbon max Z 1.35 (< 2.0)"
   ],
   [
    "9.6",
    "Spring extension",
    true,
-   "min with \u2265 2 bites 21.5 (\u2265 18); last bite 9.2-9.2; max 114.1"
+   "min with \u2265 2 bites 20.4 (\u2265 18); last bite 9.1-9.7; max 118.1"
   ],
   [
    "9.7",
    "Kinematics",
    true,
-   "lift 13.70 (\u2265 13.5), stroke 14.30, pins inside slots (min margin 0.24 at nominal X)"
+   "lift 14.10 model / 13.80 with pin-hole play (\u2265 13.5), stroke 14.70, pins inside slots (min margin 0.18 at nominal X)"
   ],
   [
    "9.8",
    "Printability",
    true,
-   "21 STLs all watertight, walls \u2265 0.8 except listed spec features; NEEDS SUPPORT: receiver_left, receiver_right, plunger (OPEN_ISSUES #2)"
+   "21 STLs all watertight, walls \u2265 0.8 except listed spec features; NEEDS SUPPORT: clip_tube, clip_tube_viewslots, receiver_left, receiver_right, plunger (OPEN_ISSUES #2)"
   ],
   [
    "9.9",
@@ -58,10 +58,43 @@
    "9.10",
    "Force report",
    true,
-   "A 4.9-7.8 N (> 6 N flagged), B 1.7-3.4 N"
+   "A 4.9-7.9 N (> 6 N flagged), B 1.7-3.5 N"
   ]
  ],
  "per": [
+  {
+   "cfg": "A/min",
+   "roof_gap": 2.6640000000000015,
+   "roof_gap_Bp": 2.6000000000000014,
+   "bite2_seat_A": 4.436,
+   "m_nom": 0.2999999999999998,
+   "m_worst": 0.0,
+   "expo": 9.5,
+   "below": 14.899999999999999,
+   "raised_bot": 18.6,
+   "win_x": 1.3000000000000007,
+   "win_y": 1.25,
+   "under_win": 1.9000000000000001,
+   "F_A": 83.3,
+   "F_C": -1.5999999999999996,
+   "F_E": 100.0,
+   "F_Bp": 82.69999999999999,
+   "back_gap_E": 8.800000000000011,
+   "ext_A": 93.39849664181287,
+   "ext_2": 20.468275871599488,
+   "ext_C": 9.217819838200729,
+   "ext_E": 110.08713931547167,
+   "ext_max": 110.08713931547167,
+   "ext_limit": 457.0,
+   "ribbon_maxz": 1.3213274476101466,
+   "coil_od_E": 15.358205987023045,
+   "pocket": 17.06379474475369,
+   "lift": 14.100000000000005,
+   "elev_rest": 4.5,
+   "push_rib_gap_Dt": 0.8000000000000003,
+   "push_rib_gap_Dt_worst": 0.5000000000000004,
+   "time": 43.29386639595032
+  },
   {
    "cfg": "A/nom",
    "roof_gap": 1.809000000000001,
@@ -69,9 +102,9 @@
    "bite2_seat_A": 4.291,
    "m_nom": 0.7999999999999998,
    "m_worst": 0.5,
-   "expo": 10.099999999999994,
-   "below": 15.3,
-   "raised_bot": 18.2,
+   "expo": 10.5,
+   "below": 14.899999999999999,
+   "raised_bot": 18.6,
    "win_x": 0.8000000000000007,
    "win_y": 0.75,
    "under_win": 1.9000000000000001,
@@ -89,355 +122,535 @@
    "ribbon_maxz": 1.3337442649058278,
    "coil_od_E": 15.33332882013786,
    "pocket": 17.06379474475369,
-   "lift": 13.7,
+   "lift": 14.100000000000005,
    "elev_rest": 4.5,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 43.27164101600647
+   "time": 43.73435091972351
+  },
+  {
+   "cfg": "A/max",
+   "roof_gap": 0.6500000000000021,
+   "roof_gap_Bp": 0.6000000000000014,
+   "bite2_seat_A": 4.45,
+   "m_nom": 1.2999999999999998,
+   "m_worst": 1.0,
+   "expo": 11.5,
+   "below": 14.899999999999999,
+   "raised_bot": 18.6,
+   "win_x": 0.3000000000000007,
+   "win_y": 0.25,
+   "under_win": 1.9000000000000001,
+   "F_A": 91.3,
+   "F_C": -1.1000000000000014,
+   "F_E": 108.0,
+   "F_Bp": 89.69999999999999,
+   "back_gap_E": 0.8000000000000114,
+   "ext_A": 101.39258925525839,
+   "ext_2": 22.437545672698743,
+   "ext_C": 9.676771677796062,
+   "ext_E": 118.08283649373121,
+   "ext_max": 118.08283649373121,
+   "ext_limit": 457.0,
+   "ribbon_maxz": 1.3461837475707563,
+   "coil_od_E": 15.308410285348618,
+   "pocket": 17.06379474475369,
+   "lift": 14.100000000000005,
+   "elev_rest": 4.5,
+   "push_rib_gap_Dt": 0.8000000000000003,
+   "push_rib_gap_Dt_worst": 0.5000000000000004,
+   "time": 43.579328536987305
+  },
+  {
+   "cfg": "B/min",
+   "roof_gap": 2.6640000000000015,
+   "roof_gap_Bp": 2.6000000000000014,
+   "bite2_seat_A": 4.436,
+   "m_nom": 0.2999999999999998,
+   "m_worst": 0.0,
+   "expo": 9.5,
+   "below": 14.899999999999999,
+   "raised_bot": 18.6,
+   "win_x": 1.3000000000000007,
+   "win_y": 1.25,
+   "under_win": 1.9000000000000001,
+   "F_A": 83.3,
+   "F_C": -1.5999999999999996,
+   "F_E": 100.0,
+   "F_Bp": 82.69999999999999,
+   "back_gap_E": 8.800000000000011,
+   "ext_A": 93.38268078857921,
+   "ext_2": 20.423987896216822,
+   "ext_C": 9.128650987668403,
+   "ext_E": 110.07253282339931,
+   "ext_max": 110.07253282339931,
+   "ext_limit": 305.0,
+   "ribbon_maxz": 1.1814681515111745,
+   "coil_od_E": 13.78338176100399,
+   "pocket": 15.30945235340646,
+   "lift": 14.100000000000005,
+   "elev_rest": 4.5,
+   "push_rib_gap_Dt": 0.8000000000000003,
+   "push_rib_gap_Dt_worst": 0.5000000000000004,
+   "time": 46.174484968185425
+  },
+  {
+   "cfg": "B/nom",
+   "roof_gap": 1.809000000000001,
+   "roof_gap_Bp": 1.6000000000000014,
+   "bite2_seat_A": 4.291,
+   "m_nom": 0.7999999999999998,
+   "m_worst": 0.5,
+   "expo": 10.5,
+   "below": 14.899999999999999,
+   "raised_bot": 18.6,
+   "win_x": 0.8000000000000007,
+   "win_y": 0.75,
+   "under_win": 1.9000000000000001,
+   "F_A": 87.3,
+   "F_C": -1.5999999999999996,
+   "F_E": 104.0,
+   "F_Bp": 86.19999999999999,
+   "back_gap_E": 4.800000000000011,
+   "ext_A": 97.37993319546536,
+   "ext_2": 21.40958741054229,
+   "ext_C": 9.128650987668403,
+   "ext_E": 114.07054316899942,
+   "ext_max": 114.07054316899942,
+   "ext_limit": 305.0,
+   "ribbon_maxz": 1.1906893480017795,
+   "coil_od_E": 13.764903569671297,
+   "pocket": 15.30945235340646,
+   "lift": 14.100000000000005,
+   "elev_rest": 4.5,
+   "push_rib_gap_Dt": 0.8000000000000003,
+   "push_rib_gap_Dt_worst": 0.5000000000000004,
+   "time": 45.17687177658081
+  },
+  {
+   "cfg": "B/max",
+   "roof_gap": 0.6500000000000021,
+   "roof_gap_Bp": 0.6000000000000014,
+   "bite2_seat_A": 4.45,
+   "m_nom": 1.2999999999999998,
+   "m_worst": 1.0,
+   "expo": 11.5,
+   "below": 14.899999999999999,
+   "raised_bot": 18.6,
+   "win_x": 0.3000000000000007,
+   "win_y": 0.25,
+   "under_win": 1.9000000000000001,
+   "F_A": 91.3,
+   "F_C": -1.1000000000000014,
+   "F_E": 108.0,
+   "F_Bp": 89.69999999999999,
+   "back_gap_E": 0.8000000000000114,
+   "ext_A": 101.37740237683285,
+   "ext_2": 22.396464562677668,
+   "ext_C": 9.591501362383964,
+   "ext_E": 118.06868830727407,
+   "ext_max": 118.06868830727407,
+   "ext_limit": 305.0,
+   "ribbon_maxz": 1.199924936927137,
+   "coil_od_E": 13.746399915351853,
+   "pocket": 15.30945235340646,
+   "lift": 14.100000000000005,
+   "elev_rest": 4.5,
+   "push_rib_gap_Dt": 0.8000000000000003,
+   "push_rib_gap_Dt_worst": 0.5000000000000004,
+   "time": 44.807353258132935
   }
  ],
  "clearance": {
   "('clip_tube', 'follower')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "clip_tube",
    "follower"
   ],
   "('clip_tube', 'drum')": [
-   2.6,
-   "A/nom E",
+   1.7228,
+   "B/min A",
    "clip_tube",
    "drum"
   ],
   "('clip_tube', 'pin_axle')": [
    0.3,
-   "A/nom A",
+   "A/min A",
    "clip_tube",
    "pin_axle"
   ],
   "('cf_spring', 'clip_tube')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "clip_tube",
    "cf_spring"
   ],
   "('bite', 'clip_tube')": [
-   0.0,
-   "A/nom A",
+   0.0001,
+   "A/min E",
    "clip_tube",
-   "bite2"
+   "bite8"
   ],
   "('cf_spring', 'ribbon_clamp')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "ribbon_clamp",
    "cf_spring"
   ],
   "('cf_spring', 'screw_clamp')": [
    0.175,
-   "A/nom E",
+   "A/min E",
    "screw_clamp_n",
    "cf_spring"
   ],
   "('drum', 'follower')": [
    0.6,
-   "A/nom E",
+   "A/min E",
    "follower",
    "drum"
   ],
   "('follower', 'pin_axle')": [
    0.05,
-   "A/nom E",
+   "A/min E",
    "follower",
    "pin_axle"
   ],
   "('cf_spring', 'follower')": [
    0.475,
-   "A/nom E",
+   "A/min E",
    "follower",
    "cf_spring"
   ],
   "('bite', 'follower')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "follower",
    "bite8"
   ],
   "('drum', 'pin_axle')": [
    0.15,
-   "A/nom Dt",
+   "A/min Dt",
    "drum",
    "pin_axle"
   ],
   "('cf_spring', 'drum')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "drum",
    "cf_spring"
   ],
   "('cf_spring', 'pin_axle')": [
    5.25,
-   "A/nom E",
+   "A/min E",
    "pin_axle",
    "cf_spring"
   ],
   "('cf_spring', 'receiver_left')": [
    2.0,
-   "A/nom A",
+   "A/min A",
    "cf_spring",
    "receiver_left"
   ],
   "('cf_spring', 'receiver_right')": [
    2.0,
-   "A/nom A",
+   "A/min A",
    "cf_spring",
    "receiver_right"
   ],
   "('bite', 'cf_spring')": [
-   3.1655,
-   "A/nom E",
+   2.8921,
+   "A/min E",
    "cf_spring",
    "bite8"
   ],
   "('elevator', 'receiver_left')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "receiver_left",
    "elevator"
   ],
   "('lever', 'receiver_left')": [
    0.5,
-   "A/nom A",
+   "A/min A",
    "receiver_left",
    "lever"
   ],
   "('pin_cup', 'receiver_left')": [
    0.55,
-   "A/nom A",
+   "A/min A",
    "receiver_left",
    "pin_cup"
   ],
   "('pin_plunger', 'receiver_left')": [
    0.6,
-   "A/nom D@+21.8",
+   "A/min D@+23.5",
    "receiver_left",
    "pin_plunger"
   ],
   "('plunger', 'receiver_left')": [
    0.0,
-   "A/nom B",
+   "A/min B",
    "receiver_left",
    "plunger"
   ],
   "('receiver_left', 'return_spring')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "receiver_left",
    "return_spring"
   ],
   "('bite', 'receiver_left')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "receiver_left",
    "bite1"
   ],
   "('elevator', 'receiver_right')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "receiver_right",
    "elevator"
   ],
   "('lever', 'receiver_right')": [
    0.5,
-   "A/nom A",
+   "A/min A",
    "receiver_right",
    "lever"
   ],
   "('pin_cup', 'receiver_right')": [
    0.55,
-   "A/nom A",
+   "A/min A",
    "receiver_right",
    "pin_cup"
   ],
   "('pin_plunger', 'receiver_right')": [
    0.6,
-   "A/nom D@+21.8",
+   "A/min D@+23.5",
    "receiver_right",
    "pin_plunger"
   ],
   "('plunger', 'receiver_right')": [
    0.0,
-   "A/nom B",
+   "A/min B",
    "receiver_right",
    "plunger"
   ],
   "('receiver_right', 'return_spring')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "receiver_right",
    "return_spring"
   ],
   "('bite', 'receiver_right')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "receiver_right",
    "bite1"
   ],
   "('dowel', 'plunger')": [
-   2.7,
-   "A/nom A",
-   "dowel2",
+   3.2,
+   "A/min C",
+   "dowel3",
    "plunger"
   ],
   "('lever', 'pin_pivot')": [
-   0.15,
-   "A/nom D@+21.8",
+   0.05,
+   "A/min D@+23.5",
    "pin_pivot",
    "lever"
   ],
   "('elevator', 'lever')": [
    0.3,
-   "A/nom D@+21.8",
+   "A/min D@+23.5",
    "elevator",
    "lever"
   ],
   "('elevator', 'pin_cup')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "elevator",
    "pin_cup"
   ],
   "('bite', 'elevator')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "elevator",
    "bite1"
   ],
   "('lever', 'pin_cup')": [
    0.05,
-   "A/nom D@+21.8",
+   "A/min D@+15.7",
    "lever",
    "pin_cup"
   ],
   "('lever', 'pin_plunger')": [
    0.05,
-   "A/nom D@+21.8",
+   "A/min D@+23.5",
    "lever",
    "pin_plunger"
   ],
   "('lever', 'plunger')": [
    0.3,
-   "A/nom D@+21.8",
+   "A/min D@+23.5",
    "lever",
    "plunger"
   ],
   "('bite', 'lever')": [
    10.8731,
-   "A/nom C",
+   "A/min A",
    "lever",
-   "bite8"
+   "bite1"
   ],
   "('pin_plunger', 'plunger')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "pin_plunger",
    "plunger"
   ],
   "('paddle_pad', 'plunger')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "plunger",
    "paddle_pad"
   ],
   "('plunger', 'return_spring')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "plunger",
    "return_spring"
   ],
   "('bite', 'bite')": [
    0.0,
-   "A/nom A",
+   "A/min A",
    "bite1",
    "bite2"
   ],
   "('paddle_pad', 'receiver_left')": [
-   1.0,
-   "A/nom B",
+   0.2,
+   "A/min B",
    "receiver_left",
    "paddle_pad"
   ],
   "('paddle_pad', 'receiver_right')": [
-   1.0,
-   "A/nom B",
+   0.2,
+   "A/min B",
    "receiver_right",
    "paddle_pad"
   ],
   "('follower', 'ribbon_clamp')": [
    0.0,
-   "A/nom C",
+   "A/min C",
    "ribbon_clamp",
    "follower"
   ],
   "('follower', 'screw_clamp')": [
    2.0,
-   "A/nom C",
+   "A/min C",
    "screw_clamp_p",
    "follower"
   ],
   "('follower', 'receiver_left')": [
    0.0,
-   "A/nom C",
+   "A/min C",
    "follower",
    "receiver_left"
   ],
   "('follower', 'receiver_right')": [
    0.0,
-   "A/nom C",
+   "A/min C",
    "follower",
    "receiver_right"
   ],
   "('elevator', 'follower')": [
    0.8,
-   "A/nom D",
+   "A/min D",
    "follower",
    "elevator"
   ],
   "('drum', 'receiver_left')": [
-   4.9,
-   "A/nom Dt",
+   4.0228,
+   "B/min C",
    "drum",
    "receiver_left"
   ],
   "('drum', 'receiver_right')": [
-   4.9,
-   "A/nom Dt",
+   4.0228,
+   "B/min C",
    "drum",
    "receiver_right"
   ],
   "('pin_axle', 'receiver_left')": [
    2.6,
-   "A/nom C",
+   "A/min C",
    "pin_axle",
    "receiver_left"
   ],
   "('pin_axle', 'receiver_right')": [
    2.6,
-   "A/nom C",
+   "A/min C",
    "pin_axle",
    "receiver_right"
   ],
   "('cf_spring', 'gate')": [
    1.85,
-   "A/nom E",
+   "A/min E",
    "gate",
    "cf_spring"
   ],
   "('bite', 'gate')": [
    0.0,
-   "A/nom E",
+   "A/min E",
    "gate",
    "bite1"
+  ],
+  "('end_cap', 'follower')": [
+   0.8,
+   "A/max E",
+   "end_cap",
+   "follower"
+  ],
+  "('clip_tube', 'drum_spacer')": [
+   0.6681,
+   "B/min A",
+   "clip_tube",
+   "drum_spacer1"
+  ],
+  "('drum_spacer', 'follower')": [
+   0.35,
+   "B/min E",
+   "follower",
+   "drum_spacer1"
+  ],
+  "('drum', 'drum_spacer')": [
+   0.15,
+   "B/min E",
+   "drum",
+   "drum_spacer2"
+  ],
+  "('drum_spacer', 'pin_axle')": [
+   5.4,
+   "B/min Dt",
+   "pin_axle",
+   "drum_spacer2"
+  ],
+  "('cf_spring', 'drum_spacer')": [
+   0.05,
+   "B/min E",
+   "drum_spacer2",
+   "cf_spring"
+  ],
+  "('drum_spacer', 'receiver_left')": [
+   2.9681,
+   "B/min C",
+   "drum_spacer2",
+   "receiver_left"
+  ],
+  "('drum_spacer', 'receiver_right')": [
+   2.9681,
+   "B/min C",
+   "drum_spacer1",
+   "receiver_right"
   ]
  },
  "forces": {
@@ -445,265 +658,459 @@
    "F": 6.6,
    "friction": 3.3,
    "rs_rest": 1.64,
-   "rs_pressed": 4.5,
+   "rs_pressed": 4.580000000000001,
    "paddle_start": 4.9399999999999995,
-   "paddle_end": 7.8,
+   "paddle_end": 7.880000000000001,
    "bite_returns": false,
    "elevator_returns": true,
    "L_rest": 26.8,
-   "L_press": 12.500000000000002
+   "L_press": 12.099999999999996
   },
   "B": {
    "F": 1.47,
    "friction": 0.735,
    "rs_rest": 0.9839999999999999,
-   "rs_pressed": 2.6999999999999997,
+   "rs_pressed": 2.7480000000000007,
    "paddle_start": 1.7189999999999999,
-   "paddle_end": 3.4349999999999996,
+   "paddle_end": 3.4830000000000005,
    "bite_returns": true,
    "elevator_returns": true,
    "L_rest": 26.8,
-   "L_press": 12.500000000000002
+   "L_press": 12.099999999999996
   }
  },
  "printability": [
   {
    "name": "clip_tube",
-   "orient": "bottom_down",
+   "orient": "plusX_down",
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 33730.924408588726,
-   "min_wall": 0.8415602143368858,
+   "volume": 34093.72105233957,
+   "min_wall": 0.8503088997706595,
    "wall_ok": true,
-   "overhang_ok": true,
+   "overhang_ok": false,
    "flags": [
+    "SUPPORT: 6 mm\u00b2 unsupported at print Z 139.6 (x -13.8..17.8, y -11.2..11.2)",
     "spec feature: top corner of the 1.2 mouth lip with the spec 0.5 mouth chamfer 0.72",
-    "spec feature: clamp notch (X 3.1-3.9) meets the \u00d82.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall 0.08",
-    "longest bridge 20.5"
+    "spec feature: clamp notch (X 3.1-3.9) meets the \u00d82.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall 0.00",
+    "longest bridge 22.5"
    ],
    "regions": [
     {
-     "area": 24.6,
-     "bad_frac": 0.0,
-     "bridge": 20.5,
-     "z": 33.5,
+     "area": 115.1,
+     "bad_frac": 0.054,
+     "bridge": 22.5,
+     "z": 139.6,
      "bbox": [
-      -70.4,
-      -69.2,
-      -10.2,
-      10.2
+      -13.8,
+      17.8,
+      -11.2,
+      11.2
      ]
     },
     {
-     "area": 3.6,
+     "area": 32.0,
+     "bad_frac": 0.0,
+     "bridge": 16.0,
+     "z": 138.8,
+     "bbox": [
+      -15.8,
+      -13.8,
+      -8.0,
+      8.0
+     ]
+    },
+    {
+     "area": 0.1,
      "bad_frac": 0.0,
      "bridge": 0.0,
-     "z": 19.8,
+     "z": 137.4,
      "bbox": [
-      67.6,
-      69.2,
-      10.2,
+      17.2,
+      17.8,
+      11.8,
       12.2
      ]
     },
     {
-     "area": 3.6,
+     "area": 3.7,
      "bad_frac": 0.0,
      "bridge": 0.0,
-     "z": 19.8,
+     "z": 3.1,
      "bbox": [
-      67.6,
-      69.2,
-      -12.2,
-      -10.2
-     ]
-    },
-    {
-     "area": 2829.0,
-     "bad_frac": 0.0,
-     "bridge": 20.5,
-     "z": 33.5,
-     "bbox": [
-      -67.6,
-      70.4,
-      -10.2,
-      10.2
-     ]
-    }
-   ]
-  },
-  {
-   "name": "clip_tube_viewslots",
-   "orient": "bottom_down",
-   "watertight": true,
-   "winding": true,
-   "bodies": 1,
-   "volume": 33010.92440668137,
-   "min_wall": 0.8078726517427566,
-   "wall_ok": true,
-   "overhang_ok": true,
-   "flags": [
-    "spec feature: rail stub in front of the gate slot: 1.2 lip with the spec 0.5 rail chamfer 0.79",
-    "spec feature: top corner of the 1.2 mouth lip with the spec 0.5 mouth chamfer 0.77",
-    "spec feature: clamp notch (X 3.1-3.9) meets the \u00d82.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall 0.36",
-    "longest bridge 20.5"
-   ],
-   "regions": [
-    {
-     "area": 24.6,
-     "bad_frac": 0.0,
-     "bridge": 20.5,
-     "z": 33.5,
-     "bbox": [
-      -70.4,
-      -69.2,
-      -10.2,
-      10.2
-     ]
-    },
-    {
-     "area": 3.6,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 19.8,
-     "bbox": [
-      67.6,
-      69.2,
-      -12.2,
-      -10.2
-     ]
-    },
-    {
-     "area": 20.0,
-     "bad_frac": 0.0,
-     "bridge": 10.0,
-     "z": 22.0,
-     "bbox": [
-      -58.4,
-      -48.4,
-      10.2,
-      12.2
-     ]
-    },
-    {
-     "area": 20.0,
-     "bad_frac": 0.0,
-     "bridge": 10.0,
-     "z": 22.0,
-     "bbox": [
-      -45.8,
-      -35.8,
-      10.2,
-      12.2
-     ]
-    },
-    {
-     "area": 20.0,
-     "bad_frac": 0.0,
-     "bridge": 10.0,
-     "z": 22.0,
-     "bbox": [
-      -33.3,
-      -23.3,
-      10.2,
-      12.2
-     ]
-    },
-    {
-     "area": 20.0,
-     "bad_frac": 0.0,
-     "bridge": 10.0,
-     "z": 22.0,
-     "bbox": [
-      -20.8,
-      -10.8,
-      10.2,
-      12.2
-     ]
-    },
-    {
-     "area": 20.0,
-     "bad_frac": 0.0,
-     "bridge": 10.0,
-     "z": 22.0,
-     "bbox": [
-      -8.2,
+      0.2,
       1.8,
       10.2,
       12.2
      ]
     },
     {
-     "area": 3.6,
+     "area": 0.1,
      "bad_frac": 0.0,
      "bridge": 0.0,
-     "z": 19.8,
+     "z": 137.4,
      "bbox": [
-      67.6,
-      69.2,
+      17.2,
+      17.8,
+      -12.2,
+      -11.8
+     ]
+    },
+    {
+     "area": 8.6,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 128.8,
+     "bbox": [
+      16.8,
+      17.8,
+      -4.3,
+      4.3
+     ]
+    },
+    {
+     "area": 3.7,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 3.1,
+     "bbox": [
+      0.2,
+      1.8,
+      -12.2,
+      -10.2
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 137.3,
+     "bbox": [
+      -17.5,
+      -16.9,
+      -6.1,
+      -5.9
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 137.3,
+     "bbox": [
+      -17.5,
+      -16.9,
+      5.9,
+      6.1
+     ]
+    },
+    {
+     "area": 4.8,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 137.7,
+     "bbox": [
+      -16.0,
+      -15.8,
+      -8.0,
+      8.0
+     ]
+    },
+    {
+     "area": 1.9,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 136.8,
+     "bbox": [
+      -16.9,
+      -15.8,
+      -6.8,
+      -5.2
+     ]
+    },
+    {
+     "area": 1.9,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 136.8,
+     "bbox": [
+      -16.9,
+      -15.8,
+      5.2,
+      6.8
+     ]
+    }
+   ]
+  },
+  {
+   "name": "clip_tube_viewslots",
+   "orient": "plusX_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 33373.72102182198,
+   "min_wall": 0.803274427485172,
+   "wall_ok": true,
+   "overhang_ok": false,
+   "flags": [
+    "SUPPORT: 6 mm\u00b2 unsupported at print Z 139.6 (x -13.8..17.8, y -11.2..11.2)",
+    "spec feature: rail stub in front of the gate slot: 1.2 lip with the spec 0.5 rail chamfer 0.77",
+    "spec feature: top corner of the 1.2 mouth lip with the spec 0.5 mouth chamfer 0.71",
+    "spec feature: clamp notch (X 3.1-3.9) meets the \u00d82.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall 0.14",
+    "longest bridge 22.5"
+   ],
+   "regions": [
+    {
+     "area": 115.1,
+     "bad_frac": 0.054,
+     "bridge": 22.5,
+     "z": 139.6,
+     "bbox": [
+      -13.8,
+      17.8,
+      -11.2,
+      11.2
+     ]
+    },
+    {
+     "area": 32.0,
+     "bad_frac": 0.0,
+     "bridge": 16.0,
+     "z": 138.8,
+     "bbox": [
+      -15.8,
+      -13.8,
+      -8.0,
+      8.0
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 137.3,
+     "bbox": [
+      -17.5,
+      -16.9,
+      -6.1,
+      -5.9
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 137.3,
+     "bbox": [
+      -17.5,
+      -16.9,
+      5.9,
+      6.1
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 137.4,
+     "bbox": [
+      17.2,
+      17.8,
+      11.8,
+      12.2
+     ]
+    },
+    {
+     "area": 8.0,
+     "bad_frac": 0.0,
+     "bridge": 4.0,
+     "z": 128.8,
+     "bbox": [
+      0.2,
+      4.2,
       10.2,
       12.2
      ]
     },
     {
-     "area": 20.0,
+     "area": 8.0,
      "bad_frac": 0.0,
-     "bridge": 10.0,
-     "z": 22.0,
+     "bridge": 4.0,
+     "z": 116.2,
      "bbox": [
-      4.3,
-      14.4,
+      0.2,
+      4.2,
       10.2,
       12.2
      ]
     },
     {
-     "area": 20.0,
+     "area": 8.0,
      "bad_frac": 0.0,
-     "bridge": 10.0,
-     "z": 22.0,
+     "bridge": 4.0,
+     "z": 103.7,
      "bbox": [
-      16.9,
-      26.9,
+      0.2,
+      4.2,
       10.2,
       12.2
      ]
     },
     {
-     "area": 20.0,
+     "area": 8.0,
      "bad_frac": 0.0,
-     "bridge": 10.0,
-     "z": 22.0,
+     "bridge": 4.0,
+     "z": 91.2,
      "bbox": [
-      29.5,
-      39.5,
+      0.2,
+      4.2,
       10.2,
       12.2
      ]
     },
     {
-     "area": 20.0,
+     "area": 8.0,
      "bad_frac": 0.0,
-     "bridge": 10.0,
-     "z": 22.0,
+     "bridge": 4.0,
+     "z": 78.6,
      "bbox": [
-      42.0,
-      52.0,
+      0.2,
+      4.2,
       10.2,
       12.2
      ]
     },
     {
-     "area": 2829.0,
+     "area": 3.7,
      "bad_frac": 0.0,
-     "bridge": 20.5,
-     "z": 33.5,
+     "bridge": 0.0,
+     "z": 3.1,
      "bbox": [
-      -67.6,
-      70.4,
-      -10.2,
-      10.2
+      0.2,
+      1.8,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 8.0,
+     "bad_frac": 0.0,
+     "bridge": 4.0,
+     "z": 66.1,
+     "bbox": [
+      0.2,
+      4.2,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 8.0,
+     "bad_frac": 0.0,
+     "bridge": 4.0,
+     "z": 53.5,
+     "bbox": [
+      0.2,
+      4.2,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 8.0,
+     "bad_frac": 0.0,
+     "bridge": 4.0,
+     "z": 41.0,
+     "bbox": [
+      0.2,
+      4.2,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 8.0,
+     "bad_frac": 0.0,
+     "bridge": 4.0,
+     "z": 28.4,
+     "bbox": [
+      0.2,
+      4.2,
+      10.2,
+      12.2
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 137.4,
+     "bbox": [
+      17.2,
+      17.8,
+      -12.2,
+      -11.8
+     ]
+    },
+    {
+     "area": 8.6,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 128.8,
+     "bbox": [
+      16.8,
+      17.8,
+      -4.3,
+      4.3
+     ]
+    },
+    {
+     "area": 3.7,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 3.1,
+     "bbox": [
+      0.2,
+      1.8,
+      -12.2,
+      -10.2
+     ]
+    },
+    {
+     "area": 4.8,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 137.7,
+     "bbox": [
+      -16.0,
+      -15.8,
+      -8.0,
+      8.0
+     ]
+    },
+    {
+     "area": 1.9,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 136.8,
+     "bbox": [
+      -16.9,
+      -15.8,
+      -6.8,
+      -5.2
+     ]
+    },
+    {
+     "area": 1.9,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 136.8,
+     "bbox": [
+      -16.9,
+      -15.8,
+      5.2,
+      6.8
      ]
     }
    ]
@@ -714,8 +1121,8 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 875.9880494799609,
-   "min_wall": 1.1998999999999997,
+   "volume": 872.2197004535577,
+   "min_wall": 1.0002886934885913,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [],
@@ -765,7 +1172,7 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 12891.906740561657,
+   "volume": 12881.684285531954,
    "min_wall": 1.4680026276231537,
    "wall_ok": true,
    "overhang_ok": true,
@@ -775,6 +1182,18 @@
     "longest bridge 10.6"
    ],
    "regions": [
+    {
+     "area": 115.3,
+     "bad_frac": 0.0,
+     "bridge": 10.6,
+     "z": 18.0,
+     "bbox": [
+      -11.2,
+      -1.0,
+      -5.3,
+      5.3
+     ]
+    },
     {
      "area": 7.8,
      "bad_frac": 0.0,
@@ -798,18 +1217,6 @@
       5.3,
       9.9
      ]
-    },
-    {
-     "area": 115.3,
-     "bad_frac": 0.0,
-     "bridge": 10.6,
-     "z": 18.0,
-     "bbox": [
-      -11.2,
-      -1.0,
-      -5.3,
-      5.3
-     ]
     }
    ]
   },
@@ -832,12 +1239,12 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 108.36651459389428,
-   "min_wall": 0.9001486543993478,
+   "volume": 107.90451511936874,
+   "min_wall": 0.9006534628142999,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [
-    "spec feature: clamp ridge (spec: 0.3 tall; 0.5 wide to fit the 0.8 notch around the ribbon) 0.50"
+    "spec feature: clamp ridge (spec: 0.3 tall; 0.5 wide to fit the 0.8 notch around the ribbon) 0.40"
    ],
    "regions": []
   },
@@ -847,13 +1254,13 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 32212.712055540116,
-   "min_wall": 0.7999000000000007,
+   "volume": 32262.84338705394,
+   "min_wall": 0.7998999999999995,
    "wall_ok": true,
    "overhang_ok": false,
    "flags": [
-    "SUPPORT: 165 mm\u00b2 unsupported at print Z 10.2 (x -1.8..12.5, y -24.7..24.0)",
-    "SUPPORT: 620 mm\u00b2 unsupported at print Z 12.6 (x 12.5..40.0, y -11.5..24.6)",
+    "SUPPORT: 163 mm\u00b2 unsupported at print Z 10.2 (x -1.8..12.1, y -24.7..24.0)",
+    "SUPPORT: 619 mm\u00b2 unsupported at print Z 12.6 (x 12.5..40.0, y -11.5..24.6)",
     "longest bridge 25.0"
    ],
    "regions": [
@@ -870,20 +1277,44 @@
      ]
     },
     {
-     "area": 712.7,
+     "area": 0.1,
      "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 6.8,
+     "bbox": [
+      -29.5,
+      -29.0,
+      23.8,
+      24.3
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 6.8,
+     "bbox": [
+      -18.4,
+      -17.9,
+      23.8,
+      24.3
+     ]
+    },
+    {
+     "area": 707.5,
+     "bad_frac": 0.001,
      "bridge": 19.3,
      "z": 6.3,
      "bbox": [
       -37.7,
       -18.4,
       -25.7,
-      24.3
+      23.8
      ]
     },
     {
      "area": 303.3,
-     "bad_frac": 0.002,
+     "bad_frac": 0.004,
      "bridge": 24.2,
      "z": 3.6,
      "bbox": [
@@ -918,20 +1349,20 @@
      ]
     },
     {
-     "area": 653.3,
-     "bad_frac": 0.253,
+     "area": 642.6,
+     "bad_frac": 0.254,
      "bridge": 24.9,
      "z": 10.2,
      "bbox": [
       -1.8,
-      12.5,
+      12.1,
       -24.7,
       24.0
      ]
     },
     {
      "area": 992.8,
-     "bad_frac": 0.624,
+     "bad_frac": 0.623,
      "bridge": 25.0,
      "z": 12.6,
      "bbox": [
@@ -978,7 +1409,19 @@
      ]
     },
     {
-     "area": 3.2,
+     "area": 27.0,
+     "bad_frac": 0.0,
+     "bridge": 13.5,
+     "z": 5.0,
+     "bbox": [
+      23.0,
+      36.5,
+      24.6,
+      26.6
+     ]
+    },
+    {
+     "area": 2.7,
      "bad_frac": 0.0,
      "bridge": 0.0,
      "z": 11.2,
@@ -986,19 +1429,7 @@
       13.7,
       15.3,
       24.6,
-      26.6
-     ]
-    },
-    {
-     "area": 26.0,
-     "bad_frac": 0.0,
-     "bridge": 13.0,
-     "z": 4.5,
-     "bbox": [
-      23.5,
-      36.5,
-      24.6,
-      26.6
+      26.3
      ]
     },
     {
@@ -1007,8 +1438,8 @@
      "bridge": 0.0,
      "z": 5.3,
      "bbox": [
-      -16.0,
-      -14.1,
+      -12.1,
+      -10.2,
       8.9,
       10.7
      ]
@@ -1033,14 +1464,14 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 31750.326725027295,
-   "min_wall": 0.7999000000000007,
+   "volume": 31796.16009752885,
+   "min_wall": 0.7998999999999987,
    "wall_ok": true,
    "overhang_ok": false,
    "flags": [
-    "SUPPORT: 152 mm\u00b2 unsupported at print Z 10.2 (x -1.8..12.5, y -25.0..23.8)",
-    "SUPPORT: 631 mm\u00b2 unsupported at print Z 12.6 (x 12.5..40.0, y -25.5..10.6)",
-    "SUPPORT: 50 mm\u00b2 unsupported at print Z 10.8 (x 15.3..40.5, y -27.5..-25.5)",
+    "SUPPORT: 150 mm\u00b2 unsupported at print Z 10.2 (x -1.8..12.1, y -25.0..23.8)",
+    "SUPPORT: 615 mm\u00b2 unsupported at print Z 12.6 (x 12.5..40.0, y -25.5..10.6)",
+    "SUPPORT: 43 mm\u00b2 unsupported at print Z 10.8 (x 15.3..40.5, y -27.3..-25.5)",
     "longest bridge 25.0"
    ],
    "regions": [
@@ -1057,14 +1488,14 @@
      ]
     },
     {
-     "area": 712.7,
-     "bad_frac": 0.0,
+     "area": 707.5,
+     "bad_frac": 0.001,
      "bridge": 19.3,
      "z": 6.3,
      "bbox": [
       -37.7,
       -18.4,
-      -25.2,
+      -24.8,
       24.8
      ]
     },
@@ -1093,13 +1524,37 @@
      ]
     },
     {
-     "area": 653.3,
-     "bad_frac": 0.232,
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 6.8,
+     "bbox": [
+      -18.4,
+      -17.9,
+      -25.2,
+      -24.8
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 6.8,
+     "bbox": [
+      -29.5,
+      -29.0,
+      -25.2,
+      -24.8
+     ]
+    },
+    {
+     "area": 642.6,
+     "bad_frac": 0.234,
      "bridge": 25.0,
      "z": 10.2,
      "bbox": [
       -1.8,
-      12.5,
+      12.1,
       -25.0,
       23.8
      ]
@@ -1118,8 +1573,8 @@
     },
     {
      "area": 992.7,
-     "bad_frac": 0.636,
-     "bridge": 25.0,
+     "bad_frac": 0.62,
+     "bridge": 24.9,
      "z": 12.6,
      "bbox": [
       12.5,
@@ -1141,14 +1596,14 @@
      ]
     },
     {
-     "area": 50.1,
+     "area": 42.9,
      "bad_frac": 1.0,
      "bridge": 0.0,
      "z": 10.8,
      "bbox": [
       15.3,
       40.5,
-      -27.5,
+      -27.3,
       -25.5
      ]
     },
@@ -1177,6 +1632,18 @@
      ]
     },
     {
+     "area": 2.7,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 11.2,
+     "bbox": [
+      13.7,
+      15.3,
+      -27.3,
+      -25.5
+     ]
+    },
+    {
      "area": 3.5,
      "bad_frac": 0.0,
      "bridge": 0.0,
@@ -1194,22 +1661,10 @@
      "bridge": 0.0,
      "z": 5.3,
      "bbox": [
-      -16.0,
-      -13.9,
+      -12.2,
+      -10.1,
       -11.8,
       -9.7
-     ]
-    },
-    {
-     "area": 3.2,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 11.2,
-     "bbox": [
-      13.7,
-      15.3,
-      -27.5,
-      -25.5
      ]
     }
    ]
@@ -1220,8 +1675,8 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 3934.054061367036,
-   "min_wall": 1.8498999999999999,
+   "volume": 3931.5520596954825,
+   "min_wall": 1.6545535405546747,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [
@@ -1229,15 +1684,15 @@
    ],
    "regions": [
     {
-     "area": 31.3,
+     "area": 59.4,
      "bad_frac": 0.0,
-     "bridge": 4.7,
-     "z": 4.2,
+     "bridge": 6.6,
+     "z": 9.0,
      "bbox": [
+      -5.8,
+      3.2,
       -3.3,
-      1.4,
-      -9.9,
-      -3.3
+      3.3
      ]
     },
     {
@@ -1253,15 +1708,15 @@
      ]
     },
     {
-     "area": 59.4,
+     "area": 31.3,
      "bad_frac": 0.0,
-     "bridge": 6.6,
-     "z": 9.0,
+     "bridge": 4.7,
+     "z": 4.2,
      "bbox": [
-      -5.8,
-      3.2,
       -3.3,
-      3.3
+      1.4,
+      -9.9,
+      -3.3
      ]
     }
    ]
@@ -1272,8 +1727,8 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 891.2966531164016,
-   "min_wall": 1.3502574406990613,
+   "volume": 895.4418374298598,
+   "min_wall": 1.4491234787174017,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [],
@@ -1285,20 +1740,20 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 6323.226867938815,
-   "min_wall": 1.7998999999999938,
+   "volume": 6346.576643081265,
+   "min_wall": 1.318403807868357,
    "wall_ok": true,
    "overhang_ok": false,
    "flags": [
-    "SUPPORT: 86 mm\u00b2 unsupported at print Z 36.0 (x -10.4..-2.3, y -6.0..6.0)",
+    "SUPPORT: 86 mm\u00b2 unsupported at print Z 36.4 (x -10.4..-2.3, y -6.0..6.0)",
     "longest bridge 4.5"
    ],
    "regions": [
     {
      "area": 96.0,
-     "bad_frac": 0.898,
+     "bad_frac": 0.891,
      "bridge": 0.0,
-     "z": 36.0,
+     "z": 36.4,
      "bbox": [
       -10.4,
       -2.3,
@@ -1310,55 +1765,40 @@
      "area": 12.1,
      "bad_frac": 0.0,
      "bridge": 4.5,
-     "z": 49.2,
-     "bbox": [
-      1.4,
-      5.8,
-      3.3,
-      6.0
-     ]
-    },
-    {
-     "area": 12.1,
-     "bad_frac": 0.0,
-     "bridge": 4.5,
-     "z": 49.2,
+     "z": 49.5,
      "bbox": [
       1.4,
       5.8,
       -6.0,
       -3.3
      ]
+    },
+    {
+     "area": 12.1,
+     "bad_frac": 0.0,
+     "bridge": 4.5,
+     "z": 49.5,
+     "bbox": [
+      1.4,
+      5.8,
+      3.3,
+      6.0
+     ]
     }
    ]
   },
   {
    "name": "paddle_pad",
-   "orient": "bottom_down",
+   "orient": "minusY_down",
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 1325.890314589985,
-   "min_wall": 2.3613853924992227,
+   "volume": 1464.7993101652291,
+   "min_wall": 2.54103972585026,
    "wall_ok": true,
    "overhang_ok": true,
-   "flags": [
-    "longest bridge 16.4"
-   ],
-   "regions": [
-    {
-     "area": 295.2,
-     "bad_frac": 0.0,
-     "bridge": 16.4,
-     "z": 1.0,
-     "bbox": [
-      -8.2,
-      8.2,
-      -9.0,
-      9.0
-     ]
-    }
-   ]
+   "flags": [],
+   "regions": []
   },
   {
    "name": "ring_hook",
@@ -1608,7 +2048,7 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 13209.09143126604,
+   "volume": 13348.146057746571,
    "min_wall": 1.8998999999999988,
    "wall_ok": true,
    "overhang_ok": true,
@@ -1619,13 +2059,25 @@
    ],
    "regions": [
     {
+     "area": 36.8,
+     "bad_frac": 0.0,
+     "bridge": 10.6,
+     "z": 18.4,
+     "bbox": [
+      -11.2,
+      -7.8,
+      -5.3,
+      5.3
+     ]
+    },
+    {
      "area": 7.8,
      "bad_frac": 0.0,
      "bridge": 0.0,
      "z": 11.0,
      "bbox": [
-      -7.7,
-      -6.1,
+      -8.5,
+      -7.0,
       -9.9,
       -5.3
      ]
@@ -1636,22 +2088,10 @@
      "bridge": 0.0,
      "z": 11.0,
      "bbox": [
-      -7.7,
-      -6.1,
+      -8.5,
+      -7.0,
       5.3,
       9.9
-     ]
-    },
-    {
-     "area": 46.1,
-     "bad_frac": 0.0,
-     "bridge": 10.6,
-     "z": 18.4,
-     "bbox": [
-      -11.2,
-      -6.9,
-      -5.3,
-      5.3
      ]
     },
     {
@@ -1660,8 +2100,8 @@
      "bridge": 10.6,
      "z": 16.8,
      "bbox": [
-      -6.9,
-      -1.4,
+      -7.8,
+      -2.3,
       -5.3,
       5.3
      ]
@@ -1674,7 +2114,7 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 57.43140552382757,
+   "volume": 57.43140552382761,
    "min_wall": 0.9043449715231723,
    "wall_ok": true,
    "overhang_ok": true,

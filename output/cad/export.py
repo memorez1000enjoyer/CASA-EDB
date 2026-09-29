@@ -30,9 +30,9 @@ def _parts(spring_key):
     s = P.SPRINGS[spring_key]
     d = {
         # name: (shape, orientation, material, note)
-        "clip_tube": (clip_tube(False), "bottom_down", "PETG (translucent)",
-                      "-Z face down; roof bridges 20.5. If roof sags > 0.2 see README."),
-        "clip_tube_viewslots": (clip_tube(True), "bottom_down", "PETG (opaque)",
+        "clip_tube": (clip_tube(False), "plusX_down", "PETG (translucent)",
+                      "standing on its back end (+X): the roof is a wall, no bridge to sag into the 0.3 follower clearance; brim"),
+        "clip_tube_viewslots": (clip_tube(True), "plusX_down", "PETG (opaque)",
                                 "Only if printing opaque: 9 short viewing windows in the +Y wall."),
         "gate": (gate(), "plusX_down", "PETG", "flat"),
         "end_cap": (end_cap(), "plusX_down", "PETG", "flat, outer face down"),
@@ -44,7 +44,7 @@ def _parts(spring_key):
         "elevator": (elevator(), "bottom_down", "PETG", "bottom down: notch roof bridges 6.6"),
         "lever": (lever(), "plusY_down", "PETG", "on its side: all holes vertical"),
         "plunger": (plunger(), "top_down", "PETG", "upside down (flange on the bed); support under the ear only"),
-        "paddle_pad": (paddle_pad(), "bottom_down", "TPU 95A", "dome up; channel roof bridges 16.4"),
+        "paddle_pad": (paddle_pad(), "minusY_down", "TPU 95A", "on its side: a pure extrusion, no overhangs or bridges"),
         "ring_hook": (ring_hook(), "minusX_down", "PETG", "on its end (J profile on the bed)"),
         "bench_base": (bench_base(), "bottom_down", "PETG/PLA", "flat"),
         "fit_coupon": (fit_coupon(), "bottom_down", "PETG", "flat - print this first"),
@@ -76,12 +76,47 @@ def write_stl(shape, path):
     mesh_of(shape).export(path)
 
 
-def to_print(shape: cq.Shape, orient: str) -> cq.Shape:
-    sh = shape
+def _rotate(sh, orient):
     for ax, deg in ORIENT[orient]:
         sh = sh.rotate(cq.Vector(0, 0, 0), cq.Vector(*AX[ax]), deg)
-    bb = sh.BoundingBox()
-    return sh.translate(cq.Vector(-(bb.xmin + bb.xmax) / 2, -(bb.ymin + bb.ymax) / 2, -bb.zmin))
+    return sh
+
+
+def print_offset(shape: cq.Shape, orient: str) -> cq.Vector:
+    bb = _rotate(shape, orient).BoundingBox()
+    return cq.Vector(-(bb.xmin + bb.xmax) / 2, -(bb.ymin + bb.ymax) / 2, -bb.zmin)
+
+
+def to_print(shape: cq.Shape, orient: str, offset: cq.Vector = None) -> cq.Shape:
+    """Rotate into the print orientation and drop onto the bed centred on the origin.
+    Pass `offset` to place a helper body (support enforcer) exactly like its part."""
+    off = offset if offset is not None else print_offset(shape, orient)
+    return _rotate(shape, orient).translate(off)
+
+
+def support_enforcers():
+    """Support-enforcer volumes for the receiver halves, in the same print frame as
+    their STLs.  Load each as a 'support enforcer' modifier in the slicer and set
+    supports to 'enforcers only' so nothing else (pin holes, sliding bridges) gets support."""
+    from geom import box
+    hw = P.SOCKET_IN_HW
+    out = {}
+    for name, side in (("receiver_left", -1), ("receiver_right", +1)):
+        part = (receiver_left() if side < 0 else receiver_right()).val()
+        orient = "plusY_down" if side < 0 else "minusY_down"
+        off = print_offset(part, orient)
+        # socket cavity, 0.2 inside every wall so the enforcer only reaches the roof
+        vols = [box(0.2, P.SOCKET_L - 0.2, 0, side * (hw - 0.05), P.SOCKET_IN_Z0 + 0.2, P.SOCKET_IN_Z1 - 0.2)]
+        if side > 0:   # under the roof strip beside the gate-tab channel
+            vols.append(box(P.GATE_SLOT_X0 + 0.2, P.SOCKET_L - 0.2, 0, P.TAB_CHANNEL_Y[1] - 0.05,
+                            P.SOCKET_IN_Z1 - 0.2, P.SOCKET_OUT_Z1 - 0.05))
+        # bite-channel side wall next to the stop face (27 mm bridge) - optional
+        vols.append(box(P.STOP_X + 5.0, -0.2, 0, side * (P.BORE_W / 2 - 0.05), P.RAIL_TOP_Z + 0.2, P.BORE_TOP_Z - 0.2))
+        w = vols[0]
+        for v in vols[1:]:
+            w = w.union(v)
+        out[name] = to_print(w.val(), orient, off)
+    return out
 
 
 def export_parts(spring_key="A", suffix=""):
@@ -96,6 +131,8 @@ def export_parts(spring_key="A", suffix=""):
             shp = cq.Compound.makeCompound(w.vals())
         pr = to_print(shp, orient)
         fn = f"{name}{suffix}"
+        if pr.BoundingBox().zmin < -1e-6:
+            raise RuntimeError(f"{fn} is below the bed")
         write_stl(pr, f"{OUT}/stl/{fn}.stl")
         cq.exporters.export(shp, f"{OUT}/step/parts/{fn}.step")
         bb = pr.BoundingBox()
@@ -126,6 +163,9 @@ def export_states(spring_key="A", bites="nom", states=("A", "B", "Bp", "C", "D",
 if __name__ == "__main__":
     import sys
     meta = export_parts("A")
+    os.makedirs(f"{OUT}/stl/slicer_helpers", exist_ok=True)
+    for n, sh in support_enforcers().items():
+        write_stl(sh, f"{OUT}/stl/slicer_helpers/{n}_SUPPORT_ENFORCER.stl")
     meta.update(export_parts("B", suffix="_springB"))
     with open(f"{OUT}/stl/parts_meta.json", "w") as f:
         json.dump(meta, f, indent=1)

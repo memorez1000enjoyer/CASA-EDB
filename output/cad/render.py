@@ -88,7 +88,7 @@ def render(bodies, fname, view="iso", title="", size=(1800, 1150), opacity=None,
         t.GetTextProperty().SetFontSize(26)
         t.GetTextProperty().SetColor(0.1, 0.1, 0.1)
         t.SetPosition(20, size[1] - 50)
-        ren.AddActor2D(t)
+        ren.AddViewProp(t)
     win = vtk.vtkRenderWindow()
     win.SetOffScreenRendering(1)
     win.AddRenderer(ren)
@@ -183,8 +183,9 @@ def main():
         st = A.build(sn, "A", "nom")
         nice = {"A": "State A - rest, full (docked, gate out)", "Bp": "State B' - pressed, bite 1 taken"}[sn]
         render(st.bodies, f"state_{label}_iso.png", "iso", f"{nice}  |  spring A, nominal bites",
-               opacity=TRANSLUCENT)
-        render(st.bodies, f"state_{label}_top.png", "top", f"{nice}  |  top view", opacity=TRANSLUCENT)
+               opacity=TRANSLUCENT, zoom=1.75)
+        render(st.bodies, f"state_{label}_top.png", "top", f"{nice}  |  top view", opacity=TRANSLUCENT,
+               size=(1900, 700), zoom=1.9)
         plot_section(st, f"state_{label}_section_Y0.png", f"{nice} - section at Y = 0")
         plot_section(st, f"state_{label}_section_Y0_zoom.png", f"{nice} - section at Y = 0 (receiver)",
                      xlim=(-56, 32), zlim=(-22, 56))
@@ -194,9 +195,9 @@ def main():
                      ("E", "State E - undocked, full, gate in")):
         st = A.build(sn, "A", "nom")
         plot_section(st, f"state_{sn}_section_Y0.png", nice)
-    render(exploded_bodies(), "exploded.png", "iso", "Exploded view  |  EBD Clip v1", size=(2000, 1300))
+    render(exploded_bodies(), "exploded.png", "iso", "Exploded view  |  EBD Clip v1", size=(2000, 1300), zoom=1.6)
     render(A.build("A", "A", "nom").bodies, "state_A_rest_full_iso_back.png", "iso_back",
-           "State A - mount (-Y) side with ring hook", opacity=TRANSLUCENT)
+           "State A - mount (-Y) side with ring hook", opacity=TRANSLUCENT, zoom=1.75)
 
 
 if __name__ == "__main__":

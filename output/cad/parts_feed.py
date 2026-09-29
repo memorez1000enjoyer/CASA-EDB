@@ -16,19 +16,24 @@ def follower(spring: P.Spring) -> cq.Workplane:
     f = body.union(keel)
     for zc in P.PUSH_RIB_Z:
         f = f.union(box(0, P.PUSH_RIB_D + 0.01, -hw, hw, zc - P.PUSH_RIB_H / 2, zc + P.PUSH_RIB_H / 2))
-    pd = P.pocket_d(spring)
+    c = P.FOLLOWER_FRONT_CHAMFER
+    for s in (+1, -1):   # chamfer the front vertical edges (ribs + body) so they can't catch the bore opening
+        tri = [(-0.01, s * (hw - c - 0.6)), (-0.01, s * (hw + 0.01)), (c + 0.6, s * (hw + 0.01))]
+        f = f.cut(cq.Workplane("XY", origin=(0, 0, -1)).polyline(tri).close().extrude(40))
+    pd, cz = P.pocket_d(spring), P.pocket_cz(spring)
     pocket_rear = P.POCKET_CX + pd / 2
-    f = f.cut(cyl_y(P.POCKET_CX, P.POCKET_CZ, pd, -P.POCKET_HW, P.POCKET_HW))
-    f = f.cut(box(P.KEEL_X0, pocket_rear, -P.POCKET_HW, P.POCKET_HW, P.KEEL_BOT_Z - 1, P.POCKET_CZ))
-    f = f.cut(cyl_y(P.POCKET_CX, P.POCKET_CZ, P.AXLE_HOLE_D, -hw - 1, hw + 1))
+    f = f.cut(cyl_y(P.POCKET_CX, cz, pd, -P.POCKET_HW, P.POCKET_HW))
+    f = f.cut(box(P.KEEL_X0, pocket_rear, -P.POCKET_HW, P.POCKET_HW, P.KEEL_BOT_Z - 1, cz))
+    f = f.cut(cyl_y(P.POCKET_CX, cz, P.AXLE_HOLE_D, -hw - 1, hw + 1))
     return f
 
 
-def drum() -> cq.Workplane:
-    """§5.4  Ø12.5 x 9.4 (Y), bore Ø2.3, edges chamfered 0.3.  At F = 0."""
-    d = cyl_y(P.POCKET_CX, P.POCKET_CZ, P.DRUM_D, -P.DRUM_L / 2, P.DRUM_L / 2)
+def drum(spring: P.Spring = P.SPRINGS[P.DEFAULT_SPRING]) -> cq.Workplane:
+    """§5.4  Ø12.5 x 9.4 (Y), bore Ø2.3, edges chamfered 0.3.  At F = 0, on the axle."""
+    cz = P.pocket_cz(spring)
+    d = cyl_y(P.POCKET_CX, cz, P.DRUM_D, -P.DRUM_L / 2, P.DRUM_L / 2)
     d = d.faces(">Y or <Y").edges().chamfer(P.DRUM_CHAMFER)
-    return d.cut(cyl_y(P.POCKET_CX, P.POCKET_CZ, P.DRUM_BORE_D, -P.DRUM_L, P.DRUM_L))
+    return d.cut(cyl_y(P.POCKET_CX, cz, P.DRUM_BORE_D, -P.DRUM_L, P.DRUM_L))
 
 
 def spacer_dims(spring: P.Spring):
@@ -48,8 +53,9 @@ def drum_spacer(spring: P.Spring, side: int = +1):
     if s is None:
         return None
     y0, y1 = side * s["y_in"], side * (s["y_in"] + s["t"])
-    ring = cyl_y(P.POCKET_CX, P.POCKET_CZ, s["od"], y0, y1)
-    return ring.cut(cyl_y(P.POCKET_CX, P.POCKET_CZ, s["id"], y0 - side, y1 + side))
+    cz = P.pocket_cz(spring)
+    ring = cyl_y(P.POCKET_CX, cz, s["od"], y0, y1)
+    return ring.cut(cyl_y(P.POCKET_CX, cz, s["id"], y0 - side, y1 + side))
 
 
 def ribbon_clamp(spring: P.Spring) -> cq.Workplane:

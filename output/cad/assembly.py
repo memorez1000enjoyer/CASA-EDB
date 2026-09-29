@@ -65,11 +65,11 @@ def _static(spring_key):
         receiver_left=_v(receiver_left()), receiver_right=_v(receiver_right()),
         clip_tube=_v(clip_tube()), end_cap=_v(end_cap()), gate=_v(gate()),
         ribbon_clamp=_v(ribbon_clamp(s)), ring_hook=_v(ring_hook()),
-        follower=_v(follower(s)), drum=_v(drum()),
+        follower=_v(follower(s)), drum=_v(drum(s)),
         elevator=_v(elevator()), lever=_v(lever()), plunger=_v(plunger()), paddle_pad=_v(paddle_pad()),
         pin_pivot=_v(H.pin_y(P.PIVOT_X, P.PIVOT_Z, P.PIVOT_PIN_L)),
         screw_clamp_p=_v(H.clamp_screw(+P.CLAMP_SCREW_Y)), screw_clamp_n=_v(H.clamp_screw(-P.CLAMP_SCREW_Y)),
-        axle=_v(H.pin_y(P.POCKET_CX, P.POCKET_CZ, P.AXLE_L)),
+        axle=_v(H.pin_y(P.POCKET_CX, P.pocket_cz(s), P.AXLE_L)),
     )
     for i, (x, z) in enumerate(P.DOWELS):
         d[f"dowel{i + 1}"] = _v(H.dowel(x, z))
