@@ -10,6 +10,7 @@ from OCP.BRepBndLib import BRepBndLib
 # Pairs whose overlap is intended (press fits, self-tapping threads, clamped ribbon).
 INTENDED = [
     ("dowel", "receiver_left", "Ø2 dowel pressed into Ø1.9 hole"),
+    ("pin_pivot", "receiver_left", "Ø2 pivot pin pressed into Ø1.9 hole"),
     ("screw_clamp", "ribbon_clamp", "M2 self-tapper threads into Ø1.6 pilot"),
 ]
 

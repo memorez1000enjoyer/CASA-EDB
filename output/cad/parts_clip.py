@@ -94,8 +94,8 @@ def gate() -> cq.Workplane:
 
 def end_cap() -> cq.Workplane:
     """§5.7  Plug X 136.8 -> 140.8 matching the inner profile at -0.2 per side,
-    with a tongue filling the groove.  The rail-to-wall gaps are left open
-    (a 0.1-wide sliver there would be unprintable)."""
+    with a tongue filling the groove and notches clearing the rails (which run to the
+    side walls)."""
     c = P.ENDCAP_CLR
     x0, x1 = P.ENDCAP_X0, P.CLIP_L
     upper = box(x0, x1, -(P.BORE_W / 2 - c), P.BORE_W / 2 - c, P.RAIL_TOP_Z + c, P.BORE_TOP_Z - c)

@@ -70,6 +70,32 @@ def mech_pressed(elev_dx=0.0) -> Mech:
     return mech_at(P.PHI_PRESS, "press", elev_dx)
 
 
+def with_hole_play():
+    """Rest and pressed poses including the round-hole clearances (see params.HOLE_LOST_MOTION).
+    Rule: a hole loaded by its pin in direction u sits at pin - (Rh - Rp)*u.
+    Returns real plunger rest bottom, real stroke to the hard stop and real lift."""
+    rp = (P.LEVER_PIVOT_HOLE_D - P.PIN_D) / 2
+    rr = P._RCV_PIVOT_RADIAL
+    re = (P.LEVER_END_HOLE_D - P.PIN_D) / 2
+    # rest: ends loaded up, pivot loads the lever down (lever sits high on the pin)
+    c = P.PIVOT_Z + rr + rp
+    cup_pin = P.LEDGE_Z + _DN
+    cup_end = cup_pin - re
+    plg_end = 2 * c - cup_end
+    plg_pin = plg_end + re
+    rest_bot = plg_pin - _DN
+    # pressed: plunger at the hard stop, ends loaded down, lever hangs on the pivot
+    press_bot = P.PLUNGER_PRESSED_BOT_Z
+    plg_pin = press_bot + _UP
+    c = P.PIVOT_Z - rr - rp
+    plg_end = plg_pin + re
+    cup_end = 2 * c - plg_end
+    cup_pin = cup_end - re
+    elev_top = cup_pin - _UP + P.ELEV_H
+    return dict(rest_bot=rest_bot, stroke=rest_bot - press_bot, lift=elev_top - P.RAIL_TOP_Z, elev_top=elev_top,
+                flange_rest=rest_bot + P.FLANGE_OFFSET)
+
+
 def sweep(n=9, direction="press", elev_dx=0.0):
     """n lever angles from rest to the hard stop, endpoints included (n-2 intermediate)."""
     return [mech_at(float(a), direction, elev_dx) for a in np.linspace(P.PHI_REST, P.PHI_PRESS, n)]

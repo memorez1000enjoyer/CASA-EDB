@@ -29,7 +29,7 @@ ALLOWED_THIN = {
         ((2.9, 4.6, -7.5, 7.5, -0.4, 0.1), "clamp notch (X 3.1-3.9) meets the Ø2.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall"),
     ],
     "ribbon_clamp": [((P.CLAMP_NOTCH_X - 0.4, P.CLAMP_NOTCH_X + 0.4, -8, 8, -0.5, 0.2),
-                      "clamp ridge (spec: 0.3 tall; 0.5 wide to fit the 0.8 notch around the ribbon)")],
+                      "clamp ridge (spec: 0.3 tall; 0.4 wide inside the 0.8 notch around the ribbon)")],
 }
 
 

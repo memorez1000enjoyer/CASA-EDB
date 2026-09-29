@@ -30,9 +30,9 @@ def _parts(spring_key):
     s = P.SPRINGS[spring_key]
     d = {
         # name: (shape, orientation, material, note)
-        "clip_tube": (clip_tube(False), "plusX_down", "PETG (translucent)",
-                      "standing on its back end (+X): the roof is a wall, no bridge to sag into the 0.3 follower clearance; brim"),
-        "clip_tube_viewslots": (clip_tube(True), "plusX_down", "PETG (opaque)",
+        "clip_tube": (clip_tube(False), "bottom_down", "PETG (translucent)",
+                      "-Z face down (spec §8.1); roof bridges 20.5 - measure sag, see README"),
+        "clip_tube_viewslots": (clip_tube(True), "bottom_down", "PETG (opaque)",
                                 "Only if printing opaque: 9 short viewing windows in the +Y wall."),
         "gate": (gate(), "plusX_down", "PETG", "flat"),
         "end_cap": (end_cap(), "plusX_down", "PETG", "flat, outer face down"),
@@ -95,27 +95,38 @@ def to_print(shape: cq.Shape, orient: str, offset: cq.Vector = None) -> cq.Shape
 
 
 def support_enforcers():
-    """Support-enforcer volumes for the receiver halves, in the same print frame as
-    their STLs.  Load each as a 'support enforcer' modifier in the slicer and set
-    supports to 'enforcers only' so nothing else (pin holes, sliding bridges) gets support."""
+    """Support-enforcer volumes in the same print frame as their STLs.  Load each on its
+    part as a 'support enforcer' modifier and set supports to 'enforcers only', so nothing
+    else (pin holes, sliding bridges) gets support.  Each volume reaches 0.6 INTO the
+    surface it must support - slicers only add support on layers the enforcer touches."""
     from geom import box
     hw = P.SOCKET_IN_HW
+    into = 0.6
     out = {}
     for name, side in (("receiver_left", -1), ("receiver_right", +1)):
         part = (receiver_left() if side < 0 else receiver_right()).val()
         orient = "plusY_down" if side < 0 else "minusY_down"
         off = print_offset(part, orient)
-        # socket cavity, 0.2 inside every wall so the enforcer only reaches the roof
-        vols = [box(0.2, P.SOCKET_L - 0.2, 0, side * (hw - 0.05), P.SOCKET_IN_Z0 + 0.2, P.SOCKET_IN_Z1 - 0.2)]
+        # socket cavity under the socket side wall
+        vols = [box(0.2, P.SOCKET_L - 0.2, 0, side * (hw + into), P.SOCKET_IN_Z0 + 0.2, P.SOCKET_IN_Z1 - 0.2)]
         if side > 0:   # under the roof strip beside the gate-tab channel
-            vols.append(box(P.GATE_SLOT_X0 + 0.2, P.SOCKET_L - 0.2, 0, P.TAB_CHANNEL_Y[1] - 0.05,
-                            P.SOCKET_IN_Z1 - 0.2, P.SOCKET_OUT_Z1 - 0.05))
-        # bite-channel side wall next to the stop face (27 mm bridge) - optional
-        vols.append(box(P.STOP_X + 5.0, -0.2, 0, side * (P.BORE_W / 2 - 0.05), P.RAIL_TOP_Z + 0.2, P.BORE_TOP_Z - 0.2))
+            vols.append(box(P.GATE_SLOT_X1 + 0.2, P.SOCKET_L - 0.2, 0, P.TAB_CHANNEL_Y[1] + into,
+                            P.SOCKET_IN_Z1 + 0.2, P.SOCKET_OUT_Z1 - 0.2))
+        # (the bite-channel wall next to the stop face is a 27 mm bridge on the elevator's
+        #  sliding face: printed WITHOUT support on purpose - see README)
         w = vols[0]
         for v in vols[1:]:
             w = w.union(v)
         out[name] = to_print(w.val(), orient, off)
+    # plunger (printed upside down): under the ear's top face, outside the flange so
+    # no support lands on the flange's hard-stop face
+    part = plunger().val()
+    off = print_offset(part, "top_down")
+    ear_top = P.EAR_UNDERSIDE + P.EAR_H
+    x1 = P.PADDLE_X - P.FLANGE_LX / 2 - 0.3
+    vol = box(P.EAR_X_END + 0.2, x1, -P.PLUNGER_LY / 2 + 0.2, P.PLUNGER_LY / 2 - 0.2,
+              ear_top - into, P.FLANGE_OFFSET + P.FLANGE_T)
+    out["plunger"] = to_print(vol.val(), "top_down", off)
     return out
 
 

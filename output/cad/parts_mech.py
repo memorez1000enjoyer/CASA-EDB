@@ -72,9 +72,9 @@ def plunger() -> cq.Workplane:
 
 def paddle_pad() -> cq.Workplane:
     """§6.5  TPU 95A pad 25 x 18 x 3.0 with a 1.0 dome (curved along X).  End rims hang
-    1.8 down over the flange's X ends and snap into its grooves with a 0.3 bead, so the
-    pad is held mechanically (CA optional) and comes off for washing.  Built with the
-    plunger bottom at Z = 0.  A pure Y-extrusion, so it prints on its side with no
+    1.8 down over the flange's X ends and locate it in X; it is CA-bonded to the flange
+    (PAD_SNAP depth 0 = no snap bead; a bead left sub-0.8 slivers - OPEN_ISSUES).  Built
+    with the plunger bottom at Z = 0.  A pure Y-extrusion: prints on its side, no
     overhangs or bridges."""
     px = P.PADDLE_X
     zf = P.FLANGE_OFFSET + P.FLANGE_T          # flange top

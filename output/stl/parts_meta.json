@@ -1,24 +1,24 @@
 {
  "clip_tube": {
-  "orientation": "plusX_down",
+  "orientation": "bottom_down",
   "material": "PETG (translucent)",
-  "note": "standing on its back end (+X): the roof is a wall, no bridge to sag into the 0.3 follower clearance; brim",
+  "note": "-Z face down (spec \u00a78.1); roof bridges 20.5 - measure sag, see README",
   "volume_mm3": 34093.7,
   "print_bbox": [
-   35.5,
+   140.8,
    24.5,
-   140.8
+   35.5
   ]
  },
  "clip_tube_viewslots": {
-  "orientation": "plusX_down",
+  "orientation": "bottom_down",
   "material": "PETG (opaque)",
   "note": "Only if printing opaque: 9 short viewing windows in the +Y wall.",
   "volume_mm3": 33373.7,
   "print_bbox": [
-   35.5,
+   140.8,
    24.5,
-   140.8
+   35.5
   ]
  },
  "gate": {
@@ -47,7 +47,7 @@
   "orientation": "plusX_down",
   "material": "PETG",
   "note": "rear (+X) face down: pocket arch bridges 10.6",
-  "volume_mm3": 12881.1,
+  "volume_mm3": 12870.1,
   "print_bbox": [
    30.9,
    19.9,
@@ -80,7 +80,7 @@
   "orientation": "plusY_down",
   "material": "PETG",
   "note": "split face (Y=0) down",
-  "volume_mm3": 32262.7,
+  "volume_mm3": 32269.3,
   "print_bbox": [
    81.3,
    58.4,
@@ -91,7 +91,7 @@
   "orientation": "minusY_down",
   "material": "PETG",
   "note": "split face (Y=0) down",
-  "volume_mm3": 31795.8,
+  "volume_mm3": 31703.1,
   "print_bbox": [
    81.3,
    56.5,
@@ -135,10 +135,10 @@
   "orientation": "minusY_down",
   "material": "TPU 95A",
   "note": "on its side: a pure extrusion, no overhangs or bridges",
-  "volume_mm3": 1471.3,
+  "volume_mm3": 1379.6,
   "print_bbox": [
    25.0,
-   4.8,
+   4.2,
    18.0
   ]
  },
@@ -212,7 +212,7 @@
   "orientation": "plusX_down",
   "material": "PETG",
   "note": "rear (+X) face down: pocket arch bridges 10.6",
-  "volume_mm3": 13347.7,
+  "volume_mm3": 13336.7,
   "print_bbox": [
    30.9,
    19.9,

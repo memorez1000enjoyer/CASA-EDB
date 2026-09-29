@@ -26,7 +26,7 @@ def receiver_full() -> cq.Workplane:
     hw = P.RCV_HW
     bw = P.BORE_W / 2
     main = box(P.RCV_X0, 0, -hw, hw, P.RCV_BOT_Z, P.TOP_Z)
-    main = main.edges("<X or |X").chamfer(P.RCV_EDGE_CHAMFER)
+    main = main.edges("<X or (|X and <Z)").chamfer(P.RCV_EDGE_CHAMFER)
     sock = box(0, P.SOCKET_L, -hw, hw, P.SOCKET_OUT_Z0, P.SOCKET_OUT_Z1)
     sock = sock.edges(">X or (|X and >Z)").chamfer(P.RCV_EDGE_CHAMFER)
     lug = box(P.LUG_X[0], P.LUG_X[1], -hw, hw, P.LUG_Z0, P.SOCKET_OUT_Z0 + 0.01)
@@ -69,7 +69,7 @@ def receiver_full() -> cq.Workplane:
                     -P.PLUNGER_CH_HW_Y, P.PLUNGER_CH_HW_Y, *P.EAR_SLOT_Z))
     cuts.append(cyl_z(P.SPRING_WELL_X, 0, P.RS_WELL_D, P.SPRING_WELL_Z0, P.EAR_SLOT_Z[0] + 0.01))
     # pivot-pin hole: blind, 1.0 short of each outer skin
-    cuts.append(cyl_y(P.PIVOT_X, P.PIVOT_Z, P.PIN_SNUG_D, -(hw - P.PIVOT_HOLE_SKIN), hw - P.PIVOT_HOLE_SKIN))
+    cuts.append(cyl_y(P.PIVOT_X, P.PIVOT_Z, P.RCV_PIVOT_HOLE_L, -(hw - P.PIVOT_HOLE_SKIN), hw - P.PIVOT_HOLE_SKIN))
     # socket interior (clip + 0.30)
     cuts.append(box(0, P.SOCKET_L + 1, -P.SOCKET_IN_HW, P.SOCKET_IN_HW, P.SOCKET_IN_Z0, P.SOCKET_IN_Z1))
     cuts.append(_entry_chamfer_cut())
@@ -87,9 +87,18 @@ def receiver_full() -> cq.Workplane:
     # clamp-screw-head relief in the socket floor
     fx0, fx1, fhw, fd = P.FLOOR_RELIEF
     cuts.append(box(fx0, fx1, -fhw, fhw, P.SOCKET_IN_Z0 - fd, P.SOCKET_IN_Z0 + 0.01))
-    # M2 x 16 clearance holes along Y
+    # M2 x 20 clearance holes along Y
     for (x, z) in P.RCV_SCREWS:
         cuts.append(cyl_y(x, z, P.M2_CLEAR_D, -hw - 1, hw + 1))
+    # top long edges of the main body, chamfered only between the raised lip and wall
+    # (chamfering under them left sharp 0.5 pockets)
+    ce = P.RCV_EDGE_CHAMFER
+    for s in (+1, -1):
+        for xa, xb in ((P.RCV_X0 - 1, P.FRONT_WALL_X0), (P.STOP_X, P.STRIPPER_X)):
+            cuts.append(chamfer_edge_x(xa, xb, s * hw, P.TOP_Z, ce, -s))
+        # outer vertical corners of the stripper wall (above the top surface)
+        tri = [(P.STRIPPER_X - 0.01, s * (hw - ce)), (P.STRIPPER_X - 0.01, s * (hw + 0.01)), (P.STRIPPER_X + ce, s * (hw + 0.01))]
+        cuts.append(cq.Workplane("XY", origin=(0, 0, P.TOP_Z - 0.01)).polyline(tri).close().extrude(5))
     # chamfers on the face-zone edges of the top surface (§8.2) - never on the stripper edge
     zs = P.SOCKET_OUT_Z1
     cuts.append(rim_chamfer(P.PADDLE_X - P.PLUNGER_CH_HW_X, P.PADDLE_X + P.PLUNGER_CH_HW_X,
@@ -164,6 +173,8 @@ def receiver_right() -> cq.Workplane:
     h = _half_common(receiver_full(), +1)
     for (x, z) in P.DOWELS:
         h = h.cut(cyl_y(x, z, P.PIN_SNUG_D, -0.01, P.DOWEL_HOLE_DEPTH))
+    # pivot pin: pressed into the left half, snug in this one
+    h = h.cut(cyl_y(P.PIVOT_X, P.PIVOT_Z, P.RCV_PIVOT_HOLE_R, -0.01, hw - P.PIVOT_HOLE_SKIN))
     for (x, z) in P.RCV_SCREWS:
         h = h.cut(cyl_y(x, z, P.CBORE_D, hw - P.CBORE_DEPTH, hw + 1))
     _CACHE["R"] = h

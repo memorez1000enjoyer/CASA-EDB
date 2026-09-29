@@ -56,13 +56,18 @@ def poses_for(spring, bkey):
     """(label, state, mech, pair_filter) for every pose to check."""
     out = []
     for s in ("A", "B", "Bp", "C", "D", "Dt", "E"):
-        out.append((s, s, None, None))
+        out.append((s, s, None, None, (0.0, 0.0)))
+    # the clip floats inside its 0.3 socket clearance: follower at its stop, clip moved
+    c = P.CLR_SLIDE
+    for s in ("C", "Dt"):
+        for sh in ((0.0, -c), (0.0, c), (-c, 0.0), (c, 0.0)):
+            out.append((f"{s} clip dy{sh[0]:+.1f} dz{sh[1]:+.1f}", s, None, None, sh))
     b_moving = {"B": {"bite1"}, "D": {f"bite{P.N_BITES}"}, "Bp": set()}
     for s, direction, dx in (("B", "press", 0.0), ("Bp", "return", -P.CLR_SLIDE), ("D", "press", 0.0)):
         mov = MECH_MOVING | b_moving[s]
         for i, m in enumerate(K.sweep(N_SWEEP, direction, dx)[1:-1]):
             f = (lambda mv: (lambda x, y: x.name in mv or y.name in mv))(mov)
-            out.append((f"{s}@{m.phi:+.1f}", s, m, f))
+            out.append((f"{s}@{m.phi:+.1f}", s, m, f, (0.0, 0.0)))
     return out
 
 
@@ -73,8 +78,8 @@ def run_config(args):
     b = P.BITES[bkey]
     res = dict(spring=spring, bites=bkey, poses=[], overlaps={}, clearance={}, errors=[])
     t0 = time.time()
-    for label, s, mech, flt in poses_for(spring, bkey):
-        st = A.build(s, spring, bkey, mech)
+    for label, s, mech, flt, shift in poses_for(spring, bkey):
+        st = A.build(s, spring, bkey, mech, clip_shift=shift)
         ov, dist = C.check_bodies(st.bodies, pairs_filter=flt,
                                   dist_pairs=lambda x, y: x.moving or y.moving)
         worst = []
@@ -283,9 +288,10 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
     c92 = all(p["roof_gap"] >= 0.6 - 1e-9 and p["m_nom"] >= -1e-9 for p in per)
     checks.append(("9.2", "One-bite rule", c92,
                    f"bite-2-top to roof min {min(p['roof_gap'] for p in per):.2f} (≥ 0.6); elevator top never under bite 2"))
-    c93 = all(p["expo"] >= 8.0 and p["below"] >= 12.0 for p in per)
-    checks.append(("9.3", "Exposure", c93, f"min exposure {min(p['expo'] for p in per):.2f} (≥ 8.0), "
-                   f"min retained {min(p['below'] for p in per):.2f} (≥ 12)"))
+    lost = P.HOLE_LOST_MOTION
+    c93 = all(p["expo"] - lost >= 8.0 and p["below"] + lost >= 12.0 for p in per)
+    checks.append(("9.3", "Exposure", c93, f"min exposure {min(p['expo'] for p in per) - lost:.2f} with pin-hole play (≥ 8.0), "
+                   f"min retained {min(p['below'] for p in per) + lost:.2f} (≥ 12)"))
     c94 = all(p["win_x"] >= 0.2 - 1e-9 and p["win_y"] >= 0.2 - 1e-9 and p["under_win"] <= 1.9 + 1e-9 for p in per)
     checks.append(("9.4", "Window", c94, f"X clearance min {min(p['win_x'] for p in per):.2f}, Y/side min "
                    f"{min(p['win_y'] for p in per):.2f}, bite 2 under window max {max(p['under_win'] for p in per):.2f} (≤ 1.9)"))
@@ -299,10 +305,11 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
     rest, prs = K.mech_rest(), K.mech_pressed()
     stroke = rest.plunger_bot - prs.plunger_bot
     nom_m = margins[0.0]
-    lift_eff = prs.lift - P.HOLE_LOST_MOTION
+    hp = K.with_hole_play()
+    lift_eff = hp["lift"]
     c97 = lift_eff >= 13.5 and nom_m[0] >= 0 and nom_m[1] >= 0 and abs(stroke - P.PADDLE_STROKE) < 1e-6 \
         and abs(rest.elev_top - P.RAIL_TOP_Z) < 1e-9
-    checks.append(("9.7", "Kinematics", c97, f"lift {prs.lift:.2f} model / {prs.lift - P.HOLE_LOST_MOTION:.2f} with pin-hole play (≥ 13.5), stroke {stroke:.2f}, pins inside slots "
+    checks.append(("9.7", "Kinematics", c97, f"lift {prs.lift:.2f} model / {hp['lift']:.2f} with pin-hole play (≥ 13.5), stroke {stroke:.2f}, pins inside slots "
                    f"(min margin {min(nom_m):.2f} at nominal X)"))
     c98 = all(r["watertight"] and r["winding"] and r["wall_ok"] for r in pr_rows)
     need_sup = [r["name"] for r in pr_rows if not r["overhang_ok"]]
@@ -337,7 +344,8 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
     w("## 9.1 Interference\n")
     w(f"Exact B-rep booleans (OpenCascade) between every pair of bodies whose bounding boxes come within "
       f"1 mm, in states A, B, B', C, D, D-taken, E, plus {N_SWEEP - 2} intermediate lever angles for each of the "
-      f"B, B' and D strokes, for each configuration. Threshold {OVERLAP_TOL} mm³. "
+      f"B, B' and D strokes, plus states C and D-taken with the clip shifted ±0.3 in Y and in Z inside its socket, "
+      f"for each configuration. Threshold {OVERLAP_TOL} mm³. "
       f"Intended overlaps are excluded and listed: " +
       "; ".join(f"{a} / {b}: {why}" for a, b, why in __import__('collide').INTENDED) + ".\n")
     if fails:
@@ -393,8 +401,13 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
       f"Z {rest.plunger_bot:.2f}, flange underside Z {rest.plunger_bot + P.FLANGE_OFFSET:.2f}.")
     w(f"- Pressed (flange on the top surface): lever {prs.phi:.2f}°, plunger bottom Z {prs.plunger_bot:.2f}, "
       f"elevator top Z {prs.elev_top:.2f}.")
-    w(f"- **Paddle stroke {stroke:.2f}** (hard stop), **elevator lift {prs.lift:.2f}** (≥ 13.5 {ok(prs.lift >= 13.5)}). "
+    w(f"- **Paddle stroke {stroke:.2f}** (hard stop), **elevator lift {prs.lift:.2f}** with pins at hole centres. "
       f"Lost motion from the two 2.3 slots = {stroke - prs.lift:.2f}.")
+    w(f"- **With the round-hole clearances as well** (lever pivot Ø{P.LEVER_PIVOT_HOLE_D} on a pin pressed into "
+      f"receiver_left, end holes Ø{P.LEVER_END_HOLE_D}): each hole sits off its pin by its radial clearance on the "
+      f"loaded side, which takes {P.HOLE_LOST_MOTION:.2f} off the lift and adds it to the stroke (rest is set by the "
+      f"ledge, pressed by the hard stop). **Real lift {hp['lift']:.2f}** (≥ 13.5 {ok(hp['lift'] >= 13.5)}), "
+      f"**real paddle stroke {hp['stroke']:.2f}**, flange underside at rest Z {hp['flange_rest']:.2f}.")
     w(f"- Cup-end pin X range over the sweep {cup_rng[0]:.3f} → {cup_rng[1]:.3f}; elevator slot allows "
       f"{P.ELEV_SLOT_X[0] + 1.0:.2f} → {P.ELEV_SLOT_X[1] - 1.0:.2f} (square-ended slot, Ø2 pin).")
     w(f"- Plunger-end pin X range {plg_rng[0]:.3f} → {plg_rng[1]:.3f}; plunger slot allows "

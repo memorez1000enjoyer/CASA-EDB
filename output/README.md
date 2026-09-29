@@ -37,8 +37,10 @@ next bite slides on.
 3. **Pin holes** (1 dot = Ø1.9 … 5 dots = Ø2.3; top row vertical, side row horizontal). Try a piece of your
    Ø2 steel rod in each. You want one that **presses in and stays** (press), one that **pushes in snugly**
    (snug) and one that **spins freely** (free). The defaults are 1.9 / 2.1 / 2.3.
-4. Edit `cad/params.py` (`CLR_SLIDE`, `PIN_PRESS_D`, `PIN_SNUG_D`, `PIN_FREE_D`) if your printer needs
-   different values, then rebuild (section 7). Everything that slides updates automatically.
+4. Edit `cad/params.py` if your printer needs different values, then rebuild (section 7). `CLR_SLIDE` sets every
+   sliding fit and the free pin hole (Ø2 + `CLR_SLIDE`); `CLR_PRESS` sets the press (Ø2 − `CLR_PRESS`), snug and
+   running (both Ø2 + `CLR_PRESS`) pin holes. The lever's pivot hole must be a *running* fit: the pin spins
+   freely without wobble. The follower's axle holes print horizontal: use the coupon's side row for them.
 
 ## 3. Print settings and orientation
 
@@ -47,7 +49,7 @@ already in the orientation below; just drop them on the bed.
 
 | File | Qty | Material | Bed face (already oriented) | Supports | Notes |
 |---|---|---|---|---|---|
-| `clip_tube.stl` | 1 | PETG, **translucent** if you have it | **standing on its back end** | none | Use a brim (it is 141 tall). For opaque filament use `clip_tube_viewslots.stl` (9 small windows so you can count bites). |
+| `clip_tube.stl` | 1 | PETG, **translucent** if you have it | bottom (−Z) | none | The roof is a 20.5 mm bridge 0.3 above the follower. After printing, check the roof underside with a straightedge: if it sags more than 0.2, see OPEN_ISSUES #7. For opaque filament use `clip_tube_viewslots.stl` (9 small windows so you can count bites). |
 | `gate.stl` | 1 | PETG | flat | none | |
 | `end_cap.stl` | 1 | PETG | flat (outer face) | none | |
 | `follower.stl` | 1 | PETG | rear face | none | Spring B: print `follower_springB.stl` instead (smaller coil pocket). |
@@ -58,21 +60,26 @@ already in the orientation below; just drop them on the bed.
 | `receiver_right.stl` | 1 | PETG | split face | **YES**: see below | The +Y half: screw counterbores, gate-tab channel. |
 | `elevator.stl` | 1 | PETG | bottom | none | |
 | `lever.stl` | 1 | PETG | on its side | none | All three holes print vertical (round). |
-| `plunger.stl` | 1 | PETG | **upside down** (flange on the bed) | **YES**: "touching build plate", under the ear only | |
+| `plunger.stl` | 1 | PETG | **upside down** (flange on the bed) | **YES**: enforcer `stl/slicer_helpers/plunger_SUPPORT_ENFORCER.stl` (under the ear only) | Brim. |
 | `paddle_pad.stl` | 1 | **TPU 95A** | on its side | none | Print slowly, with a brim. |
 | `ring_hook.stl` | 1 | PETG | on its end | none | Placeholder size until the neck ring is measured (OPEN_ISSUES #4). |
 | `bench_base.stl` | 1 | PETG or PLA | flat | none | Holds the device upright on the bench. |
 | `bite_nominal.stl`, `bite_min.stl`, `bite_max.stl` | 8 of each | PETG or PLA | flat | none | Dummy bites for testing: 12.7 × 19 × 25.4, 12.2 × 18 × 24.4, 13.2 × 20 × 26.4. |
 | `fit_coupon.stl` | 1 | PETG | flat | none | Print first (section 2). |
 
-**Receiver halves, supports:** load `stl/slicer_helpers/receiver_left_SUPPORT_ENFORCER.stl` (and the right one) as a *support enforcer* modifier on its half, set supports to *enforcers only*, and add a brim. In the slicer preview,
-supports should appear only in three places:
+**Supports (receiver halves and plunger):** in the slicer, load each part's `stl/slicer_helpers/<part>_SUPPORT_ENFORCER.stl`
+as a *support enforcer* modifier on that part (it lines up automatically), set supports to **enforcers only**, and
+add a brim. In the preview, supports should appear only:
 - inside the U-shaped socket opening (the part the clip slides into)
-- under the thin roof strip beside the gate-tab channel (right half)
-- along one side wall of the bite channel near the socket
+- under the thin roof strip beside the gate-tab channel (right half only)
+- under the plunger's spring ear
 
-Remove them with pliers and a hobby knife. Then **file the socket's inner side faces smooth**: the clip
-slides there with only 0.3 mm clearance. Why supports are needed: OPEN_ISSUES #2.
+Nothing else gets support. In particular, the bite-channel side wall next to the socket prints as a 27 mm
+bridge on purpose, because support there would scar the elevator's sliding face.
+
+Remove the supports with pliers and a hobby knife, then **file the socket's inner side faces smooth**: the clip
+slides there with only 0.3 mm clearance. Then **dry-fit the elevator and a max-size dummy bite** in each half's
+bite channel and scrape any sag on that bridged wall. Why supports are needed: OPEN_ISSUES #2.
 
 ## 4. Hardware (BOM)
 
@@ -112,28 +119,40 @@ slides there with only 0.3 mm clearance. Why supports are needed: OPEN_ISSUES #2
 
 ### Receiver (head)
 
-1. Clean off the supports. Check the latch tongue flexes freely (run a knife through its 1.0 cuts if needed). Dry-fit the elevator and plunger in each half and file any tight channel face. Press the **3 dowels** into the Ø1.9 holes of the **left** half (use a vise;
-   they stick out about 5 mm).
+1. Clean off the supports. Check the latch tongue flexes freely (run a knife through its 1.0 cuts if needed).
+   Dry-fit the elevator, the plunger and a max-size dummy bite in each half, and file or scrape any tight
+   channel face. Press the **3 dowels** into the Ø1.9 holes of the **left** half with a vise (they stick out
+   about 5 mm).
 2. Put **PTFE tape** on the elevator's front and rear faces and on the front-wall stop face (the flat wall at
    the front of the window) in both halves.
-3. Push an **M2 nut** into each of the 4 hex traps in the left half and hold it with a strip of masking tape over the trap (the screws pull it in).
-4. Lay the left half split-face up. Drop the **26.0 pivot pin** into its hole and slip the **lever** onto it.
+3. Drop an **M2 nut** into each of the 4 hex traps on the left half's outer face and hold it with a strip of
+   masking tape. The M2 × 20 screws reach a nut anywhere in its trap and pull it in as you tighten.
+4. Ream the lever's **centre** hole with a Ø2.1 drill in a pin vise until the lever spins freely on a Ø2 pin
+   without wobble (the two end holes stay snug). Lay the left half split-face up. **Press** the **26.0 pivot
+   pin** into its Ø1.9 hole with the vise, all the way to the bottom, like the dowels. Then slip the
+   **lever** onto it.
 5. Put the **elevator** in its channel, sitting on the ledge, with the lever's end inside the elevator's
    front notch. Push the **19.4 cup-end pin** through the elevator slot and the lever end.
 6. Put the **plunger** in its channel with the ear in the ear slot and the lever's other end in the
    plunger's notch. Push the **11.4 plunger-end pin** through.
 7. Stand the **return spring** in its well under the ear, with the spigot inside the spring.
-8. Close with the **right** half (the dowels line it up). Put the **M2 × 16** screws in from the right side
-   and tighten into the nuts.
-9. **Test:** press the plunger down to its stop (14.7 mm of travel). The cup should rise about 13.8 mm and fall back when you
-   let go.
-10. CA-glue the **TPU pad** onto the flange: the pad's two end rims go over the flange ends. The gate tab faces the right (+Y) half when docking; tie a lanyard to its hole.
+8. Close with the **right** half (the dowels and pivot pin line it up). Put the four **M2 × 20** screws in from
+   the right side (they sit 9 mm deep in their counterbores; use a long driver) and tighten into the nuts.
+9. **Test:** press the plunger down to its stop (about 14.9 mm of travel). The cup should rise about 13.9 mm and
+   fall back when you let go.
+10. Scuff the flange top with sandpaper, then CA-glue the **TPU pad** onto it: the pad's two end rims go over
+    the flange ends.
 11. Screw the **ring hook** onto the left (mount) face with 2 × **M2 × 8 countersunk**. Add Velcro
     (OPEN_ISSUES #4).
 
 ### Load, dock, arm, undock
 
-- **Load:** pull the gate out and push bites in through the mouth one at a time. Each new bite pushes the previous one in. Push the last one about 3 mm past the gate slot with a pencil held low in the mouth. Slide the gate down until it rests on the pencil, pull the pencil out, and push the gate fully down. **Keep eyes away from the mouth: spring A can fire a bite out.**
+- **Load (one bite at a time, using the gate as a ratchet):** with the gate in, hold the next bite at the mouth
+  and lift the gate out. Push the bite in about 3 mm past the gate slot with a pencil held low in the mouth.
+  Slide the gate down until it rests on the pencil, pull the pencil out, and push the gate fully down. Repeat for
+  each bite. **Keep eyes away from the mouth: spring A can fire a bite out.** Spring B makes this much easier.
+  The gate's tab points to the right (+Y) side. Tie a short lanyard through its hole so it doesn't get lost on
+  the bench; the gate is not used during an EVA.
 - **Dock:** with the gate **in**, slide the clip into the socket so the gate's tab runs in the slot in the
   socket roof. Push until the latch clicks (the clip mouth meets the stop face).
 - **Arm:** pull the gate straight up out of the socket.
@@ -144,7 +163,9 @@ slides there with only 0.3 mm clearance. Why supports are needed: OPEN_ISSUES #2
 `VERIFICATION.md` is written by `cad/verify.py`. It rebuilds every state at min / nominal / max bite size
 for both springs and checks every pair of parts for overlap with exact solid booleans. It sweeps the lever
 through 7 in-between angles, measures clearances, exposure, spring extension and slot margins, checks every
-STL is watertight with walls ≥ 0.8, finds overhangs, and reports mass and chin force. Current status: **§9.1–9.7, 9.9 and 9.10 pass. §9.8 is flagged**: the receiver halves and the plunger need support in known places (OPEN_ISSUES #2).
+STL is watertight with walls ≥ 0.8, finds overhangs, and reports mass and chin force. Current status: **§9.1–9.7,
+9.9 and 9.10 pass. §9.8 is flagged**: the receiver halves and the plunger need support in known places
+(enforcers supplied), and one bite-channel wall is a 27 mm bridge against the 25 mm rule (OPEN_ISSUES #2).
 
 ## 7. Changing the design
 
@@ -165,6 +186,7 @@ Common edits:
   `BITE_T` is a MUST: it stops the elevator lifting two bites.
 - **Real spring:** edit its row in `SPRINGS` (force, width, thickness, length). The pocket size and spacer
   rings follow automatically.
-- **Reach test (`PADDLE_X` ±10):** the pivot, `LEVER_R`, plunger, channels and slot lengths all follow.
-  Then **read VERIFICATION.md**: a shorter lever swings further and may need more room.
+- **Reach test (`PADDLE_X`):** the pivot, `LEVER_R`, plunger, channels, slot lengths, dowel and ring hook all
+  follow. Moving the paddle up to 10 mm **further** from the window passes every check. Moving it **closer**
+  only works to about 7 mm (`PADDLE_X` ≥ −29), because the pad then runs into the window (OPEN_ISSUES #11).
 - **Neck ring:** set `RING_FLANGE_T`, `RING_HOOK_REACH`, `RING_HOOK_Z` after measuring `HUT – Largest.stl`.

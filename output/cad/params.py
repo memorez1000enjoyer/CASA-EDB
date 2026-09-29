@@ -31,9 +31,11 @@ import math
 CLR_SLIDE = 0.30        # PARAM DEFAULT  sliding clearance per side - set from fit_coupon
 CLR_PRESS = 0.10        # PARAM DEFAULT  press clearance
 PIN_D = 2.0             # Ø2 steel pins / music wire (§8.3)
-PIN_PRESS_D = 1.9       # DEFAULT  press-fit hole for a Ø2 pin
-PIN_SNUG_D = 2.1        # DEFAULT  snug hole
-PIN_FREE_D = 2.3        # DEFAULT  free-running hole
+PIN_PRESS_D = PIN_D - CLR_PRESS   # DERIVED 1.9 press-fit hole for a Ø2 pin
+PIN_SNUG_D = PIN_D + CLR_PRESS    # DERIVED 2.1 snug hole
+PIN_FREE_D = PIN_D + CLR_SLIDE    # DERIVED 2.3 free-running hole
+PIN_RUN_D = PIN_D + CLR_PRESS     # ADDED 2.1 running fit: turns freely without wobble (ream after printing;
+                                  # set from the smallest coupon hole a Ø2 pin spins freely in)
 MIN_WALL = 1.2          # DEFAULT  minimum structural wall
 MIN_WALL_ABS = 0.8      # MUST     absolute minimum wall
 MIN_HOLE_D = 1.6        # DEFAULT  smallest printed hole
@@ -271,7 +273,11 @@ PIVOT_Z = LEDGE_Z + SLOT_Z + LIFT / 2  # DERIVED -5.5
 LEVER_SWING = math.degrees(math.asin((LIFT / 2) / LEVER_R))  # DERIVED 30.0 (nominal)
 LEVER_T = 6.0           # DEFAULT (Y ±3.0)
 LEVER_H = 5.0           # DEFAULT (ends full round R2.5)
-LEVER_PIVOT_HOLE_D = PIN_SNUG_D   # CHANGED 2.3 -> 2.1: free-hole play doubled on a 1:1 lever
+LEVER_PIVOT_HOLE_D = PIN_RUN_D    # CHANGED 2.3 -> 2.1 running fit: pivot play counts double on a 1:1 lever
+# CHANGED: the pivot pin is PRESSED into receiver_left (Ø1.9, like a dowel) and snug in
+# receiver_right (Ø2.1), so the pin itself cannot float in the receiver.
+RCV_PIVOT_HOLE_L = PIN_PRESS_D
+RCV_PIVOT_HOLE_R = PIN_SNUG_D
 LEVER_END_HOLE_D = PIN_SNUG_D     # 2.1
 PIVOT_PIN_L = 26.0      # DEFAULT
 PLUNGER_PIN_L = 11.4    # DEFAULT
@@ -307,7 +313,8 @@ PAD_LX, PAD_LY, PAD_T = 25.0, 18.0, 3.0   # DEFAULT (TPU 95A)
 PAD_DOME = 1.0          # DEFAULT
 PAD_RIM_CLR = 0.2       # ADDED gap between the rim and the flange ends
 PAD_CORNER_C = 1.0      # ADDED 45° plan-corner chamfers (pad prints on its side)
-PAD_RIM_H = 1.8         # CHANGED 1.0 -> 1.8: rims reach down the flange ends to a snap bead
+PAD_RIM_H = 1.2         # CHANGED 1.0 -> 1.2: rims locate the pad on the flange ends; 0.8 above the
+                        # receiver top at the hard stop so a deflected pad never lands first
 PAD_SNAP = (1.2, 0.0, 0.0)   # ADDED bead centre below the flange top, height, depth (TPU snaps on/off for washing)
 
 # =============================================================================
@@ -364,7 +371,8 @@ RCV_SCREWS = [
     (12.0, -7.2),                                               # through the socket lug
 ]
 CBORE_D = 4.2           # DEFAULT head counterbore (+Y)
-CBORE_DEPTH = 6.6       # DEFAULT
+CBORE_DEPTH = 9.0       # CHANGED 6.6 -> 9.0: an M2 x 20 then reaches a nut lying anywhere in its trap
+                        # (even at the trap mouth) and pulls it in; its tip stays 0.1 inside the -Y face
 NUT_AF = 4.3            # CHANGED 4.1 -> 4.3: a printed 4.1 hex will not take a 4.0 AF nut by hand
 NUT_TRAP_DEPTH = 6.6    # DEFAULT (screws are M2 x 20 - an M2 x 16 only reaches 0.1 into the nut)
 RCV_SCREW_L = 20.0      # CHANGED BOM M2 x 16 -> M2 x 20
@@ -411,7 +419,9 @@ RING_HOOK_REACH = 6.0   # PARAM
 RING_HOOK_Z = 8.0       # PARAM hook seat height above the top surface
 RING_HOOK_T = 3.0       # DEFAULT
 RING_HOOK_CLR = 0.3     # ADDED flange gap clearance per side
-RING_HOOK_X = (-41.0, -15.0)  # CHANGED width 20 -> 26 (the two pilots are 18 apart; 2.0 edge wall)
+RING_HOOK_EDGE = 4.0          # ADDED pilot centre to bracket end (countersink r 2.0 + 2.0 wall)
+RING_HOOK_X = (min(x for x, _ in RING_HOOK_PILOTS) - RING_HOOK_EDGE,
+               max(x for x, _ in RING_HOOK_PILOTS) + RING_HOOK_EDGE)  # CHANGED width 20 -> 26 (-41 -> -15); follows PADDLE_X
 RING_HOOK_Z0 = 15.0     # ADDED bottom of the screw leg
 VELCRO_X = (-51.0, -1.0)  # DEFAULT two 25 x 50 pads
 VELCRO_H = 50.0
@@ -446,13 +456,13 @@ MU_BITE = 0.4           # bite on bite
 # down onto its ledge: both pins sit on the lower slot faces.
 _REST_CUP_PIN_Z = LEDGE_Z + SLOT_Z - PIN_SLOT_PLAY           # -12.65
 PHI_REST = math.degrees(math.asin((_REST_CUP_PIN_Z - PIVOT_Z) / LEVER_R))  # -30.71
-PLUNGER_REST_BOT_Z = (2 * PIVOT_Z - _REST_CUP_PIN_Z) - (SLOT_Z - PIN_SLOT_PLAY)  # -1.20
+PLUNGER_REST_BOT_Z = (2 * PIVOT_Z - _REST_CUP_PIN_Z) - (SLOT_Z - PIN_SLOT_PLAY)  # -1.20 (pins at hole centres)
 # CHANGED/derived: body length chosen so the flange underside sits at TOP_Z +
 # PADDLE_STROKE at rest (spec 47.8) with the real rest position (-1.2, not -1.5).
-FLANGE_OFFSET = FLANGE_UNDERSIDE_REST_Z - PLUNGER_REST_BOT_Z  # 49.0 (spec implied 49.3)
-PLUNGER_PRESSED_BOT_Z = TOP_Z - FLANGE_OFFSET                 # -15.5
+FLANGE_OFFSET = FLANGE_UNDERSIDE_REST_Z - PLUNGER_REST_BOT_Z  # 49.4 with PADDLE_STROKE 14.7 (spec implied 49.3)
+PLUNGER_PRESSED_BOT_Z = TOP_Z - FLANGE_OFFSET                 # -15.9 (channel floor -16.5)
 _PRESS_PLUNGER_PIN_Z = PLUNGER_PRESSED_BOT_Z + SLOT_Z + PIN_SLOT_PLAY  # -12.35
-PHI_PRESS = math.degrees(math.asin((PIVOT_Z - _PRESS_PLUNGER_PIN_Z) / LEVER_R))  # +29.29
+PHI_PRESS = math.degrees(math.asin((PIVOT_Z - _PRESS_PLUNGER_PIN_Z) / LEVER_R))  # +31.19
 
 
 def summary():
@@ -470,8 +480,17 @@ def summary():
 if __name__ == "__main__":
     summary()
 
-# Lost motion from round-hole clearances that the kinematic model (exact pin centres)
-# does not include: lever pivot hole + receiver pivot holes (x2 on a 1:1 lever) + both end holes.
-HOLE_LOST_MOTION = 2 * ((LEVER_PIVOT_HOLE_D - PIN_D) / 2 + (PIN_SNUG_D - PIN_D) / 2) + 2 * (LEVER_END_HOLE_D - PIN_D) / 2
+# Round-hole clearances that the kinematic model (pins at hole centres) leaves out.
+# Under load each hole sits off its pin by its RADIAL clearance, on the side the load
+# pushes.  Pressed: both lever ends are loaded down, so the lever hangs on the pivot
+# (lower by the lever-hole + receiver-hole clearance, which counts twice at the cup end
+# of a 1:1 lever) and each end hole sits above its pin.  At rest everything reverses.
+# The rest pose is fixed by the elevator ledge and the pressed pose by the flange hard
+# stop, so the clearances take this much off the LIFT and add the same to the STROKE:
+_RCV_PIVOT_RADIAL = 0.0   # pin pressed into receiver_left - it cannot move in the receiver
+HOLE_LOST_MOTION = (2 * ((LEVER_PIVOT_HOLE_D - PIN_D) / 2 + _RCV_PIVOT_RADIAL)
+                    + 2 * (LEVER_END_HOLE_D - PIN_D) / 2)       # DERIVED 0.2
 FOLLOWER_FRONT_CHAMFER = 0.6   # ADDED vertical front edges: the clip can float 0.3 in its socket
+FOLLOWER_FRONT_RELIEF = (2.0, 0.4)  # ADDED underside raised 0.4 over the front 2.0: at F_STOP that part sits
+                                    # over the receiver bridge, which it must not have to climb if the clip sits low
 BORE_LEADIN = 0.4              # ADDED on the receiver bore opening's vertical edges at X 0

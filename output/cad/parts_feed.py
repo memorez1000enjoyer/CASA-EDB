@@ -20,6 +20,8 @@ def follower(spring: P.Spring) -> cq.Workplane:
     for s in (+1, -1):   # chamfer the front vertical edges (ribs + body) so they can't catch the bore opening
         tri = [(-0.01, s * (hw - c - 0.6)), (-0.01, s * (hw + 0.01)), (c + 0.6, s * (hw + 0.01))]
         f = f.cut(cq.Workplane("XY", origin=(0, 0, -1)).polyline(tri).close().extrude(40))
+    rl, rh = P.FOLLOWER_FRONT_RELIEF
+    f = f.cut(box(-1, rl, -hw - 1, hw + 1, P.FOLLOWER_BOT_Z - 1, P.FOLLOWER_BOT_Z + rh))
     pd, cz = P.pocket_d(spring), P.pocket_cz(spring)
     pocket_rear = P.POCKET_CX + pd / 2
     f = f.cut(cyl_y(P.POCKET_CX, cz, pd, -P.POCKET_HW, P.POCKET_HW))
