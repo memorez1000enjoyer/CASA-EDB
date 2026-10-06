@@ -112,7 +112,7 @@ def support_enforcers():
         if side > 0:   # under the roof strip beside the gate-tab channel
             vols.append(box(P.GATE_SLOT_X1 + 0.2, P.SOCKET_L - 0.2, 0, P.TAB_CHANNEL_Y[1] + into,
                             P.SOCKET_IN_Z1 + 0.2, P.SOCKET_OUT_Z1 - 0.2))
-        # (the bite-channel wall next to the stop face is a 27 mm bridge on the elevator's
+        # (the bite-channel wall next to the stop face is a 27.8 mm bridge on the elevator's
         #  sliding face: printed WITHOUT support on purpose - see README)
         w = vols[0]
         for v in vols[1:]:

@@ -70,7 +70,7 @@ def receiver_full() -> cq.Workplane:
     cuts.append(cyl_z(P.SPRING_WELL_X, 0, P.RS_WELL_D, P.SPRING_WELL_Z0, P.EAR_SLOT_Z[0] + 0.01))
     # pivot-pin hole: blind, 1.0 short of each outer skin
     cuts.append(cyl_y(P.PIVOT_X, P.PIVOT_Z, P.RCV_PIVOT_HOLE_L, -(hw - P.PIVOT_HOLE_SKIN), hw - P.PIVOT_HOLE_SKIN))
-    # socket interior (clip + 0.30)
+    # socket interior: clip + CLR_SLIDE at the sides and roof, + SOCKET_FLOOR_CLR (0.10) at the floor
     cuts.append(box(0, P.SOCKET_L + 1, -P.SOCKET_IN_HW, P.SOCKET_IN_HW, P.SOCKET_IN_Z0, P.SOCKET_IN_Z1))
     cuts.append(_entry_chamfer_cut())
     # gate slot and gate-tab channel through the socket roof

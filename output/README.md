@@ -42,7 +42,9 @@ next bite slides on.
    (free). The defaults are 1.9 / 2.1 / 2.1 / 2.3: run = snug because you ream the lever hole (section 5,
    step 4). If you won't ream, type the coupon's run hole instead (it costs 0.1-0.2 of lift, still ≥ 13.5).
 4. Edit `cad/params.py` if your printer needs different values, then rebuild (section 7). `CLR_SLIDE` sets every
-   sliding fit. Each pin hole is its **own** number, typed straight from the coupon: `PIN_PRESS_D` (presses in),
+   sliding fit except the socket floor: `SOCKET_FLOOR_CLR` (0.10) is kept small so the latch engages 0.6 and
+   bites step down into the receiver. If a clip is tight going into the socket, file the socket floor or set
+   `SOCKET_FLOOR_CLR` to 0.2 (the step-down is then 0.1 and the latch engages 0.5). Each pin hole is its **own** number, typed straight from the coupon: `PIN_PRESS_D` (presses in),
    `PIN_SNUG_D` (snug), `PIN_RUN_D` (smallest hole the rod *spins freely* in without wobble: the lever pivot)
    and `PIN_FREE_D` (loose: the drum bore). The follower's axle holes print horizontal: if the side row differs,
    set `AXLE_HOLE_D` from it. Screw holes (`M2_CLEAR_D` = 2.3) don't follow any of these; if an M2 screw
@@ -97,7 +99,7 @@ bite channel and scrape any sag on that bridged wall. Why supports are needed: O
 |---|---|---|
 | 1 | Constant-force spring **B** 0.33 lb, ID 0.44″, ¼″ wide (SUS301; Amazon ASIN B0DL4KCGVB, 5-pack): **the final spring** | Bite feed |
 | 1 | *Compression spring, OD 5.5–6.5 mm (ID ≥ 3.4 so it fits over the Ø3 spigot), **wire 0.40 mm / 0.016 in (0.45 max)**, free length 38 mm (37–40), rate 0.12–0.15 N/mm (0.7–0.85 lb/in), solid length ≤ 10 mm, music wire or 302 SS. **Do NOT buy 0.5–0.6 mm wire springs**: they go solid before the end of the stroke and halve the lift. Check: squeeze to 12 mm by hand, and it must not be coil-bound.* **Note from the model (VERIFICATION §9.12):** the "0.45 max" only holds on OD ≥ 6.0 with k ≥ 0.13. On a 5.5 OD, 0.45 wire goes solid at 10.8–13.2 mm and can coil-bind. If in doubt, buy 0.40. | Return spring (spring B) |
-| (1) | *Optional:* constant-force spring **A** 1.48 lb (0.38″ wide) + a return spring of free length 35, ≈ 0.20 N/mm | High-force feed tests only (chin force ~8 N, an uneaten bite won't sink back) |
+| (1) | *Optional:* constant-force spring **A** 1.48 lb (0.38″ wide) + a return spring of OD 5.5–6.5, wire 0.40–0.45 (not 0.5–0.6), free length 35, ≈ 0.20 N/mm, solid ≤ 10 | High-force feed tests only (chin force ~8 N, an uneaten bite won't sink back) |
 | ~1 m | Ø2.0 steel rod: **5/64″ music wire** (1.98 mm) in the US. *Not* 3/32″ (2.38, too big). Cut to: pivot **26.0** (max 27.1), cup-end **19.4** (max 20.4), plunger-end **11.4** (max 12.5), drum axle **19.9** (max 20.4), dowels **3 × 10** | Pins (file the ends flat and deburr). The maxima are where a pin starts to rub a wall or no longer fits its blind holes. |
 | 2 | M2 × 4 countersunk self-tapping | Ribbon clamp |
 | 2 | M2 × 6 pan-head self-tapping | End cap |
@@ -194,8 +196,9 @@ the 25 mm rule (OPEN_ISSUES #2).
 ### Bench go / no-go tests (before any demo)
 
 1. **Feed:** small-width (18 mm) dummy bites made sticky (a little honey on the faces, or real food after the
-   warm soak), clip resting in the socket, all 8 bites cycled. **Must not stall.** This is also the test for
-   leaning bites (OPEN_ISSUES #14).
+   warm soak), clip resting in the socket, all 8 bites cycled, **level and with the mouth tilted ~50° up**.
+   **Must not stall.** This is also the test for leaning bites: the model predicts the tilted case is
+   marginal (OPEN_ISSUES #14).
 2. **Sink-back:** raise a bite, don't take it, let go. **It must drop back**, with real or sticky bites, not
    just dry printed dummies.
 3. **Lift:** press the paddle to its stop. The cup should rise about 13.9 mm, and at least 8 mm of the smallest

@@ -30,9 +30,22 @@ def main():
         else:
             print("no display and no xvfb-run: skipping renders")
     run([py, "verify.py"] + (["--quick"] if "--quick" in sys.argv else []))
-    zip_base = os.path.join(os.path.dirname(ROOT), "EBD_Clip_v1.1_output")
-    shutil.make_archive(zip_base, "zip", os.path.dirname(ROOT), os.path.basename(ROOT))
-    print("wrote", zip_base + ".zip")
+    write_zip()
+
+
+def write_zip():
+    """Zip the output folder (no Python caches) -> ../../EBD_Clip_v1.1_output.zip"""
+    import zipfile
+    zip_path = os.path.join(os.path.dirname(ROOT), "EBD_Clip_v1.1_output.zip")
+    base = os.path.dirname(ROOT)
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
+        for d, dirs, files in os.walk(ROOT):
+            dirs[:] = sorted(x for x in dirs if x != "__pycache__")
+            for f in sorted(files):
+                if not f.endswith(".pyc"):
+                    p = os.path.join(d, f)
+                    z.write(p, os.path.relpath(p, base))
+    print("wrote", zip_path)
 
 
 if __name__ == "__main__":

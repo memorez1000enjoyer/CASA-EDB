@@ -490,6 +490,7 @@ SPRING_F_HI = 0.10      # +10 % (sink-back check)
 FEED_BITE_MASS_G = 10.0  # §9.10 feed margin: 8 x 10 g sticky bites
 FEED_MU = 0.6           # bite on the rails (sticky)
 FEED_MU_FOLLOWER = 0.4  # ADDED follower (PETG) on the PETG rail tops, dry
+FEED_AXLE_MU = 0.3      # ADDED drum (PETG) turning on the steel axle: loss = mu * r_pin / r_coil of the spring force
 G_EARTH, G_MOON = 9.81, 1.62
 
 # =============================================================================

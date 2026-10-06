@@ -144,6 +144,13 @@ def build(state: str, spring=P.DEFAULT_SPRING, bites="nom", mech: K.Mech = None,
         for bd in out.bodies:
             if bd.group == "clip":
                 bd.shape = _mv(bd.shape, 0, dy, dz)
+        # bites resting on the clip rails ride with the clip; in Y each one stays inside both
+        # the clip bore and the receiver bore (it may straddle the mouth)
+        play = (P.BORE_W - b.W) / 2 - 1e-4
+        by = max(-play, min(play, dy))
+        for bd, bp in zip([x for x in out.bodies if x.kind == "bite"], poses):
+            if not bp.on_cup:
+                bd.shape = _mv(bd.shape, 0, by, dz)
     return out
 
 
