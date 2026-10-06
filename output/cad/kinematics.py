@@ -102,9 +102,10 @@ def sweep(n=9, direction="press", elev_dx=0.0):
 
 
 # ----------------------------------------------------------------------------- bites
-def rail_seat(W: float) -> float:
-    """Bite bottom Z when its R2 side edges rest on the rails' R0.5 inner edges (§3)."""
-    yc = W / 2 - P.BITE_R
+def rail_seat(W: float, dy: float = 0.0) -> float:
+    """Bite bottom Z when its R2 side edges rest on the rails' R0.5 inner edges (§3).
+    dy: the bite sits that far off the clip centre, kept upright (the higher side sets it)."""
+    yc = W / 2 - P.BITE_R + abs(dy)
     ey, ez = P.RAIL_IN_Y + P.RAIL_EDGE_R, P.RAIL_TOP_Z - P.RAIL_EDGE_R
     if yc >= ey:
         return P.RAIL_TOP_Z
