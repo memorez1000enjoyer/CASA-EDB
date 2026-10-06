@@ -49,31 +49,36 @@ def _pose(rp, y):
     return zc, zc + float(rp[:, 1].min()), float(Y[np.argmin(rp[:, 1])])
 
 
-def _contacts(rp, y, zc, tol=5e-3):
-    """Contact patches of the posed outline (rp + (y, zc)) with the rails and walls, and the
-    unit normal (pointing into the bite) at each; one representative point per patch."""
-    Y, Z = rp[:, 0] + y, rp[:, 1] + zc
+def _contacts(b: P.Bite, y, zc, th_deg, tol=2e-3):
+    """Exact contacts of the posed bite with the walls and the rails.  The rounded bite is its
+    inner rectangle (W-2R x H-2R) grown by R, so every contact normal runs from the support to
+    the nearest point of that rectangle.  Returns (name, Y, Z, unit normal into the bite)."""
+    a, h = b.W / 2 - b.R, b.H / 2 - b.R
+    c, s = math.cos(math.radians(th_deg)), math.sin(math.radians(th_deg))
+    to_w = lambda u, v: (u * c - v * s + y, u * s + v * c + zc)
+    to_l = lambda Y, Z: ((Y - y) * c + (Z - zc) * s, -(Y - y) * s + (Z - zc) * c)
+    verts = [to_w(u, v) for u in (-a, a) for v in (-h, h)]
     hw = P.BORE_W / 2
     out = []
-    for side in (+1, -1):                                   # walls
-        m = np.abs(Y - side * hw) < tol
-        if m.any():
-            out.append(("wall%+d" % side, Y[m].mean(), Z[m].mean(), (-side, 0.0)))
-    gap = Z - rail_profile(Y)                               # rails
-    m = gap < tol
-    for side in (+1, -1):
-        ms = m & (np.sign(Y) == side) & (np.abs(Y) >= P.RAIL_IN_Y - 1e-6)
-        if not ms.any():
+    vy = max(verts, key=lambda q: q[0])                     # walls
+    if vy[0] + b.R >= hw - tol:
+        out.append(("wall+1", vy[0] + b.R, vy[1], (-1.0, 0.0)))
+    vy = min(verts, key=lambda q: q[0])
+    if vy[0] - b.R <= -hw + tol:
+        out.append(("wall-1", vy[0] - b.R, vy[1], (1.0, 0.0)))
+    r, yi = P.RAIL_EDGE_R, P.RAIL_IN_Y
+    for side in (+1, -1):                                   # rail R0.5 edges, else the flat top
+        E = (side * (yi + r), P.RAIL_TOP_Z - r)
+        u, v = to_l(*E)
+        Q = to_w(max(-a, min(a, u)), max(-h, min(h, v)))
+        d = math.hypot(Q[0] - E[0], Q[1] - E[1])
+        n = ((Q[0] - E[0]) / d, (Q[1] - E[1]) / d)
+        if d - (b.R + r) < tol and n[1] >= 0 and side * n[0] <= 1e-9:
+            out.append(("rail%+d" % side, E[0] + r * n[0], E[1] + r * n[1], n))
             continue
-        yc, zc_ = Y[ms].mean(), Z[ms].mean()
-        r, yi = P.RAIL_EDGE_R, P.RAIL_IN_Y
-        ay = abs(yc)
-        if ay < yi + r:                                     # on the R0.5 edge: normal from its centre
-            cy, cz = side * (yi + r), P.RAIL_TOP_Z - r
-            n = np.array([yc - cy, zc_ - cz]); n /= np.linalg.norm(n)
-        else:
-            n = np.array([0.0, 1.0])
-        out.append(("rail%+d" % side, yc, zc_, tuple(n)))
+        low = min(verts, key=lambda q: q[1])                # lowest corner on the flat rail top
+        if side * low[0] >= yi + r and abs(low[1] - b.R - P.RAIL_TOP_Z) < tol:
+            out.append(("rail%+d" % side, low[0], P.RAIL_TOP_Z, (0.0, 1.0)))
     return out
 
 
@@ -89,18 +94,23 @@ def normal_forces(contacts, com):
     return sol, float(np.abs(A @ sol - rhs).max())
 
 
-def upright_stability(b: P.Bite):
-    """Height where the two upright contact normals cross vs the CoM: crossing below the
-    CoM means the centred upright pose is unstable (frictionless)."""
-    yc = b.W / 2 - b.R
-    ey, ez = P.RAIL_IN_Y + P.RAIL_EDGE_R, P.RAIL_TOP_Z - P.RAIL_EDGE_R
-    if yc >= ey:
-        return math.inf, None
-    R = b.R + P.RAIL_EDGE_R
-    dz = math.sqrt(R * R - (ey - yc) ** 2)
-    seat = ez + dz - b.R
-    cross = ez + dz / (ey - yc) * ey        # normal line from the edge centre through the fillet centre
-    return cross, seat + b.H / 2
+def _centre_at(pts, th_deg):
+    """Lowest centre height over shift y at lean angle th (the two-rail rocking path)."""
+    c, s = math.cos(math.radians(th_deg)), math.sin(math.radians(th_deg))
+    rp = np.c_[pts[:, 0] * c - pts[:, 1] * s, pts[:, 0] * s + pts[:, 1] * c]
+    hw = (P.BORE_W - (pts[:, 0].max() - pts[:, 0].min())) / 2 + 1.0
+    zs = [r[0] for r in (_pose(rp, y) for y in np.linspace(-hw, hw, 801)) if r is not None]
+    return min(zs) if zs else math.inf
+
+
+def upright_drop(b: P.Bite, th_deg=0.5):
+    """Energy test of the centred upright pose: how much LOWER (mm) the centre of mass gets
+    when the bite leans th degrees and rolls on its rail contacts.  > 0: upright is unstable.
+    (The R2-corner-on-R0.5-edge contacts make a four-bar linkage; crossing contact normals
+    alone do not decide it.)"""
+    pts = _outline(b.W, b.H, b.R, step=0.005)
+    z0 = _centre_at(pts, 0.0)
+    return z0 - min(_centre_at(pts, th_deg), _centre_at(pts, -th_deg))
 
 
 def rest_pose(b: P.Bite):
@@ -130,26 +140,25 @@ def rest_pose(b: P.Bite):
     upright = _pose(pts, 0.0)
     c, s_ = math.cos(math.radians(th)), math.sin(math.radians(th))
     rp = np.c_[pts[:, 0] * c - pts[:, 1] * s_, pts[:, 0] * s_ + pts[:, 1] * c]
-    cts = _contacts(rp, y, zc)
+    cts = _contacts(b, y, zc, th)
     k_lean, resid = (None, None)
-    if len(cts) == 3:
+    if len(cts) in (2, 3):
         f, resid = normal_forces(cts, (y, zc))
-        if (f > -1e-6).all() and resid < 1e-6:
+        if (f > -1e-6).all() and resid < 1e-3:
             k_lean = float(f.sum())
-    cross, com_up = upright_stability(b)
+    drop = upright_drop(b)
     return dict(centre=zc, y=y, lean_deg=th, lowest=low, lowest_y=low_y,
                 upright_centre=upright[0], upright_bottom=upright[1],
                 com_drop=upright[0] - zc, contacts=[c_[0] for c_ in cts], k_lean=k_lean,
-                upright_stable=cross > com_up if com_up is not None else True,
-                normals_cross_z=cross, upright_com_z=com_up)
+                upright_stable=drop <= 1e-6, upright_drop_um=1000 * drop)
 
 
 if __name__ == "__main__":
     for k, b in P.BITES.items():
         r = rest_pose(b)
         print(k, {a: (round(v, 3) if isinstance(v, float) else v) for a, v in r.items()})
-    for W in (18.0, 18.1, 18.2, 18.3):
-        b = P.Bite("w", P.BITE_T, W, P.BITE_H - P.BITE_H_TOL)
+    for W in (18.0, 18.5, 19.0, 19.5, 20.0):
+        b = P.Bite("w", P.BITE_T, W, P.BITE_H)
         r = rest_pose(b)
         print("W", W, "lean", round(r["lean_deg"], 2), "k_lean", r["k_lean"] and round(r["k_lean"], 3),
-              "upright stable", r["upright_stable"], round(r["normals_cross_z"], 2), round(r["upright_com_z"], 2))
+              "upright stable", r["upright_stable"], round(r["upright_drop_um"], 1), "um", r["contacts"])

@@ -197,8 +197,8 @@ the 25 mm rule (OPEN_ISSUES #2).
 
 1. **Feed:** small-width (18 mm) dummy bites made sticky (a little honey on the faces, or real food after the
    warm soak), clip resting in the socket, all 8 bites cycled, **level and with the mouth tilted ~50° up**.
-   **Must not stall.** This is also the test for leaning bites: the model predicts the tilted case is
-   marginal (OPEN_ISSUES #14).
+   **Must not stall.** Repeat with nominal bites. This is also the test for leaning bites: the model predicts the
+   tilted case is marginal for both sizes (OPEN_ISSUES #14).
 2. **Sink-back:** raise a bite, don't take it, let go. **It must drop back**, with real or sticky bites, not
    just dry printed dummies.
 3. **Lift:** press the paddle to its stop. The cup should rise about 13.9 mm, and at least 8 mm of the smallest

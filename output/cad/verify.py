@@ -204,7 +204,7 @@ def feed_margins():
     import lean
     out = {}
     m_b = P.N_BITES * P.FEED_BITE_MASS_G / 1000
-    k_lean = lean.rest_pose(P.BITES["min"])["k_lean"]
+    k_lean = {bk: lean.rest_pose(b)["k_lean"] for bk, b in P.BITES.items()}
     for sk, s in P.SPRINGS.items():
         from hardware import ribbon_geometry
         F_full = P.STOP_X + P.N_BITES * P.BITES["min"].T
@@ -213,7 +213,7 @@ def feed_margins():
         Fa = s.F * (1 - P.SPRING_F_LO) * (1 - axle_loss)
         m_f = follower_group_mass(sk) / 1000
         cases = [(bk, b, contact_factor(b.W)) for bk, b in P.BITES.items()]
-        cases.append(("min_lean", P.BITES["min"], k_lean))
+        cases += [(f"{bk}_lean", b, k_lean[bk]) for bk, b in P.BITES.items() if k_lean[bk]]
         for bk, b, kf in cases:
             a_ = P.FEED_MU * kf * m_b + P.FEED_MU_FOLLOWER * m_f
             b_ = m_b + m_f
@@ -453,13 +453,14 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
     checks.append(("9.9", "Envelope / mass report", True, "reported below"))
     fd = extra["feed"]
     fB = fd[(P.DEFAULT_SPRING, "min")]
-    fL = fd[(P.DEFAULT_SPRING, "min_lean")]
+    fL = min((v for (sk, bk), v in fd.items() if sk == P.DEFAULT_SPRING and bk.endswith("_lean")),
+             key=lambda v: v["earth_incline"])
     checks.append(("9.10", "Force report", True,
                    f"B {fr['B']['paddle_start']:.1f}-{fr['B']['paddle_end']:.1f} N, uneaten bite returns "
                    f"{fr['B']['return_margin']:.2f}x (sticky {fr['B']['sticky_margin']:.2f}x); "
                    f"A {fr['A']['paddle_start']:.1f}-{fr['A']['paddle_end']:.1f} N (> 6 N flagged, does not return); "
                    f"B feed margin, min width: {fB['earth_level']:.2f}x level / {fB['earth_vertical']:.2f}x vertical / "
-                   f"**{fB['earth_incline']:.2f}x at {fB['worst_incline_deg']:.0f}°**, leaning bites "
+                   f"**{fB['earth_incline']:.2f}x at {fB['worst_incline_deg']:.0f}°**, leaning bites (min/nom) "
                    f"**{fL['earth_incline']:.2f}x at {fL['worst_incline_deg']:.0f}°**; Moon ≥ "
                    f"{min(v['moon_incline'] for (sk, bk), v in fd.items() if sk == P.DEFAULT_SPRING):.1f}x any orientation"))
     st_ = extra["steps"]
@@ -493,7 +494,7 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
         if cid == "9.8" and passed and need_sup:
             res = "**FLAG** (supports)"
         if cid == "9.10":
-            res = "REPORT (A > 6 N; **B feed < 1.0 on Earth at ~47° with leaning min bites**)" \
+            res = "REPORT (A > 6 N; **B feed < 1.0 on Earth at ~47° if bites lean**)" \
                 if fL["earth_incline"] < 1.0 else "REPORT (A flagged > 6 N)"
         if cid == "9.13" and passed:
             res = "PASS (report)"
@@ -659,15 +660,16 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
       f"10 g bites are heavy (a nominal bite of 1.1 g/cm³ food is ~6.5 g): real margins scale up with lighter food.\n")
     w("| Spring | Bite width | k | follower group g | Earth level | Earth vertical (mouth up) | **Earth worst incline** | Moon level | Moon worst incline |")
     w("|---|---|---|---|---|---|---|---|---|")
-    order = {"min": 0, "min_lean": 1, "nom": 2, "max": 3}
+    order = {"min": 0, "min_lean": 1, "nom": 2, "nom_lean": 3, "max": 4, "max_lean": 5}
     for (sk, bk), r in sorted(fd.items(), key=lambda kv: (kv[0][0] != P.DEFAULT_SPRING, order[kv[0][1]])):
-        lab = "min (18), **leaning**" if bk == "min_lean" else f"{bk} ({P.BITES[bk].W:.0f})"
+        b0 = bk.replace("_lean", "")
+        lab = f"{b0} ({P.BITES[b0].W:.0f})" + (", **leaning**" if bk.endswith("_lean") else "")
         w(f"| {sk} | {lab} | {r['k']:.2f} | {r['m_f_g']:.1f} | {r['earth_level']:.2f}x | "
           f"{r['earth_vertical']:.2f}x | **{r['earth_incline']:.2f}x** at {r['worst_incline_deg']:.0f}° | "
           f"{r['moon_level']:.1f}x | {r['moon_incline']:.1f}x |")
     w(f"\n**Flag (1-g worst case):** with spring B the Earth margin is lowest with the mouth tilted uphill: "
       f"{fB['earth_incline']:.2f}x at ~{fB['worst_incline_deg']:.0f}° for upright min-width bites and "
-      f"**{fL['earth_incline']:.2f}x at ~{fL['worst_incline_deg']:.0f}° if they lean** (a stall is predicted). That stacks "
+      f"**{fL['earth_incline']:.2f}x at ~{fL['worst_incline_deg']:.0f}° if min or nominal bites lean** (a stall is predicted). That stacks "
       f"every worst case: sticky μ 0.6 on rails and walls, 10 g bites, spring 13 % weak, frictionless lean. Treat "
       f"steep mouth-up tilts as the limit of the Earth \"any orientation\" demo (OPEN_ISSUES #14). On the Moon the "
       f"margin is ≥ {min(v['moon_incline'] for (sk, bk), v in fd.items() if sk == P.DEFAULT_SPRING):.1f}x in any "
@@ -695,24 +697,27 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
         w(f"| {r['bites']} ({r['W']:.0f}) | {where} | {r['seat']:.3f} | **{r['step']:.2f}** {ok(r['step'] >= -1e-9)} |")
     w("\n**Leaning bites (not covered by the rule above).** The rule assumes upright, centred bites. A rigid, "
       "**frictionless** 2-D check (`cad/lean.py`) lets a bite shift and lean about X; a whole stack can lean "
-      "together because rotating about the stacking axis does not slide one face on the next. Upright is stable "
-      "only if the two rail-contact normals cross above the centre of mass. Lowest-energy pose, clip on its floor:\n")
-    w("| Bite width | Upright stable? (normals cross / CoM) | Lowest-energy lean | CoM lower by | Contacts | k (Σ normals ÷ weight) | Lowest bottom point Z (at Y) | vs bridge top |\n|---|---|---|---|---|---|---|---|")
+      "together because rotating about the stacking axis does not slide one face on the next. Upright is tested "
+      "by energy: lean it 0.5° and let it roll on its two rail contacts (an R2 corner on an R0.5 edge acts like a "
+      "four-bar linkage); if its centre of mass drops, upright is unstable. Lowest-energy pose, clip on its floor:\n")
+    w("| Bite width | Upright stable? (CoM change at 0.5° lean) | Lowest-energy lean | CoM lower by | Contacts | k (Σ normals ÷ weight) | Lowest bottom point Z (at Y) | vs bridge top |\n|---|---|---|---|---|---|---|---|")
     for r in st_:
         if r["dz"] == 0:
             continue
         ln = r["ln"]
         k_txt = f"{ln['k_lean']:.2f}" if ln["k_lean"] else "-"
         w(f"| {r['bites']} ({r['W']:.0f}) | {'yes' if ln['upright_stable'] else '**no**'} "
-          f"({ln['normals_cross_z']:.1f} / {ln['upright_com_z']:.1f}) | {abs(r['lean']):.1f}° | {r['com_drop']:.2f} | "
+          f"({-ln['upright_drop_um']:+.1f} µm) | {abs(r['lean']):.1f}° | {r['com_drop']:.2f} | "
           f"{', '.join(ln['contacts'])} | {k_txt} | {r['lowest']:.2f} (Y {abs(r['lowest_y']):.1f}) | {r['lean_step']:+.2f} |")
-    w("\n- **Min (18 wide): upright is unstable** even without friction (the normals cross 0.9 below the CoM). "
-      "It rolls ~7° until it wedges against both side walls, its low bottom corner hangs into the gap between the "
-      "rails about 1 mm below the bridge top (v1: 1.8 below the 4.5 bridge), and its contact forces add up to "
-      f"{st_[0]['ln']['k_lean']:.2f}x its weight instead of 1.25x (used in §9.10). Rail friction may hold it upright; "
-      "a jolt won't. The flip is at about 18.15 wide: from 18.2 up, upright is stable.")
-    w("- **Nominal and max: upright is stable.** The lowest-energy leaning pose of a nominal bite is behind an "
-      "energy barrier (only a hard knock gets it there); max bites stay upright.")
+    kmin, knom = st_[0]["ln"]["k_lean"], st_[2]["ln"]["k_lean"]
+    w("\n- **Min and nominal bites: upright is unstable** (without friction): the centre of mass drops as soon as "
+      "they lean. A min bite rolls ~7° and wedges against both side walls; its low bottom corner hangs into the gap "
+      "between the rails 1.0-1.1 below the bridge top (v1: 1.8-1.9 below the 4.5 bridge). A nominal bite rolls ~3° "
+      "and wedges against one wall, its low corner level with the bridge top. Wedged, their contact forces add up to "
+      f"{kmin:.2f}x / {knom:.2f}x their weight instead of 1.25x / 1.09x upright (§9.10 reports both). Only friction "
+      "(rail and wall contacts) keeps them upright, and a jolt can tip them. Bite width tolerance does not change "
+      "this: every width up to ~19.5 is unstable.")
+    w("- **Max bites (20 wide):** they lean only ~0.2° before the flat bottom lands on a rail edge, then stay put.")
     w("- A leaning bite meets the bridge edge on one rounded R2 corner, 0.9-1.1 above the corner's lowest point "
       "(contact ~60° from vertical). It has to roll upright about its high-side rail against bite-to-bite face "
       "friction; a rough torque balance says that can self-lock at bite-to-bite friction of only ~0.2-0.4, no "
