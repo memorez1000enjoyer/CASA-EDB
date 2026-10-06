@@ -99,6 +99,9 @@ def receiver_full() -> cq.Workplane:
         # outer vertical corners of the stripper wall (above the top surface)
         tri = [(P.STRIPPER_X - 0.01, s * (hw - ce)), (P.STRIPPER_X - 0.01, s * (hw + 0.01)), (P.STRIPPER_X + ce, s * (hw + 0.01))]
         cuts.append(cq.Workplane("XY", origin=(0, 0, P.TOP_Z - 0.01)).polyline(tri).close().extrude(5))
+        # the socket's top outer edges are chamfered from X 0 on: carry the same chamfer along the
+        # stripper wall's top outer edges, or the step at X 0 leaves a 0.37 corner sliver
+        cuts.append(chamfer_edge_x(P.STRIPPER_X - 0.01, 0.05, s * hw, P.STRIPPER_WALL_TOP_Z, ce, -s))
     # chamfers on the face-zone edges of the top surface (§8.2) - never on the stripper edge
     zs = P.SOCKET_OUT_Z1
     cuts.append(rim_chamfer(P.PADDLE_X - P.PLUNGER_CH_HW_X, P.PADDLE_X + P.PLUNGER_CH_HW_X,

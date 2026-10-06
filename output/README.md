@@ -84,7 +84,7 @@ add a brim. In the preview, supports should appear only:
 - under the thin roof strip beside the gate-tab channel (right half only)
 - under the plunger's spring ear
 
-Nothing else gets support. In particular, the bite-channel side wall next to the socket prints as a 27 mm
+Nothing else gets support. In particular, the bite-channel side wall next to the socket prints as a 27.8 mm
 bridge on purpose, because support there would scar the elevator's sliding face.
 
 Remove the supports with pliers and a hobby knife, then **file the socket's inner side faces smooth**: the clip

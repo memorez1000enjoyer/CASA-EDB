@@ -49,9 +49,9 @@ def _device_mesh(name):
     return trimesh.Trimesh(np.array([v.toTuple() for v in vs]), np.array(fs))
 
 
-def wall_thickness(mesh, n=40000, seed=1):
+def wall_thickness(mesh, n=80000, seed=1):
     area = mesh.area
-    n = int(min(max(area * 2.0, 4000), n))
+    n = int(min(max(area * 4.0, 4000), n))   # ~4 samples per mm²
     pts, fi = trimesh.sample.sample_surface(mesh, n, seed=seed)
     nrm = mesh.face_normals[fi]
     orig = pts - nrm * 1e-4

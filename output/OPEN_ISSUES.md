@@ -43,7 +43,7 @@ watertight with walls ≥ 0.8 (spec features excepted):
 | plunger | Under the spring ear (upside-down print) | The ear sticks out 8.3 from the body. No orientation of the spec'd plunger is support-free: the flange blocks side orientations and the ear blocks vertical ones. |
 
 One more region is flagged but printed **without** support on purpose: the bite-channel side wall next to
-the stop face. The span between the bridge (Z 4.5) and the stripper wall (Z 31.5) is a **27 mm** bridge
+the stop face. The span between the bridge (Z 3.7 since v1.1) and the roof (Z 31.5) is a **27.8 mm** bridge
 (limit 25), because the socket cavity starts at X = 0. That wall is also the elevator's sliding face, and
 support scars there would be worse than a slight sag. The README says to scrape it after a dry fit.
 
