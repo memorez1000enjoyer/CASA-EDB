@@ -47,7 +47,7 @@
   "orientation": "plusX_down",
   "material": "PETG",
   "note": "rear (+X) face down: pocket arch bridges 10.6",
-  "volume_mm3": 12861.9,
+  "volume_mm3": 13331.6,
   "print_bbox": [
    30.9,
    19.9,
@@ -80,7 +80,7 @@
   "orientation": "plusY_down",
   "material": "PETG",
   "note": "split face (Y=0) down",
-  "volume_mm3": 32269.3,
+  "volume_mm3": 32265.7,
   "print_bbox": [
    81.3,
    58.4,
@@ -91,7 +91,7 @@
   "orientation": "minusY_down",
   "material": "PETG",
   "note": "split face (Y=0) down",
-  "volume_mm3": 31703.1,
+  "volume_mm3": 31699.5,
   "print_bbox": [
    81.3,
    56.5,
@@ -102,11 +102,11 @@
   "orientation": "bottom_down",
   "material": "PETG",
   "note": "bottom down: notch roof bridges 6.6",
-  "volume_mm3": 3931.6,
+  "volume_mm3": 3746.9,
   "print_bbox": [
    11.6,
    19.9,
-   20.0
+   19.2
   ]
  },
  "lever": {
@@ -208,26 +208,26 @@
    13.2
   ]
  },
- "follower_springB": {
-  "orientation": "plusX_down",
-  "material": "PETG",
-  "note": "rear (+X) face down: pocket arch bridges 10.6",
-  "volume_mm3": 13328.5,
-  "print_bbox": [
-   30.9,
-   19.9,
-   28.0
-  ]
- },
- "drum_spacer_springB": {
+ "drum_spacer": {
   "orientation": "plusY_down",
   "material": "PETG",
   "note": "spring B only - print 2",
-  "volume_mm3": 57.5,
+  "volume_mm3": 51.5,
   "print_bbox": [
    14.6,
    14.6,
    1.5
+  ]
+ },
+ "follower_springA": {
+  "orientation": "plusX_down",
+  "material": "PETG",
+  "note": "rear (+X) face down: pocket arch bridges 10.6",
+  "volume_mm3": 12865.1,
+  "print_bbox": [
+   30.9,
+   19.9,
+   28.0
   ]
  }
 }

@@ -16,7 +16,7 @@
    "9.3",
    "Exposure",
    true,
-   "min exposure 9.30 with pin-hole play (\u2265 8.0), min retained 15.10 (\u2265 12)"
+   "min exposure 8.50 with pin-hole play (\u2265 8.0), min retained 15.90 (\u2265 12)"
   ],
   [
    "9.4",
@@ -28,7 +28,7 @@
    "9.5",
    "Follower",
    true,
-   "stops at F = -1.60 on the clamp back edge; ribbon max Z 1.35 (< 2.0)"
+   "stops at F = -1.60 on the clamp back edge; ribbon max Z 1.33 (< 2.0)"
   ],
   [
    "9.6",
@@ -58,119 +58,38 @@
    "9.10",
    "Force report",
    true,
-   "A 4.9-7.9 N (> 6 N flagged), B 1.7-3.5 N"
+   "B 2.2-4.1 N, uneaten bite returns 1.95x (sticky 1.26x); A 4.9-7.9 N (> 6 N flagged, does not return); B feed margin (min width) 1.91x level / 1.29x vertical / 1.07x at 56\u00b0 / Moon 11.5x level, 6.5x worst"
+  ],
+  [
+   "9.11",
+   "Bites step down into the receiver (v1.1)",
+   true,
+   "smallest step-down 0.20 (min width, clip dz -0.1); bridge and cup at rest both Z 3.70"
+  ],
+  [
+   "9.12",
+   "Return-spring solid length (v1.1)",
+   true,
+   "B 5.6 / A 4.1 (\u2264 10, pressed length 12.1) for \u00d80.4 wire, OD 6.0"
+  ],
+  [
+   "9.13",
+   "Latch engagement (v1.1)",
+   true,
+   "0.60 with the clip on its floor; tooth to notch floor 0.00 with the clip floated up 0.3"
   ]
  ],
  "per": [
   {
-   "cfg": "A/min",
-   "roof_gap": 2.6640000000000015,
-   "roof_gap_Bp": 2.6000000000000014,
-   "bite2_seat_A": 4.436,
-   "m_nom": 0.2999999999999998,
-   "m_worst": 0.0,
-   "expo": 9.5,
-   "below": 14.899999999999999,
-   "raised_bot": 18.6,
-   "win_x": 1.3000000000000007,
-   "win_y": 1.25,
-   "under_win": 1.9000000000000001,
-   "F_A": 83.3,
-   "F_C": -1.5999999999999996,
-   "F_E": 100.0,
-   "F_Bp": 82.69999999999999,
-   "back_gap_E": 8.800000000000011,
-   "ext_A": 93.39849664181287,
-   "ext_2": 20.468275871599488,
-   "ext_C": 9.217819838200729,
-   "ext_E": 110.08713931547167,
-   "ext_max": 110.08713931547167,
-   "ext_limit": 457.0,
-   "ribbon_maxz": 1.3213274476101466,
-   "coil_od_E": 15.358205987023045,
-   "pocket": 17.06379474475369,
-   "lift": 14.100000000000005,
-   "elev_rest": 4.5,
-   "push_rib_gap_Dt": 0.8000000000000003,
-   "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 81.240549325943
-  },
-  {
-   "cfg": "A/nom",
-   "roof_gap": 1.809000000000001,
-   "roof_gap_Bp": 1.6000000000000014,
-   "bite2_seat_A": 4.291,
-   "m_nom": 0.7999999999999998,
-   "m_worst": 0.5,
-   "expo": 10.5,
-   "below": 14.899999999999999,
-   "raised_bot": 18.6,
-   "win_x": 0.8000000000000007,
-   "win_y": 0.75,
-   "under_win": 1.9000000000000001,
-   "F_A": 87.3,
-   "F_C": -1.5999999999999996,
-   "F_E": 104.0,
-   "F_Bp": 86.19999999999999,
-   "back_gap_E": 4.800000000000011,
-   "ext_A": 97.3954216643096,
-   "ext_2": 21.452199255921396,
-   "ext_C": 9.217819838200729,
-   "ext_E": 114.08491248401295,
-   "ext_max": 114.08491248401295,
-   "ext_limit": 457.0,
-   "ribbon_maxz": 1.3337442649058278,
-   "coil_od_E": 15.33332882013786,
-   "pocket": 17.06379474475369,
-   "lift": 14.100000000000005,
-   "elev_rest": 4.5,
-   "push_rib_gap_Dt": 0.8000000000000003,
-   "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 80.6070191860199
-  },
-  {
-   "cfg": "A/max",
-   "roof_gap": 0.6500000000000021,
-   "roof_gap_Bp": 0.6000000000000014,
-   "bite2_seat_A": 4.45,
-   "m_nom": 1.2999999999999998,
-   "m_worst": 1.0,
-   "expo": 11.5,
-   "below": 14.899999999999999,
-   "raised_bot": 18.6,
-   "win_x": 0.3000000000000007,
-   "win_y": 0.25,
-   "under_win": 1.9000000000000001,
-   "F_A": 91.3,
-   "F_C": -1.1000000000000014,
-   "F_E": 108.0,
-   "F_Bp": 89.69999999999999,
-   "back_gap_E": 0.8000000000000114,
-   "ext_A": 101.39258925525839,
-   "ext_2": 22.437545672698743,
-   "ext_C": 9.676771677796062,
-   "ext_E": 118.08283649373121,
-   "ext_max": 118.08283649373121,
-   "ext_limit": 457.0,
-   "ribbon_maxz": 1.3461837475707563,
-   "coil_od_E": 15.308410285348618,
-   "pocket": 17.06379474475369,
-   "lift": 14.100000000000005,
-   "elev_rest": 4.5,
-   "push_rib_gap_Dt": 0.8000000000000003,
-   "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 79.72014713287354
-  },
-  {
    "cfg": "B/min",
-   "roof_gap": 2.6640000000000015,
-   "roof_gap_Bp": 2.6000000000000014,
-   "bite2_seat_A": 4.436,
+   "roof_gap": 3.1000000000000014,
+   "roof_gap_Bp": 3.1000000000000014,
+   "bite2_seat_A": 4.0,
    "m_nom": 0.2999999999999998,
    "m_worst": 0.0,
-   "expo": 9.5,
-   "below": 14.899999999999999,
-   "raised_bot": 18.6,
+   "expo": 8.700000000000003,
+   "below": 15.7,
+   "raised_bot": 17.8,
    "win_x": 1.3000000000000007,
    "win_y": 1.25,
    "under_win": 1.9000000000000001,
@@ -179,31 +98,31 @@
    "F_E": 100.0,
    "F_Bp": 82.69999999999999,
    "back_gap_E": 8.800000000000011,
-   "ext_A": 93.38268078857921,
-   "ext_2": 20.423987896216822,
-   "ext_C": 9.128650987668403,
-   "ext_E": 110.07253282339931,
-   "ext_max": 110.07253282339931,
+   "ext_A": 93.38114639711199,
+   "ext_2": 20.41696694766026,
+   "ext_C": 9.112916722985483,
+   "ext_E": 110.07123112189888,
+   "ext_max": 110.07123112189888,
    "ext_limit": 305.0,
-   "ribbon_maxz": 1.1814681515111745,
-   "coil_od_E": 13.78338176100399,
+   "ribbon_maxz": 1.163351554025625,
+   "coil_od_E": 13.783387773234853,
    "pocket": 15.30945235340646,
    "lift": 14.100000000000005,
-   "elev_rest": 4.5,
+   "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 86.36591339111328
+   "time": 81.36364603042603
   },
   {
    "cfg": "B/nom",
    "roof_gap": 1.809000000000001,
-   "roof_gap_Bp": 1.6000000000000014,
+   "roof_gap_Bp": 1.809000000000001,
    "bite2_seat_A": 4.291,
    "m_nom": 0.7999999999999998,
    "m_worst": 0.5,
-   "expo": 10.5,
-   "below": 14.899999999999999,
-   "raised_bot": 18.6,
+   "expo": 9.700000000000003,
+   "below": 15.7,
+   "raised_bot": 17.8,
    "win_x": 0.8000000000000007,
    "win_y": 0.75,
    "under_win": 1.9000000000000001,
@@ -212,31 +131,31 @@
    "F_E": 104.0,
    "F_Bp": 86.19999999999999,
    "back_gap_E": 4.800000000000011,
-   "ext_A": 97.37993319546536,
-   "ext_2": 21.40958741054229,
-   "ext_C": 9.128650987668403,
-   "ext_E": 114.07054316899942,
-   "ext_max": 114.07054316899942,
+   "ext_A": 97.37846179890936,
+   "ext_2": 21.40289001685656,
+   "ext_C": 9.112916722985483,
+   "ext_E": 114.06928709711921,
+   "ext_max": 114.06928709711921,
    "ext_limit": 305.0,
-   "ribbon_maxz": 1.1906893480017795,
-   "coil_od_E": 13.764903569671297,
+   "ribbon_maxz": 1.1725735332152945,
+   "coil_od_E": 13.76490937893848,
    "pocket": 15.30945235340646,
    "lift": 14.100000000000005,
-   "elev_rest": 4.5,
+   "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 85.89285969734192
+   "time": 81.66067695617676
   },
   {
    "cfg": "B/max",
    "roof_gap": 0.6500000000000021,
-   "roof_gap_Bp": 0.6000000000000014,
+   "roof_gap_Bp": 0.6500000000000021,
    "bite2_seat_A": 4.45,
    "m_nom": 1.2999999999999998,
    "m_worst": 1.0,
-   "expo": 11.5,
-   "below": 14.899999999999999,
-   "raised_bot": 18.6,
+   "expo": 10.700000000000003,
+   "below": 15.7,
+   "raised_bot": 17.8,
    "win_x": 0.3000000000000007,
    "win_y": 0.25,
    "under_win": 1.9000000000000001,
@@ -245,56 +164,161 @@
    "F_E": 108.0,
    "F_Bp": 89.69999999999999,
    "back_gap_E": 0.8000000000000114,
-   "ext_A": 101.37740237683285,
-   "ext_2": 22.396464562677668,
-   "ext_C": 9.591501362383964,
-   "ext_E": 118.06868830727407,
-   "ext_max": 118.06868830727407,
+   "ext_A": 101.37598900961137,
+   "ext_2": 22.390062577594563,
+   "ext_C": 9.576528849618425,
+   "ext_E": 118.06747477573713,
+   "ext_max": 118.06747477573713,
    "ext_limit": 305.0,
-   "ribbon_maxz": 1.199924936927137,
-   "coil_od_E": 13.746399915351853,
+   "ribbon_maxz": 1.1818098325223487,
+   "coil_od_E": 13.746405535427057,
    "pocket": 15.30945235340646,
    "lift": 14.100000000000005,
-   "elev_rest": 4.5,
+   "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 84.78355526924133
+   "time": 80.46691656112671
+  },
+  {
+   "cfg": "A/min",
+   "roof_gap": 3.1000000000000014,
+   "roof_gap_Bp": 3.1000000000000014,
+   "bite2_seat_A": 4.0,
+   "m_nom": 0.2999999999999998,
+   "m_worst": 0.0,
+   "expo": 8.700000000000003,
+   "below": 15.7,
+   "raised_bot": 17.8,
+   "win_x": 1.3000000000000007,
+   "win_y": 1.25,
+   "under_win": 1.9000000000000001,
+   "F_A": 83.3,
+   "F_C": -1.5999999999999996,
+   "F_E": 100.0,
+   "F_Bp": 82.69999999999999,
+   "back_gap_E": 8.800000000000011,
+   "ext_A": 93.39679716769935,
+   "ext_2": 20.460512617571013,
+   "ext_C": 9.200544117114527,
+   "ext_E": 110.08569753190767,
+   "ext_max": 110.08569753190767,
+   "ext_limit": 457.0,
+   "ribbon_maxz": 1.3032071337536695,
+   "coil_od_E": 15.358214951621422,
+   "pocket": 17.06379474475369,
+   "lift": 14.100000000000005,
+   "elev_rest": 3.6999999999999993,
+   "push_rib_gap_Dt": 0.8000000000000003,
+   "push_rib_gap_Dt_worst": 0.5000000000000004,
+   "time": 75.30548143386841
+  },
+  {
+   "cfg": "A/nom",
+   "roof_gap": 1.809000000000001,
+   "roof_gap_Bp": 1.809000000000001,
+   "bite2_seat_A": 4.291,
+   "m_nom": 0.7999999999999998,
+   "m_worst": 0.5,
+   "expo": 9.700000000000003,
+   "below": 15.7,
+   "raised_bot": 17.8,
+   "win_x": 0.8000000000000007,
+   "win_y": 0.75,
+   "under_win": 1.9000000000000001,
+   "F_A": 87.3,
+   "F_C": -1.5999999999999996,
+   "F_E": 104.0,
+   "F_Bp": 86.19999999999999,
+   "back_gap_E": 4.800000000000011,
+   "ext_A": 97.39379195155131,
+   "ext_2": 21.444792589346918,
+   "ext_C": 9.200544117114527,
+   "ext_E": 114.08352123465423,
+   "ext_max": 114.08352123465423,
+   "ext_limit": 457.0,
+   "ribbon_maxz": 1.3156248993569157,
+   "coil_od_E": 15.33333748456367,
+   "pocket": 17.06379474475369,
+   "lift": 14.100000000000005,
+   "elev_rest": 3.6999999999999993,
+   "push_rib_gap_Dt": 0.8000000000000003,
+   "push_rib_gap_Dt_worst": 0.5000000000000004,
+   "time": 73.60357737541199
+  },
+  {
+   "cfg": "A/max",
+   "roof_gap": 0.6500000000000021,
+   "roof_gap_Bp": 0.6500000000000021,
+   "bite2_seat_A": 4.45,
+   "m_nom": 1.2999999999999998,
+   "m_worst": 1.0,
+   "expo": 10.700000000000003,
+   "below": 15.7,
+   "raised_bot": 17.8,
+   "win_x": 0.3000000000000007,
+   "win_y": 0.25,
+   "under_win": 1.9000000000000001,
+   "F_A": 91.3,
+   "F_C": -1.1000000000000014,
+   "F_E": 108.0,
+   "F_Bp": 89.69999999999999,
+   "back_gap_E": 0.8000000000000114,
+   "ext_A": 101.3910238061469,
+   "ext_2": 22.4304647188797,
+   "ext_C": 9.66031875787988,
+   "ext_E": 118.08149235780638,
+   "ext_max": 118.08149235780638,
+   "ext_limit": 457.0,
+   "ribbon_maxz": 1.3280652443751115,
+   "coil_od_E": 15.308418669987416,
+   "pocket": 17.06379474475369,
+   "lift": 14.100000000000005,
+   "elev_rest": 3.6999999999999993,
+   "push_rib_gap_Dt": 0.8000000000000003,
+   "push_rib_gap_Dt_worst": 0.5000000000000004,
+   "time": 74.46538209915161
   }
  ],
  "clearance": {
   "('clip_tube', 'follower')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "clip_tube",
    "follower"
   ],
   "('clip_tube', 'drum')": [
-   1.7228,
+   1.7047,
    "B/min A",
    "clip_tube",
    "drum"
   ],
   "('clip_tube', 'pin_axle')": [
    0.3,
-   "A/min A",
+   "B/min A",
    "clip_tube",
    "pin_axle"
   ],
+  "('clip_tube', 'drum_spacer')": [
+   0.65,
+   "B/min Dt clip dy+0.3 dz+0.0",
+   "clip_tube",
+   "drum_spacer2"
+  ],
   "('cf_spring', 'clip_tube')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "clip_tube",
    "cf_spring"
   ],
   "('bite', 'clip_tube')": [
    0.0001,
-   "A/min E",
+   "B/min E",
    "clip_tube",
    "bite8"
   ],
   "('cf_spring', 'ribbon_clamp')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "ribbon_clamp",
    "cf_spring"
   ],
@@ -306,15 +330,21 @@
   ],
   "('drum', 'follower')": [
    0.6,
-   "A/min Dt clip dy+0.3 dz+0.0",
+   "B/min Dt clip dy+0.3 dz+0.0",
    "follower",
    "drum"
   ],
   "('follower', 'pin_axle')": [
    0.05,
-   "A/min Dt clip dy+0.3 dz+0.0",
+   "B/min Dt clip dy+0.3 dz+0.0",
    "follower",
    "pin_axle"
+  ],
+  "('drum_spacer', 'follower')": [
+   0.35,
+   "B/min Dt clip dy+0.3 dz+0.0",
+   "follower",
+   "drum_spacer2"
   ],
   "('cf_spring', 'follower')": [
    0.475,
@@ -324,272 +354,302 @@
   ],
   "('bite', 'follower')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "follower",
    "bite8"
   ],
   "('drum', 'pin_axle')": [
    0.15,
-   "A/min Dt clip dy+0.3 dz+0.0",
+   "B/min Dt clip dy+0.3 dz+0.0",
    "drum",
    "pin_axle"
   ],
+  "('drum', 'drum_spacer')": [
+   0.25,
+   "B/min Dt clip dy+0.3 dz+0.0",
+   "drum",
+   "drum_spacer2"
+  ],
   "('cf_spring', 'drum')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "drum",
    "cf_spring"
   ],
+  "('drum_spacer', 'pin_axle')": [
+   5.5,
+   "B/min A",
+   "pin_axle",
+   "drum_spacer1"
+  ],
   "('cf_spring', 'pin_axle')": [
    5.25,
-   "A/min Dt clip dy+0.3 dz+0.0",
+   "B/min Dt clip dy+0.3 dz+0.0",
    "pin_axle",
+   "cf_spring"
+  ],
+  "('cf_spring', 'drum_spacer')": [
+   0.05,
+   "B/min Dt clip dy+0.3 dz+0.0",
+   "drum_spacer2",
    "cf_spring"
   ],
   "('cf_spring', 'receiver_left')": [
    1.7029,
-   "A/min C clip dy+0.0 dz-0.3",
+   "B/min C clip dy+0.0 dz-0.1",
    "cf_spring",
    "receiver_left"
   ],
   "('cf_spring', 'receiver_right')": [
    1.7029,
-   "A/min C clip dy+0.0 dz-0.3",
+   "B/min C clip dy+0.0 dz-0.1",
    "cf_spring",
    "receiver_right"
   ],
   "('bite', 'cf_spring')": [
-   2.8921,
+   2.9069,
    "A/min E",
    "cf_spring",
    "bite8"
   ],
   "('elevator', 'receiver_left')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "receiver_left",
    "elevator"
   ],
   "('lever', 'receiver_left')": [
    0.5,
-   "A/min A",
+   "B/min A",
    "receiver_left",
    "lever"
   ],
   "('pin_cup', 'receiver_left')": [
    0.55,
-   "A/min A",
+   "B/min A",
    "receiver_left",
    "pin_cup"
   ],
   "('pin_plunger', 'receiver_left')": [
    0.6,
-   "A/min D@+23.5",
+   "B/min D@+23.5",
    "receiver_left",
    "pin_plunger"
   ],
   "('plunger', 'receiver_left')": [
    0.0,
-   "A/min B",
+   "B/min B",
    "receiver_left",
    "plunger"
   ],
   "('receiver_left', 'return_spring')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "receiver_left",
    "return_spring"
   ],
   "('bite', 'receiver_left')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "receiver_left",
    "bite1"
   ],
   "('elevator', 'receiver_right')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "receiver_right",
    "elevator"
   ],
   "('lever', 'receiver_right')": [
    0.5,
-   "A/min A",
+   "B/min A",
    "receiver_right",
    "lever"
   ],
   "('pin_cup', 'receiver_right')": [
    0.55,
-   "A/min A",
+   "B/min A",
    "receiver_right",
    "pin_cup"
   ],
   "('pin_plunger', 'receiver_right')": [
    0.6,
-   "A/min D@+23.5",
+   "B/min D@+23.5",
    "receiver_right",
    "pin_plunger"
   ],
   "('plunger', 'receiver_right')": [
    0.0,
-   "A/min B",
+   "B/min B",
    "receiver_right",
    "plunger"
   ],
   "('receiver_right', 'return_spring')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "receiver_right",
    "return_spring"
   ],
   "('bite', 'receiver_right')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "receiver_right",
    "bite1"
   ],
   "('dowel', 'plunger')": [
    3.2,
-   "A/min C clip dy+0.3 dz+0.0",
+   "B/min C clip dy+0.3 dz+0.0",
    "dowel3",
    "plunger"
   ],
   "('lever', 'pin_pivot')": [
    0.05,
-   "A/min D@+23.5",
+   "B/min D@+23.5",
    "pin_pivot",
    "lever"
   ],
   "('elevator', 'lever')": [
    0.3,
-   "A/min D@+23.5",
+   "B/min D@+23.5",
    "elevator",
    "lever"
   ],
   "('elevator', 'pin_cup')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "elevator",
    "pin_cup"
   ],
   "('bite', 'elevator')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "elevator",
    "bite1"
   ],
   "('lever', 'pin_cup')": [
    0.05,
-   "A/min D@+15.7",
+   "B/min D@+15.7",
    "lever",
    "pin_cup"
   ],
   "('lever', 'pin_plunger')": [
    0.05,
-   "A/min D@+23.5",
+   "B/min D@+23.5",
    "lever",
    "pin_plunger"
   ],
   "('lever', 'plunger')": [
    0.3,
-   "A/min D@+23.5",
+   "B/min D@+23.5",
    "lever",
    "plunger"
   ],
   "('bite', 'lever')": [
-   10.8731,
-   "A/min A",
+   10.1853,
+   "B/min A",
    "lever",
    "bite1"
   ],
   "('pin_plunger', 'plunger')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "pin_plunger",
    "plunger"
   ],
   "('paddle_pad', 'plunger')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "plunger",
    "paddle_pad"
   ],
   "('plunger', 'return_spring')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "plunger",
    "return_spring"
   ],
   "('bite', 'bite')": [
    0.0,
-   "A/min A",
+   "B/min A",
    "bite1",
    "bite2"
   ],
   "('paddle_pad', 'receiver_left')": [
    0.8,
-   "A/min Dt clip dy+0.3 dz+0.0",
+   "B/min Dt clip dy+0.3 dz+0.0",
    "receiver_left",
    "paddle_pad"
   ],
   "('paddle_pad', 'receiver_right')": [
    0.8,
-   "A/min Dt clip dy+0.3 dz+0.0",
+   "B/min Dt clip dy+0.3 dz+0.0",
    "receiver_right",
    "paddle_pad"
   ],
   "('follower', 'ribbon_clamp')": [
    0.0,
-   "A/min C",
+   "B/min C",
    "ribbon_clamp",
    "follower"
   ],
   "('follower', 'screw_clamp')": [
    2.0,
-   "A/min C",
+   "B/min C",
    "screw_clamp_p",
    "follower"
   ],
   "('follower', 'receiver_left')": [
    0.0,
-   "A/min C clip dy+0.0 dz+0.3",
+   "B/min C clip dy+0.0 dz+0.3",
    "follower",
    "receiver_left"
   ],
   "('follower', 'receiver_right')": [
    0.0,
-   "A/min C clip dy+0.0 dz+0.3",
+   "B/min C clip dy+0.0 dz+0.3",
    "follower",
    "receiver_right"
   ],
   "('elevator', 'follower')": [
    0.8,
-   "A/min D",
+   "B/min D",
    "follower",
    "elevator"
   ],
   "('drum', 'receiver_left')": [
-   3.7228,
-   "B/min C clip dy+0.0 dz-0.3",
+   3.7047,
+   "B/min C clip dy+0.0 dz-0.1",
    "drum",
    "receiver_left"
   ],
   "('drum', 'receiver_right')": [
-   3.7228,
-   "B/min C clip dy+0.0 dz-0.3",
+   3.7047,
+   "B/min C clip dy+0.0 dz-0.1",
    "drum",
    "receiver_right"
   ],
   "('pin_axle', 'receiver_left')": [
    2.3,
-   "A/min C clip dy-0.3 dz+0.0",
+   "B/min C clip dy-0.3 dz+0.0",
    "pin_axle",
    "receiver_left"
   ],
   "('pin_axle', 'receiver_right')": [
    2.3,
-   "A/min C clip dy+0.3 dz+0.0",
+   "B/min C clip dy+0.3 dz+0.0",
    "pin_axle",
+   "receiver_right"
+  ],
+  "('drum_spacer', 'receiver_left')": [
+   2.65,
+   "B/min Dt clip dy+0.0 dz-0.1",
+   "drum_spacer2",
+   "receiver_left"
+  ],
+  "('drum_spacer', 'receiver_right')": [
+   2.65,
+   "B/min Dt clip dy+0.0 dz-0.1",
+   "drum_spacer1",
    "receiver_right"
   ],
   "('cf_spring', 'gate')": [
@@ -600,83 +660,55 @@
   ],
   "('bite', 'gate')": [
    0.0,
-   "A/min E",
+   "B/min E",
    "gate",
    "bite1"
   ],
   "('end_cap', 'follower')": [
    0.8,
-   "A/max E",
+   "B/max E",
    "end_cap",
    "follower"
-  ],
-  "('clip_tube', 'drum_spacer')": [
-   0.6681,
-   "B/min A",
-   "clip_tube",
-   "drum_spacer1"
-  ],
-  "('drum_spacer', 'follower')": [
-   0.35,
-   "B/min Dt clip dy+0.3 dz+0.0",
-   "follower",
-   "drum_spacer2"
-  ],
-  "('drum', 'drum_spacer')": [
-   0.15,
-   "B/min Dt clip dy+0.3 dz+0.0",
-   "drum",
-   "drum_spacer2"
-  ],
-  "('drum_spacer', 'pin_axle')": [
-   5.4,
-   "B/min Dt clip dy+0.3 dz+0.0",
-   "pin_axle",
-   "drum_spacer2"
-  ],
-  "('cf_spring', 'drum_spacer')": [
-   0.05,
-   "B/min Dt clip dy+0.3 dz+0.0",
-   "drum_spacer2",
-   "cf_spring"
-  ],
-  "('drum_spacer', 'receiver_left')": [
-   2.6681,
-   "B/min C clip dy+0.0 dz-0.3",
-   "drum_spacer2",
-   "receiver_left"
-  ],
-  "('drum_spacer', 'receiver_right')": [
-   2.6681,
-   "B/min C clip dy+0.0 dz-0.3",
-   "drum_spacer1",
-   "receiver_right"
   ]
  },
  "forces": {
   "A": {
    "F": 6.6,
    "friction": 3.3,
-   "rs_rest": 1.64,
+   "rs_rest": 1.6,
    "rs_pressed": 4.580000000000001,
-   "paddle_start": 4.9399999999999995,
+   "paddle_start": 4.9,
    "paddle_end": 7.880000000000001,
    "bite_returns": false,
+   "return_margin": 0.4848484848484849,
+   "sticky_drag": 5.082,
+   "sticky_returns": false,
+   "sticky_margin": 0.31483667847304214,
    "elevator_returns": true,
-   "L_rest": 26.8,
-   "L_press": 12.099999999999996
+   "L_rest": 27.0,
+   "L_rest_model": 26.8,
+   "L_press": 12.099999999999994,
+   "solid": 4.089941690962101,
+   "solid_ok": true
   },
   "B": {
    "F": 1.47,
    "friction": 0.735,
-   "rs_rest": 0.9839999999999999,
-   "rs_pressed": 2.7480000000000007,
-   "paddle_start": 1.7189999999999999,
-   "paddle_end": 3.4830000000000005,
+   "rs_rest": 1.4300000000000002,
+   "rs_pressed": 3.367000000000001,
+   "paddle_start": 2.165,
+   "paddle_end": 4.102000000000001,
    "bite_returns": true,
+   "return_margin": 1.9455782312925172,
+   "sticky_drag": 1.1319,
+   "sticky_returns": true,
+   "sticky_margin": 1.263362487852284,
    "elevator_returns": true,
-   "L_rest": 26.8,
-   "L_press": 12.099999999999996
+   "L_rest": 27.0,
+   "L_rest_model": 26.8,
+   "L_press": 12.099999999999994,
+   "solid": 5.646064139941693,
+   "solid_ok": true
   }
  },
  "printability": [
@@ -686,13 +718,14 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 34093.721930142354,
-   "min_wall": 0.8509130800702565,
+   "volume": 34093.72193014234,
+   "min_wall": 0.8093105729168084,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [
-    "spec feature: top corner of the 1.2 mouth lip with the spec 0.5 mouth chamfer 0.72",
-    "spec feature: clamp notch (X 3.1-3.9) meets the \u00d82.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall 0.00",
+    "spec feature: rail stub in front of the gate slot: 1.2 lip with the spec 0.5 rail chamfer 0.78",
+    "spec feature: top corner of the 1.2 mouth lip with the spec 0.5 mouth chamfer 0.70",
+    "spec feature: clamp notch (X 3.1-3.9) meets the \u00d82.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall 0.01",
     "longest bridge 20.5"
    ],
    "regions": [
@@ -716,8 +749,8 @@
      "bbox": [
       67.6,
       69.2,
-      -12.2,
-      -10.2
+      10.2,
+      12.2
      ]
     },
     {
@@ -728,8 +761,8 @@
      "bbox": [
       67.6,
       69.2,
-      10.2,
-      12.2
+      -12.2,
+      -10.2
      ]
     },
     {
@@ -753,13 +786,12 @@
    "winding": true,
    "bodies": 1,
    "volume": 33373.72192823499,
-   "min_wall": 0.803274427485172,
+   "min_wall": 0.8148289345253811,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [
-    "spec feature: rail stub in front of the gate slot: 1.2 lip with the spec 0.5 rail chamfer 0.77",
     "spec feature: top corner of the 1.2 mouth lip with the spec 0.5 mouth chamfer 0.71",
-    "spec feature: clamp notch (X 3.1-3.9) meets the \u00d82.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall 0.14",
+    "spec feature: clamp notch (X 3.1-3.9) meets the \u00d82.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall 0.03",
     "longest bridge 20.5"
    ],
    "regions": [
@@ -928,7 +960,7 @@
    "winding": true,
    "bodies": 1,
    "volume": 872.2197004535577,
-   "min_wall": 1.0002886934885913,
+   "min_wall": 1.0007654546643732,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [],
@@ -941,7 +973,7 @@
    "winding": true,
    "bodies": 1,
    "volume": 2390.1982116403437,
-   "min_wall": 1.0982830746280268,
+   "min_wall": 1.090877614905014,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [],
@@ -978,8 +1010,8 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 12862.42596659318,
-   "min_wall": 1.4680026276231537,
+   "volume": 13331.968443298707,
+   "min_wall": 1.8998999999999988,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [
@@ -994,8 +1026,8 @@
      "bridge": 0.0,
      "z": 11.0,
      "bbox": [
-      -7.7,
-      -6.1,
+      -8.5,
+      -7.0,
       5.3,
       9.9
      ]
@@ -1006,20 +1038,32 @@
      "bridge": 0.0,
      "z": 11.0,
      "bbox": [
-      -7.7,
-      -6.1,
+      -8.5,
+      -7.0,
       -9.9,
       -5.3
      ]
     },
     {
-     "area": 115.3,
+     "area": 36.6,
      "bad_frac": 0.0,
      "bridge": 10.6,
-     "z": 18.0,
+     "z": 18.4,
      "bbox": [
       -11.2,
-      -1.0,
+      -7.8,
+      -5.3,
+      5.3
+     ]
+    },
+    {
+     "area": 64.7,
+     "bad_frac": 0.0,
+     "bridge": 10.6,
+     "z": 16.8,
+     "bbox": [
+      -7.8,
+      -2.3,
       -5.3,
       5.3
      ]
@@ -1032,8 +1076,8 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 1110.5606658620616,
-   "min_wall": 4.806582631747904,
+   "volume": 1110.560665877292,
+   "min_wall": 4.806582631747902,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [],
@@ -1045,7 +1089,7 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 107.90451511936874,
+   "volume": 107.90451511936878,
    "min_wall": 0.9006534628142999,
    "wall_ok": true,
    "overhang_ok": true,
@@ -1060,13 +1104,13 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 32269.4501463125,
+   "volume": 32265.92168021353,
    "min_wall": 0.7998999999999996,
    "wall_ok": true,
    "overhang_ok": false,
    "flags": [
-    "SUPPORT: 163 mm\u00b2 unsupported at print Z 10.2 (x -1.8..12.1, y -24.7..24.0)",
-    "SUPPORT: 618 mm\u00b2 unsupported at print Z 12.6 (x 12.5..40.0, y -11.5..24.6)",
+    "SUPPORT: 169 mm\u00b2 unsupported at print Z 10.2 (x -1.8..12.1, y -24.7..24.0)",
+    "SUPPORT: 611 mm\u00b2 unsupported at print Z 12.6 (x 12.5..40.0, y -11.3..24.6)",
     "longest bridge 25.0"
    ],
    "regions": [
@@ -1155,9 +1199,9 @@
      ]
     },
     {
-     "area": 642.6,
-     "bad_frac": 0.254,
-     "bridge": 24.9,
+     "area": 643.9,
+     "bad_frac": 0.263,
+     "bridge": 25.0,
      "z": 10.2,
      "bbox": [
       -1.8,
@@ -1167,14 +1211,14 @@
      ]
     },
     {
-     "area": 992.8,
-     "bad_frac": 0.622,
+     "area": 987.3,
+     "bad_frac": 0.619,
      "bridge": 25.0,
      "z": 12.6,
      "bbox": [
       12.5,
       40.0,
-      -11.5,
+      -11.3,
       24.6
      ]
     },
@@ -1186,8 +1230,8 @@
      "bbox": [
       15.5,
       19.5,
-      -12.0,
-      -11.5
+      -11.8,
+      -11.3
      ]
     },
     {
@@ -1215,48 +1259,16 @@
      ]
     },
     {
-     "area": 0.1,
+     "area": 2.7,
      "bad_frac": 0.0,
      "bridge": 0.0,
-     "z": 11.3,
-     "bbox": [
-      13.4,
-      13.7,
-      26.3,
-      26.6
-     ]
-    },
-    {
-     "area": 3.4,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 11.3,
+     "z": 11.2,
      "bbox": [
       13.7,
       15.3,
       24.6,
-      26.6
+      26.3
      ]
-    },
-    {
-     "area": 0.1,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 11.3,
-     "bbox": [
-      15.3,
-      15.6,
-      26.3,
-      26.6
-     ]
-    },
-    {
-     "area": 3.1,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 0.29,
-     "bbox": [],
-     "note": "bed-edge fillet"
     },
     {
      "area": 27.0,
@@ -1269,46 +1281,6 @@
       24.6,
       26.6
      ]
-    },
-    {
-     "area": 1.5,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 0.29,
-     "bbox": [],
-     "note": "bed-edge fillet"
-    },
-    {
-     "area": 0.4,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 0.3,
-     "bbox": [],
-     "note": "bed-edge fillet"
-    },
-    {
-     "area": 1.4,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 0.3,
-     "bbox": [],
-     "note": "bed-edge fillet"
-    },
-    {
-     "area": 0.4,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 0.5,
-     "bbox": [],
-     "note": "bed-edge fillet"
-    },
-    {
-     "area": 3.5,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 0.29,
-     "bbox": [],
-     "note": "bed-edge fillet"
     },
     {
      "area": 2.8,
@@ -1342,13 +1314,13 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 31703.439462670398,
+   "volume": 31699.91100532886,
    "min_wall": 0.7998999999999996,
    "wall_ok": true,
    "overhang_ok": false,
    "flags": [
-    "SUPPORT: 150 mm\u00b2 unsupported at print Z 10.2 (x -1.8..12.1, y -25.0..23.8)",
-    "SUPPORT: 615 mm\u00b2 unsupported at print Z 12.6 (x 12.5..40.0, y -25.5..10.6)",
+    "SUPPORT: 159 mm\u00b2 unsupported at print Z 10.2 (x -1.8..12.1, y -25.0..23.8)",
+    "SUPPORT: 611 mm\u00b2 unsupported at print Z 12.6 (x 12.5..40.0, y -25.5..10.4)",
     "SUPPORT: 43 mm\u00b2 unsupported at print Z 10.8 (x 15.3..40.5, y -27.3..-25.5)",
     "longest bridge 25.0"
    ],
@@ -1363,6 +1335,30 @@
       -31.6,
       14.8,
       26.2
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 6.8,
+     "bbox": [
+      -18.4,
+      -17.9,
+      -25.2,
+      -24.8
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 6.8,
+     "bbox": [
+      -29.5,
+      -29.0,
+      -25.2,
+      -24.8
      ]
     },
     {
@@ -1402,32 +1398,8 @@
      ]
     },
     {
-     "area": 0.1,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 6.8,
-     "bbox": [
-      -18.4,
-      -17.9,
-      -25.2,
-      -24.8
-     ]
-    },
-    {
-     "area": 0.1,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 6.8,
-     "bbox": [
-      -29.5,
-      -29.0,
-      -25.2,
-      -24.8
-     ]
-    },
-    {
-     "area": 642.6,
-     "bad_frac": 0.234,
+     "area": 643.9,
+     "bad_frac": 0.247,
      "bridge": 25.0,
      "z": 10.2,
      "bbox": [
@@ -1450,15 +1422,15 @@
      ]
     },
     {
-     "area": 992.7,
-     "bad_frac": 0.62,
+     "area": 987.2,
+     "bad_frac": 0.619,
      "bridge": 24.9,
      "z": 12.6,
      "bbox": [
       12.5,
       40.0,
       -25.5,
-      10.6
+      10.4
      ]
     },
     {
@@ -1469,8 +1441,8 @@
      "bbox": [
       15.5,
       19.5,
-      10.6,
-      11.1
+      10.4,
+      10.9
      ]
     },
     {
@@ -1525,24 +1497,24 @@
      "area": 3.5,
      "bad_frac": 0.0,
      "bridge": 0.0,
-     "z": 13.6,
-     "bbox": [
-      -10.8,
-      -8.7,
-      12.7,
-      14.8
-     ]
-    },
-    {
-     "area": 3.5,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
      "z": 5.3,
      "bbox": [
       -12.2,
       -10.1,
       -11.8,
       -9.7
+     ]
+    },
+    {
+     "area": 3.5,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 13.6,
+     "bbox": [
+      -10.8,
+      -8.7,
+      12.7,
+      14.8
      ]
     }
    ]
@@ -1553,8 +1525,8 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 3931.5520596954825,
-   "min_wall": 1.6545535405546747,
+   "volume": 3746.880221196408,
+   "min_wall": 1.5707918688069658,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [
@@ -1619,7 +1591,7 @@
    "winding": true,
    "bodies": 1,
    "volume": 6346.576643081265,
-   "min_wall": 1.318403807868357,
+   "min_wall": 1.343304922375097,
    "wall_ok": true,
    "overhang_ok": false,
    "flags": [
@@ -1672,7 +1644,7 @@
    "winding": true,
    "bodies": 1,
    "volume": 1373.1192321918843,
-   "min_wall": 2.5409481404740575,
+   "min_wall": 2.5415179206328853,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [],
@@ -1685,7 +1657,7 @@
    "winding": true,
    "bodies": 1,
    "volume": 3317.3878136463404,
-   "min_wall": 2.065669968661446,
+   "min_wall": 2.1583371626486496,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [],
@@ -1787,7 +1759,7 @@
    "winding": true,
    "bodies": 2,
    "volume": 19583.27970719525,
-   "min_wall": 0.8008817823964854,
+   "min_wall": 0.8011617277619099,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [],
@@ -1921,13 +1893,26 @@
    ]
   },
   {
-   "name": "follower_springB",
+   "name": "drum_spacer",
+   "orient": "plusY_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 51.456213439502186,
+   "min_wall": 0.8043760533230908,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [],
+   "regions": []
+  },
+  {
+   "name": "follower_springA",
    "orient": "plusX_down",
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 13328.887738807804,
-   "min_wall": 1.8998999999999988,
+   "volume": 12865.674991868438,
+   "min_wall": 1.4680026276231537,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [
@@ -1942,8 +1927,8 @@
      "bridge": 0.0,
      "z": 11.0,
      "bbox": [
-      -8.5,
-      -7.0,
+      -7.7,
+      -6.2,
       5.3,
       9.9
      ]
@@ -1954,50 +1939,25 @@
      "bridge": 0.0,
      "z": 11.0,
      "bbox": [
-      -8.5,
-      -7.0,
+      -7.7,
+      -6.2,
       -9.9,
       -5.3
      ]
     },
     {
-     "area": 36.8,
+     "area": 115.2,
      "bad_frac": 0.0,
      "bridge": 10.6,
-     "z": 18.4,
+     "z": 18.0,
      "bbox": [
       -11.2,
-      -7.8,
-      -5.3,
-      5.3
-     ]
-    },
-    {
-     "area": 64.7,
-     "bad_frac": 0.0,
-     "bridge": 10.6,
-     "z": 16.8,
-     "bbox": [
-      -7.8,
-      -2.3,
+      -1.0,
       -5.3,
       5.3
      ]
     }
    ]
-  },
-  {
-   "name": "drum_spacer_springB",
-   "orient": "plusY_down",
-   "watertight": true,
-   "winding": true,
-   "bodies": 1,
-   "volume": 57.43140552382761,
-   "min_wall": 0.9043449715231723,
-   "wall_ok": true,
-   "overhang_ok": true,
-   "flags": [],
-   "regions": []
   }
  ]
 }
