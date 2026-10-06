@@ -4,7 +4,7 @@
    "9.1",
    "Interference (all states + lever sweep)",
    true,
-   "216 poses checked, 0 unintended overlaps > 0.01 mm\u00b3"
+   "258 poses checked, 0 unintended overlaps > 0.01 mm\u00b3"
   ],
   [
    "9.2",
@@ -58,7 +58,7 @@
    "9.10",
    "Force report",
    true,
-   "B 2.2-4.1 N, uneaten bite returns 1.95x (sticky 1.26x); A 4.9-7.9 N (> 6 N flagged, does not return); B feed margin (min width) 1.91x level / 1.29x vertical / 1.07x at 56\u00b0 / Moon 11.5x level, 6.5x worst"
+   "B 2.2-4.1 N, uneaten bite returns 1.95x (sticky 1.26x); A 4.9-7.9 N (> 6 N flagged, does not return); B feed margin, min width: 1.82x level / 1.24x vertical / **1.02x at 56\u00b0**, leaning bites **0.91x at 47\u00b0**; Moon \u2265 5.5x any orientation"
   ],
   [
    "9.11",
@@ -111,7 +111,7 @@
    "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 81.36364603042603
+   "time": 106.13220524787903
   },
   {
    "cfg": "B/nom",
@@ -144,7 +144,7 @@
    "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 81.66067695617676
+   "time": 105.33756494522095
   },
   {
    "cfg": "B/max",
@@ -177,7 +177,7 @@
    "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 80.46691656112671
+   "time": 105.04073905944824
   },
   {
    "cfg": "A/min",
@@ -210,7 +210,7 @@
    "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 75.30548143386841
+   "time": 96.65075826644897
   },
   {
    "cfg": "A/nom",
@@ -243,7 +243,7 @@
    "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 73.60357737541199
+   "time": 96.41077899932861
   },
   {
    "cfg": "A/max",
@@ -276,7 +276,7 @@
    "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 74.46538209915161
+   "time": 95.9731674194336
   }
  ],
  "clearance": {
@@ -300,7 +300,7 @@
   ],
   "('clip_tube', 'drum_spacer')": [
    0.65,
-   "B/min Dt clip dy+0.3 dz+0.0",
+   "B/min Bp clip dy+0.3 dz+0.0",
    "clip_tube",
    "drum_spacer2"
   ],
@@ -312,7 +312,7 @@
   ],
   "('bite', 'clip_tube')": [
    0.0001,
-   "B/min E",
+   "B/min Bp clip dy+0.3 dz+0.0",
    "clip_tube",
    "bite8"
   ],
@@ -324,31 +324,31 @@
   ],
   "('cf_spring', 'screw_clamp')": [
    0.175,
-   "A/min Dt clip dy+0.3 dz+0.0",
+   "A/min Bp clip dy+0.3 dz+0.0",
    "screw_clamp_n",
    "cf_spring"
   ],
   "('drum', 'follower')": [
    0.6,
-   "B/min Dt clip dy+0.3 dz+0.0",
+   "B/min Bp clip dy+0.3 dz+0.0",
    "follower",
    "drum"
   ],
   "('follower', 'pin_axle')": [
    0.05,
-   "B/min Dt clip dy+0.3 dz+0.0",
+   "B/min Bp clip dy+0.3 dz+0.0",
    "follower",
    "pin_axle"
   ],
   "('drum_spacer', 'follower')": [
    0.35,
-   "B/min Dt clip dy+0.3 dz+0.0",
+   "B/min Bp clip dy+0.3 dz+0.0",
    "follower",
    "drum_spacer2"
   ],
   "('cf_spring', 'follower')": [
    0.475,
-   "A/min Dt clip dy+0.3 dz+0.0",
+   "A/min Bp clip dy+0.3 dz+0.0",
    "follower",
    "cf_spring"
   ],
@@ -360,13 +360,13 @@
   ],
   "('drum', 'pin_axle')": [
    0.15,
-   "B/min Dt clip dy+0.3 dz+0.0",
+   "B/min A clip dy+0.3 dz+0.0",
    "drum",
    "pin_axle"
   ],
   "('drum', 'drum_spacer')": [
    0.25,
-   "B/min Dt clip dy+0.3 dz+0.0",
+   "B/min Bp clip dy+0.3 dz+0.0",
    "drum",
    "drum_spacer2"
   ],
@@ -384,13 +384,13 @@
   ],
   "('cf_spring', 'pin_axle')": [
    5.25,
-   "B/min Dt clip dy+0.3 dz+0.0",
+   "B/min Bp clip dy+0.3 dz+0.0",
    "pin_axle",
    "cf_spring"
   ],
   "('cf_spring', 'drum_spacer')": [
    0.05,
-   "B/min Dt clip dy+0.3 dz+0.0",
+   "B/min Bp clip dy+0.3 dz+0.0",
    "drum_spacer2",
    "cf_spring"
   ],
@@ -498,7 +498,7 @@
   ],
   "('dowel', 'plunger')": [
    3.2,
-   "B/min C clip dy+0.3 dz+0.0",
+   "B/min A clip dy+0.3 dz+0.0",
    "dowel3",
    "plunger"
   ],
@@ -546,7 +546,7 @@
   ],
   "('bite', 'lever')": [
    10.1853,
-   "B/min A",
+   "B/min A clip dy+0.3 dz+0.0",
    "lever",
    "bite1"
   ],
@@ -576,13 +576,13 @@
   ],
   "('paddle_pad', 'receiver_left')": [
    0.8,
-   "B/min Dt clip dy+0.3 dz+0.0",
+   "B/min Bp clip dy+0.3 dz+0.0",
    "receiver_left",
    "paddle_pad"
   ],
   "('paddle_pad', 'receiver_right')": [
    0.8,
-   "B/min Dt clip dy+0.3 dz+0.0",
+   "B/min Bp clip dy+0.3 dz+0.0",
    "receiver_right",
    "paddle_pad"
   ],
@@ -808,6 +808,18 @@
      ]
     },
     {
+     "area": 3.6,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 19.8,
+     "bbox": [
+      67.6,
+      69.2,
+      -12.2,
+      -10.2
+     ]
+    },
+    {
      "area": 20.0,
      "bad_frac": 0.0,
      "bridge": 10.0,
@@ -925,18 +937,6 @@
       52.0,
       10.2,
       12.2
-     ]
-    },
-    {
-     "area": 3.6,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 19.8,
-     "bbox": [
-      67.6,
-      69.2,
-      -12.2,
-      -10.2
      ]
     },
     {
