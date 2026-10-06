@@ -73,6 +73,7 @@ already in the orientation below; just drop them on the bed.
 | `ring_hook.stl` | 1 | PETG | on its end | none | Placeholder size until the neck ring is measured (OPEN_ISSUES #4). |
 | `bench_base.stl` | 1 | PETG or PLA | flat | none | Holds the device upright on the bench. **195.8 mm long: it won't fit a 180 mm bed** (print it diagonally or on a bigger printer). |
 | `bite_nominal.stl`, `bite_min.stl`, `bite_max.stl` | 8 of each | PETG or PLA | flat | none | Dummy bites for testing: 12.7 × 19 × 25.4, 12.2 × 18 × 24.4, 13.2 × 20 × 26.4. |
+| `bite_wedge_test.stl` | 8 | PETG or PLA | flat | none | 12.7 × **18.6** × 25.4: the width the model says wedges worst if bites lean (bench test #1, OPEN_ISSUES #14). |
 | `fit_coupon.stl` | 1 | PETG | flat | none | Print first (section 2). |
 
 **Already printed v1 parts?** Reprint `receiver_left`, `receiver_right` and `elevator`: v1.1 lowers the
@@ -195,10 +196,11 @@ the 25 mm rule (OPEN_ISSUES #2).
 
 ### Bench go / no-go tests (before any demo)
 
-1. **Feed:** small-width (18 mm) dummy bites made sticky (a little honey on the faces, or real food after the
-   warm soak), clip resting in the socket, all 8 bites cycled, **level and with the mouth tilted ~50° up**.
-   **Must not stall.** Repeat with nominal bites. This is also the test for leaning bites: the model predicts the
-   tilted case is marginal for both sizes (OPEN_ISSUES #14).
+1. **Feed:** sticky dummy bites (a little honey on the faces, or real food after the warm soak), clip resting in
+   the socket, all 8 bites cycled, **level and with the mouth tilted ~50° up**. Do it with `bite_min` (18 wide),
+   `bite_nominal` (19) and **`bite_wedge_test` (18.6)**, and tap the clip sideways first so the bites can lean.
+   **Must not stall.** If bites lean, the model predicts the tilted case is marginal and the 18.6 bites could
+   stall even level (OPEN_ISSUES #14). If they stall, the fix is flat rail tops, not more spring.
 2. **Sink-back:** raise a bite, don't take it, let go. **It must drop back**, with real or sticky bites, not
    just dry printed dummies.
 3. **Lift:** press the paddle to its stop. The cup should rise about 13.9 mm, and at least 8 mm of the smallest

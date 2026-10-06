@@ -205,6 +205,7 @@ def feed_margins():
     out = {}
     m_b = P.N_BITES * P.FEED_BITE_MASS_G / 1000
     k_lean = {bk: lean.rest_pose(b)["k_lean"] for bk, b in P.BITES.items()}
+    band = lean.width_sweep()[1]                     # worst leaning width over the whole band
     for sk, s in P.SPRINGS.items():
         from hardware import ribbon_geometry
         F_full = P.STOP_X + P.N_BITES * P.BITES["min"].T
@@ -214,11 +215,13 @@ def feed_margins():
         m_f = follower_group_mass(sk) / 1000
         cases = [(bk, b, contact_factor(b.W)) for bk, b in P.BITES.items()]
         cases += [(f"{bk}_lean", b, k_lean[bk]) for bk, b in P.BITES.items() if k_lean[bk]]
+        if band:
+            cases.append(("band_lean", P.Bite("band", P.BITE_T, band[0], P.BITE_H), band[1]))
         for bk, b, kf in cases:
             a_ = P.FEED_MU * kf * m_b + P.FEED_MU_FOLLOWER * m_f
             b_ = m_b + m_f
             worst = math.degrees(math.atan2(b_, a_))
-            r = dict(k=kf, m_f_g=m_f * 1000, F_avail=Fa, axle_loss=axle_loss, worst_incline_deg=worst)
+            r = dict(k=kf, m_f_g=m_f * 1000, F_avail=Fa, axle_loss=axle_loss, worst_incline_deg=worst, W=b.W)
             for gname, g in (("earth", P.G_EARTH), ("moon", P.G_MOON)):
                 r[f"{gname}_level"] = Fa / (g * a_)
                 r[f"{gname}_vertical"] = Fa / (g * b_)
@@ -249,8 +252,8 @@ def step_down():
     for bk, b in P.BITES.items():
         seat = K.rail_seat(b.W)
         ln = lean.rest_pose(b)
-        for dz in (0.0, -P.SOCKET_FLOOR_CLR):
-            rows.append(dict(bites=bk, W=b.W, dz=dz, seat=seat + dz, step=seat + dz - P.CUP_TOP_Z, ln=ln,
+        for floor, dz in ((False, 0.0), (True, -P.SOCKET_FLOOR_CLR)):
+            rows.append(dict(bites=bk, W=b.W, dz=dz, floor=floor, seat=seat + dz, step=seat + dz - P.CUP_TOP_Z, ln=ln,
                              lean=ln["lean_deg"], com_drop=ln["com_drop"], lowest=ln["lowest"] + dz,
                              lowest_y=ln["lowest_y"], lean_step=ln["lowest"] + dz - P.CUP_TOP_Z))
     return rows
@@ -348,7 +351,8 @@ def main():
     em = envelope_mass()
     fr = forces()
     margins, cup_rng, plg_rng = slot_margins()
-    extra = dict(feed=feed_margins(), drag=drag_up_margins(), steps=step_down(), latch=latch(),
+    import lean
+    extra = dict(feed=feed_margins(), drag=drag_up_margins(), steps=step_down(), latch=latch(), band=lean.width_sweep(),
                  solid=solid_table())
     write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, quick, extra)
 
@@ -455,7 +459,9 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
     fB = fd[(P.DEFAULT_SPRING, "min")]
     fL = min((v for (sk, bk), v in fd.items() if sk == P.DEFAULT_SPRING and bk.endswith("_lean")),
              key=lambda v: v["earth_incline"], default=None)
-    lean_txt = (f", leaning bites **{fL['earth_incline']:.2f}x at {fL['worst_incline_deg']:.0f}°**" if fL else "")
+    fW0 = fd.get((P.DEFAULT_SPRING, "band_lean"))
+    lean_txt = (f", leaning bites **{fL['earth_incline']:.2f}x at {fL['worst_incline_deg']:.0f}°**" if fL else "") + \
+        (f" (worst width {fW0['W']:.2f}: **{fW0['earth_level']:.2f}x level**)" if fW0 else "")
     checks.append(("9.10", "Force report", True,
                    f"B {fr['B']['paddle_start']:.1f}-{fr['B']['paddle_end']:.1f} N, uneaten bite returns "
                    f"{fr['B']['return_margin']:.2f}x (sticky {fr['B']['sticky_margin']:.2f}x); "
@@ -660,22 +666,29 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
       f"10 g bites are heavy (a nominal bite of 1.1 g/cm³ food is ~6.5 g): real margins scale up with lighter food.\n")
     w("| Spring | Bite width | k | follower group g | Earth level | Earth vertical (mouth up) | **Earth worst incline** | Moon level | Moon worst incline |")
     w("|---|---|---|---|---|---|---|---|---|")
-    order = {"min": 0, "min_lean": 1, "nom": 2, "nom_lean": 3, "max": 4, "max_lean": 5}
+    order = {"min": 0, "min_lean": 1, "nom": 2, "nom_lean": 3, "max": 4, "max_lean": 5, "band_lean": 6}
     for (sk, bk), r in sorted(fd.items(), key=lambda kv: (kv[0][0] != P.DEFAULT_SPRING, order[kv[0][1]])):
         b0 = bk.replace("_lean", "")
-        lab = f"{b0} ({P.BITES[b0].W:.0f})" + (", **leaning**" if bk.endswith("_lean") else "")
+        lab = (f"**worst width {r['W']:.2f}, leaning**" if bk == "band_lean" else
+               f"{b0} ({P.BITES[b0].W:.0f})" + (", **leaning**" if bk.endswith("_lean") else ""))
         w(f"| {sk} | {lab} | {r['k']:.2f} | {r['m_f_g']:.1f} | {r['earth_level']:.2f}x | "
           f"{r['earth_vertical']:.2f}x | **{r['earth_incline']:.2f}x** at {r['worst_incline_deg']:.0f}° | "
           f"{r['moon_level']:.1f}x | {r['moon_incline']:.1f}x |")
-    leaners = [bk.replace("_lean", "") for (sk, bk), v in fd.items() if sk == P.DEFAULT_SPRING
-               and bk.endswith("_lean") and v["earth_incline"] < 1.0]
+    names = {"min": "min-width", "nom": "nominal", "max": "max-width"}
+    leaners = [names.get(bk.replace("_lean", ""), "") for (sk, bk), v in fd.items() if sk == P.DEFAULT_SPRING
+               and bk.endswith("_lean") and bk != "band_lean" and v["earth_incline"] < 1.0]
+    fW = fd.get((P.DEFAULT_SPRING, "band_lean"))
     w(f"\n**Flag (1-g worst case):** with spring B the Earth margin is lowest with the mouth tilted uphill: "
       f"{fB['earth_incline']:.2f}x at ~{fB['worst_incline_deg']:.0f}° for upright min-width bites"
-      + (f" and **{fL['earth_incline']:.2f}x at ~{fL['worst_incline_deg']:.0f}° if {' or '.join(leaners)} bites lean** "
-         f"(a stall is predicted)" if fL and leaners else "") + ". That stacks "
-      f"every worst case: sticky μ 0.6 on rails and walls, 10 g bites, spring 13 % weak, frictionless lean. Treat "
-      f"steep mouth-up tilts as the limit of the Earth \"any orientation\" demo (OPEN_ISSUES #14). On the Moon the "
-      f"margin is ≥ {min(v['moon_incline'] for (sk, bk), v in fd.items() if sk == P.DEFAULT_SPRING):.1f}x in any "
+      + (f"; **{fL['earth_incline']:.2f}x at ~{fL['worst_incline_deg']:.0f}° if {' or '.join(leaners)} bites lean**"
+         if fL and leaners else "")
+      + (f"; and at the worst leaning width ({fW['W']:.2f}, pinched between one wall and the opposite rail edge) "
+         f"**{fW['earth_level']:.2f}x level / {fW['earth_incline']:.2f}x at ~{fW['worst_incline_deg']:.0f}°**"
+         if fW else "")
+      + ". A margin below 1 means a stall is predicted. That stacks every worst case: sticky μ 0.6 on rails "
+      f"and walls, 10 g bites, spring 13 % weak, a rigid frictionless lean (real food deforms; friction resists "
+      f"the lean). The bench test decides (OPEN_ISSUES #14). On the Moon the margin is ≥ "
+      f"{min(v['moon_incline'] for (sk, bk), v in fd.items() if sk == P.DEFAULT_SPRING):.1f}x in any "
       f"orientation (the often-quoted ~12x is the level case).\n")
     dg = extra["drag"]
     w("### Bite 2 dragged up in state B\n")
@@ -696,7 +709,7 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
       f"once bite-to-bite friction reaches ~0.43, however hard the spring pushes).\n")
     w("| Bite width | Clip | Rail seat Z | **Step down to the bridge** |\n|---|---|---|---|")
     for r in st_:
-        where = "centred" if r["dz"] == 0 else f"on its floor ({r['dz']:+.1f})"
+        where = f"on its floor ({r['dz']:+.1f})" if r["floor"] else "centred"
         w(f"| {r['bites']} ({r['W']:.0f}) | {where} | {r['seat']:.3f} | **{r['step']:.2f}** {ok(r['step'] >= -1e-9)} |")
     w("\n**Leaning bites (not covered by the rule above).** The rule assumes upright, centred bites. A rigid, "
       "**frictionless** 2-D check (`cad/lean.py`) lets a bite shift and lean about X; a whole stack can lean "
@@ -706,7 +719,7 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
       "then decide where the roll stops. Lowest-energy pose, clip on its floor:\n")
     w("| Bite width | Upright stable? (CoM change, 0.25° free roll) | Lowest-energy lean | CoM lower by | Contacts | k (Σ normals ÷ weight) | Lowest bottom point Z (at Y) | vs bridge top |\n|---|---|---|---|---|---|---|---|")
     for r in st_:
-        if r["dz"] == 0:
+        if not r["floor"]:
             continue
         ln = r["ln"]
         k_txt = f"{ln['k_lean']:.2f}" if ln["k_lean"] else "-"
@@ -715,23 +728,34 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
           f"{', '.join(ln['contacts'])} | {k_txt} | {r['lowest']:.2f} (Y {abs(r['lowest_y']):.1f}) | {r['lean_step']:+.2f} |")
     w("")
     for bk, b in P.BITES.items():
-        r = next(x for x in st_ if x["bites"] == bk and x["dz"] != 0)
+        r = next(x for x in st_ if x["bites"] == bk and x["floor"])
         ln = r["ln"]
         walls = {0: "without reaching a wall", 1: "until it wedges against one side wall",
                  2: "until it wedges against both side walls"}[ln["walls"]]
-        k_txt = (f"its contact forces add up to {ln['k_lean']:.2f}x its weight instead of "
-                 f"{contact_factor(b.W):.2f}x upright" if ln["k_lean"] else "")
+        k_txt = (f"; its contact forces add up to {ln['k_lean']:.2f}x its weight instead of "
+                 f"{contact_factor(b.W):.2f}x upright" if ln["k_lean"] else
+                 ("; **its contact forces could not be resolved**" if not ln["upright_stable"] else ""))
         w(f"- **{bk} ({b.W:.0f} wide): upright is {'stable' if ln['upright_stable'] else 'unstable'}** (frictionless). "
-          f"It rolls {abs(ln['lean_deg']):.1f}° {walls}; its lowest corner ends {abs(r['lean_step']):.2f} "
-          f"{'below' if r['lean_step'] < 0 else 'above'} the bridge top (clip on its floor); {k_txt}.")
-    w("- Only friction at the rails and walls keeps bites upright, and a jolt can tip them. The corner/edge "
-      "contacts make even the widest bite unstable upright; the narrow side clearance just stops a wide bite "
-      "sooner, which keeps its contact factor low (§9.10 reports every leaning row).")
+          f"It rolls {abs(ln['lean_deg']):.2f}° {walls}; its lowest corner ends {abs(r['lean_step']):.2f} "
+          f"{'below' if r['lean_step'] < 0 else 'above'} the bridge top (clip on its floor){k_txt}.")
+    unstable = [bk for bk, b in P.BITES.items() if not next(x for x in st_ if x["bites"] == bk)["ln"]["upright_stable"]]
+    w("- Only friction at the rails and walls keeps bites upright, and a jolt can tip them"
+      + (" (every listed width is unstable upright)." if len(unstable) == len(P.BITES) else "."))
+    rows_w, worst_w = extra["band"]
+    if worst_w:
+        w(f"- **Across the whole width band** (H {P.BITE_H}, every {rows_w[1][0] - rows_w[0][0]:.3f}): k = "
+          + ", ".join(f"{W:.2f}: {k:.2f}" for W, k, _, _ in rows_w[::4] if k) + ". "
+          f"The worst is **{worst_w[1]:.2f} at {worst_w[0]:.2f} wide**: just past the width where a bite can touch both walls, "
+          f"it pinches between one wall and the opposite rail edge, whose contact faces almost sideways, so the "
+          f"two forces fight each other. This is a sharp, geometry-sensitive jump in a rigid model, but it is the "
+          f"case to test: `bite_wedge_test.stl` is {P.BITE_WEDGE_TEST_W} wide"
+          + ("" if abs(worst_w[0] - P.BITE_WEDGE_TEST_W) <= 0.05 else
+             f" (**update `BITE_WEDGE_TEST_W` to {worst_w[0]:.2f}**)") + ".")
     w("- A leaning bite meets the bridge edge on one rounded R2 corner, 0.9-1.1 above the corner's lowest point "
       "(contact ~60° from vertical). It has to roll upright about its high-side rail against bite-to-bite face "
       "friction; a rough torque balance says that can self-lock at bite-to-bite friction of only ~0.2-0.4, no "
-      "better than the climb v1.1 removed. The CAD can't settle it: **bench go/no-go #1 (sticky 18-wide and "
-      "nominal bites, clip resting in the socket, all 8 cycled, level and at ~50° mouth-up) is the real test** "
+      "better than the climb v1.1 removed. The CAD can't settle it: **bench go/no-go #1 (sticky min, nominal and "
+      "wedge-test bites, clip resting in the socket, all 8 cycled, level and at ~50° mouth-up) is the real test** "
       "(OPEN_ISSUES #14).\n")
 
     w("## 9.12 Return-spring solid length (v1.1)\n")

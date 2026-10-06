@@ -184,36 +184,41 @@ notch floor, at exactly the moment the clip reaches the roof (§9.13).
 - **Team model review (Oct 2 2026):** an independent rebuild found 182 of 182 spec coordinates matching, and a
   second collision engine (manifold3d) found 0 collisions. Its findings became v1.1 (CHANGES.md section G).
 
-## 14. Leaning bites: possible feed stall at steep mouth-up tilts on Earth (needs the bench test)
+## 14. Leaning bites: possible feed stall on Earth (needs the bench test)
 
 The step-down rule (§9.11) and the upright drag numbers in §9.10 assume bites stand upright and centred on the
 rails. A rigid, frictionless 2-D check (`cad/lean.py`, VERIFICATION §9.11) shows they don't have to:
 - **Every bite width is unstable upright.** Each R2 bite corner sits on an R0.5 rail edge, which acts like a
   four-bar linkage: lean the bite a little and its centre of mass drops. Only friction at the rails and walls
-  keeps the bites upright, and a jolt can tip them. The side walls decide where the roll stops.
-- A min (18-wide) bite rolls about 7° and wedges against both side walls. A nominal bite rolls about 3° and a
-  max (20-wide) bite about 0.4° before each wedges against one wall. A whole stack can lean together, because
-  rotating about the stacking axis doesn't slide one bite face on the next.
-- Wedged, the contact forces add up to **1.77× (min) / 1.75× (nominal) / 1.14× (max) the bite's weight** instead
-  of 1.25× / 1.09× / 1.02×.
-  With spring B and sticky bites, the Earth feed margin drops to **about 0.91× at ~47° mouth-up (a stall is
-  predicted)**, compared with 1.02-1.06× at 56-59° upright. On the Moon it stays at 5.5× or more in any
-  orientation. Leaning max bites stay at 1.05×. These numbers stack every worst case (μ 0.6, 10 g bites, spring
-  13 % weak, no friction holding the bites upright).
+  keeps the bites upright, and a jolt can tip them. The side walls decide where the roll stops. A whole stack
+  can lean together, because rotating about the stacking axis doesn't slide one bite face on the next.
+- **Where it stops depends on the width:**
+  - From 18.0 to ~18.58 wide a bite rolls 5-7° and wedges against both walls; its contact forces add up to about
+    **1.73×** its weight (upright: 1.25×).
+  - Just wider, it can no longer reach both walls and pinches between one wall and the opposite rail edge, whose
+    contact faces almost sideways. The two forces fight each other: **k jumps to about 3.1 at ~18.6 wide**, then
+    falls (1.75 at 19.0, 1.34 at 19.5, 1.14 at 20.0).
+- **Feed margin with spring B and sticky bites:** upright 1.02-1.07× at the worst Earth tilt (~56-60°
+  mouth-up). Leaning min or nominal bites: about 0.91× at ~47°. **At the worst width (~18.6): about 0.79× even
+  level, 0.66× at ~32°.** A margin below 1 means a stall is predicted. On the Moon it stays at 3.9× or more in any
+  orientation.
+- These numbers stack every worst case: μ 0.6 on rails and walls, 10 g bites, the spring 13 % weak, and a rigid,
+  frictionless lean. The jump at ~18.6 is a sharp, geometry-sensitive feature of the rigid model. Real food
+  deforms, and friction resists the lean in the first place. So this is a credible risk, not a measured result.
 - A leaning min bite's low bottom corner hangs into the gap between the rails, **1.0-1.1 below the bridge top**
   (v1: 1.8-1.9). The bridge edge meets that rounded R2 corner at about 60° from vertical. Rolling it upright
   against bite-to-bite face friction could self-lock at a friction of only ~0.2-0.4 (rough torque balance). That
-  is no better than the climb v1.1 removed. A leaning nominal bite's corner is about level with the bridge top.
-  The CAD can't settle any of this.
+  is no better than the climb v1.1 removed. The CAD can't settle any of this.
 
 **What to do (team decision):**
-1. **Bench go/no-go #1** (sticky 18-wide dummy bites, which is the worst case, plus nominal ones; clip resting in
-   the socket; all 8 cycled, level **and at ~50° mouth-up**) is the real test. If it passes, nothing to change.
-   Tightening the bite-width tolerance around the current nominal does **not** help: every width from 18 to 19
-   wedges with a factor of about 1.72-1.77. Only a 19.5-20 band would cut it (1.34-1.14, worst-tilt margin
-   about 1.0×), which is a food-spec change for Esther, not a CAD fix.
-2. For the Earth "any orientation" demo, treat steep mouth-up tilts with sticky bites as the limit. A stronger
-   feed spring (about 0.5 lb) would raise the margin, but with this return spring the sticky sink-back check
-   (§9.10) then fails. The return spring would need re-tuning.
-3. v2: stop the lean at the source with flat rail tops wider than a min bite's flat bottom (±7.0), so bites stand
-   on flats instead of on two edges. That means a narrower ribbon groove, clamp and keel.
+1. **Bench go/no-go #1 is the real test.** Use sticky dummy bites in three widths: `bite_min` (18),
+   `bite_nominal` (19) and **`bite_wedge_test` (18.6, the worst width)**. Rest the clip in the socket and cycle
+   all 8, level **and at ~50° mouth-up**. Also tap the clip sideways first to provoke a lean. If all three pass,
+   nothing to change.
+2. If the wedge-test or min bites stall, the fix is the **rail geometry** (v2, or v1.2 if the team wants it
+   before the demo). Make the rail tops flat and wider than a min bite's flat bottom (±7.0), so every bite
+   stands on two flats and can't roll. That means a narrower ribbon groove, clamp and keel; spring B's 6.35
+   ribbon fits, spring A's doesn't. Tightening the bite-width tolerance is not a fix: the bad widths sit
+   inside the band.
+3. A stronger feed spring (about 0.5 lb) would raise the margin, but with this return spring the sticky sink-back
+   check (§9.10) then fails. The return spring would need re-tuning.

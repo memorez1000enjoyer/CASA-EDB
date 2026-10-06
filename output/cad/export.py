@@ -51,6 +51,8 @@ def _parts(spring_key):
         "bite_nominal": (bite(P.BITES["nom"]), "plusX_down", "PETG/PLA", "print 8"),
         "bite_min": (bite(P.BITES["min"]), "plusX_down", "PETG/PLA", "print 8"),
         "bite_max": (bite(P.BITES["max"]), "plusX_down", "PETG/PLA", "print 8"),
+        "bite_wedge_test": (bite(P.Bite("wedge", P.BITE_T, P.BITE_WEDGE_TEST_W, P.BITE_H)), "plusX_down", "PETG/PLA",
+                            f"print 8: {P.BITE_WEDGE_TEST_W} wide, the worst leaning width (bench test #1)"),
     }
     sp = drum_spacer(s, +1)
     if sp is not None:

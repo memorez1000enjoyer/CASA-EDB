@@ -57,6 +57,8 @@ BITE_W_TOL = 1.0
 BITE_H_TOL = 1.0
 N_BITES = 8             # PARAM
 BITE_MASS_G = 8.0       # §9.9 loaded-mass estimate
+BITE_WEDGE_TEST_W = 18.6  # ADDED width of the extra dummy bite for bench test #1: the worst leaning width
+                          # in VERIFICATION §9.11 (one-wall pinch, highest drag); verify.py warns if it drifts
 
 
 @dataclass(frozen=True)
