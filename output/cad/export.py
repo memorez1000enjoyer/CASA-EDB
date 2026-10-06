@@ -171,15 +171,27 @@ def export_states(spring_key="A", bites="nom", states=("A", "B", "Bp", "C", "D",
         trimesh.util.concatenate(meshes).export(f"{OUT}/stl/assemblies/{tag}.stl")
 
 
+def clean_outputs():
+    """Remove previously generated STL/STEP files so renamed or dropped parts never linger."""
+    import glob
+    for pat in ("stl/*.stl", "stl/assemblies/*.stl", "stl/slicer_helpers/*.stl",
+                "step/parts/*.step", "step/assemblies/*.step"):
+        for f in glob.glob(f"{OUT}/{pat}"):
+            os.remove(f)
+
+
 if __name__ == "__main__":
     import sys
-    meta = export_parts("A")
+    clean_outputs()
+    D = P.DEFAULT_SPRING                      # v1.1: spring B (final) -> plain file names
+    other = "A" if D == "B" else "B"
+    meta = export_parts(D)
     os.makedirs(f"{OUT}/stl/slicer_helpers", exist_ok=True)
     for n, sh in support_enforcers().items():
         write_stl(sh, f"{OUT}/stl/slicer_helpers/{n}_SUPPORT_ENFORCER.stl")
-    meta.update(export_parts("B", suffix="_springB"))
+    meta.update(export_parts(other, suffix=f"_spring{other}"))
     with open(f"{OUT}/stl/parts_meta.json", "w") as f:
         json.dump(meta, f, indent=1)
-    export_states("A", "nom")
-    export_states("B", "nom", states=("A", "Bp"))
+    export_states(D, "nom")
+    export_states(other, "nom", states=("A", "Bp"))
     print("exported", len(meta), "parts")

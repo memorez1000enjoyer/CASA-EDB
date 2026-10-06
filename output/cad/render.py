@@ -148,7 +148,7 @@ def plot_section(st, fname, title, xlim=(-60, 150), zlim=(-25, 58), annotate=Tru
 
 # ------------------------------------------------------------------ exploded
 def exploded_bodies():
-    st = A.build("A", "A", "nom")
+    st = A.build("A", P.DEFAULT_SPRING, "nom")
     off = {
         "receiver_left": (0, -55, 0), "receiver_right": (0, 55, 0), "ring_hook": (0, -95, 0),
         "dowel": (0, -20, 0), "pin_pivot": (0, 30, 0), "pin_cup": (0, 38, 0), "pin_plunger": (0, 30, 0),
@@ -170,9 +170,9 @@ def exploded_bodies():
         out.append(A.Body(bd.name, bd.kind, bd.shape.moved(cq.Location(cq.Vector(dx, dy, dz))), bd.moving))
     import hardware as H
     F = st.F
-    sp = H.cf_spring(P.SPRINGS["A"], F).val()
+    sp = H.cf_spring(P.SPRINGS[P.DEFAULT_SPRING], F).val()
     out.append(A.Body("cf_spring", "cf_spring", sp.moved(cq.Location(cq.Vector(0, 0, -40))), True))
-    g = A._static("A")["gate"]
+    g = A._static(P.DEFAULT_SPRING)["gate"]
     out.append(A.Body("gate", "gate", g.moved(cq.Location(cq.Vector(70, 0, 50))), False))
     return out
 
@@ -180,9 +180,9 @@ def exploded_bodies():
 def main():
     os.makedirs(OUT, exist_ok=True)
     for sn, label in (("A", "A_rest_full"), ("Bp", "Bprime_pressed_bite1_taken")):
-        st = A.build(sn, "A", "nom")
+        st = A.build(sn, P.DEFAULT_SPRING, "nom")
         nice = {"A": "State A - rest, full (docked, gate out)", "Bp": "State B' - pressed, bite 1 taken"}[sn]
-        render(st.bodies, f"state_{label}_iso.png", "iso", f"{nice}  |  spring A, nominal bites",
+        render(st.bodies, f"state_{label}_iso.png", "iso", f"{nice}  |  spring {P.DEFAULT_SPRING}, nominal bites",
                opacity=TRANSLUCENT, zoom=1.3)
         render(st.bodies, f"state_{label}_top.png", "top", f"{nice}  |  top view", opacity=TRANSLUCENT,
                size=(1900, 700), zoom=1.9)
@@ -193,10 +193,10 @@ def main():
     for sn, nice in (("B", "State B - pressed, bite 1 still on the cup"), ("C", "State C - rest, last bite"),
                      ("D", "State D - pressed, last bite"), ("Dt", "State D - pressed, last bite taken"),
                      ("E", "State E - undocked, full, gate in")):
-        st = A.build(sn, "A", "nom")
+        st = A.build(sn, P.DEFAULT_SPRING, "nom")
         plot_section(st, f"state_{sn}_section_Y0.png", nice)
-    render(exploded_bodies(), "exploded.png", "iso", "Exploded view  |  EBD Clip v1", size=(2000, 1300), zoom=1.3)
-    render(A.build("A", "A", "nom").bodies, "state_A_rest_full_iso_back.png", "iso_back",
+    render(exploded_bodies(), "exploded.png", "iso", "Exploded view  |  EBD Clip v1.1", size=(2000, 1300), zoom=1.3)
+    render(A.build("A", P.DEFAULT_SPRING, "nom").bodies, "state_A_rest_full_iso_back.png", "iso_back",
            "State A - mount (-Y) side with ring hook", opacity=TRANSLUCENT, zoom=1.3)
 
 

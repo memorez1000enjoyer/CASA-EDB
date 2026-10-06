@@ -87,7 +87,7 @@ def _mv(shape, dx=0.0, dy=0.0, dz=0.0):
     return shape.moved(cq.Location(cq.Vector(dx, dy, dz)))
 
 
-def build(state: str, spring="A", bites="nom", mech: K.Mech = None, include_mount=True,
+def build(state: str, spring=P.DEFAULT_SPRING, bites="nom", mech: K.Mech = None, include_mount=True,
           clip_shift=(0.0, 0.0)) -> State:
     """state in A, B, Bp (B'), C, D, Dt (D after the last bite is taken), E (undocked).
     clip_shift=(dy, dz) moves the whole clip (cartridge) inside its socket clearance."""
@@ -158,6 +158,6 @@ if __name__ == "__main__":
     import time
     t = time.time()
     for sname in ("A", "B", "Bp", "C", "D", "Dt", "E"):
-        st = build(sname, "A", "nom")
+        st = build(sname, P.DEFAULT_SPRING, "nom")
         print(sname, len(st.bodies), "F=%.2f" % st.F, [(p.idx, round(p.x_front, 2), round(p.z_bot, 3)) for p in st.bite_poses][:3])
     print("t", time.time() - t)

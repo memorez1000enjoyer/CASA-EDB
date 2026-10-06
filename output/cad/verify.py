@@ -1,8 +1,9 @@
-"""§9 acceptance checks at min / nominal / max bites for spring A and spring B.
+"""§9 acceptance checks (+ v1.1 §9.11 step-down, §9.12 return-spring solid length,
+§9.13 latch) at min / nominal / max bites for spring B (default) and spring A.
 Writes ../VERIFICATION.md and ../verification_results.json.
 
     python verify.py            (full run, ~5-10 min on 4 cores)
-    python verify.py --quick    (nominal bites, spring A only)
+    python verify.py --quick    (nominal bites, default spring only)
 """
 import sys
 import os
@@ -60,7 +61,7 @@ def poses_for(spring, bkey):
     # the clip floats inside its 0.3 socket clearance: follower at its stop, clip moved
     c = P.CLR_SLIDE
     for s in ("C", "Dt"):
-        for sh in ((0.0, -c), (0.0, c), (-c, 0.0), (c, 0.0)):
+        for sh in ((0.0, -(P.CLIP_BOT_Z - P.SOCKET_IN_Z0)), (0.0, c), (-c, 0.0), (c, 0.0)):
             out.append((f"{s} clip dy{sh[0]:+.1f} dz{sh[1]:+.1f}", s, None, None, sh))
     b_moving = {"B": {"bite1"}, "D": {f"bite{P.N_BITES}"}, "Bp": set()}
     for s, direction, dx in (("B", "press", 0.0), ("Bp", "return", -P.CLR_SLIDE), ("D", "press", 0.0)):
@@ -133,48 +134,161 @@ def slot_margins():
 
 
 def forces():
+    """§9.10 paddle force and sink-back, at the REAL rest pose (pins on the loaded side of
+    their holes: plunger bottom ~-1.0) - the weakest return-spring point - and the hard stop."""
     rows = {}
-    rest, pr = K.mech_rest(), K.mech_pressed()
-    L_rest = (rest.plunger_bot + P.EAR_UNDERSIDE) - P.SPRING_WELL_Z0
-    L_press = (pr.plunger_bot + P.EAR_UNDERSIDE) - P.SPRING_WELL_Z0
+    hp = K.with_hole_play()
+    L_rest = (hp["rest_bot"] + P.EAR_UNDERSIDE) - P.SPRING_WELL_Z0           # 27.0
+    L_rest_model = (K.mech_rest().plunger_bot + P.EAR_UNDERSIDE) - P.SPRING_WELL_Z0  # 26.8 (pins centred)
+    L_press = (P.PLUNGER_PRESSED_BOT_Z + P.EAR_UNDERSIDE) - P.SPRING_WELL_Z0  # 12.1 hard stop
     for k, s in P.SPRINGS.items():
         rs0 = s.rs_k * (s.rs_free - L_rest)
         rs1 = s.rs_k * (s.rs_free - L_press)
         fric = (P.MU_WALL + P.MU_BITE) * s.F
+        sticky = (P.MU_WALL + P.MU_BITE_STICKY) * s.F * (1 + P.SPRING_F_HI)
+        solid = P.rs_solid_length(s.rs_k)
         rows[k] = dict(F=s.F, friction=fric, rs_rest=rs0, rs_pressed=rs1,
                        paddle_start=fric + rs0, paddle_end=fric + rs1,
-                       bite_returns=rs0 > fric, elevator_returns=rs0 > 2 * P.MU_WALL * s.F,
-                       L_rest=L_rest, L_press=L_press)
+                       bite_returns=rs0 > fric, return_margin=rs0 / fric,
+                       sticky_drag=sticky, sticky_returns=rs0 > sticky, sticky_margin=rs0 / sticky,
+                       elevator_returns=rs0 > 2 * P.MU_WALL * s.F,
+                       L_rest=L_rest, L_rest_model=L_rest_model, L_press=L_press,
+                       solid=solid, solid_ok=solid <= P.RS_SOLID_MAX + 1e-9 and solid < L_press)
     return rows
+
+
+def solid_table():
+    """Solid length over the BOM range (spring-B return spring): OD x wire x rate."""
+    out = []
+    for od in (P.RS_OD_RANGE[0], P.RS_OD, P.RS_OD_RANGE[1]):
+        for wire in (P.RS_WIRE, P.RS_WIRE_MAX):
+            out.append((od, wire, [P.rs_solid_length(k, wire, od) for k in P.RS_K_RANGE]))
+    return out
+
+
+def contact_factor(W):
+    """Normal force on the R0.5 rail edges per unit bite weight (1/cos of the contact angle)."""
+    yc = W / 2 - P.BITE_R
+    ey = P.RAIL_IN_Y + P.RAIL_EDGE_R
+    if yc >= ey:
+        return 1.0
+    R = P.BITE_R + P.RAIL_EDGE_R
+    dy = ey - yc
+    return R / math.sqrt(R * R - dy * dy)
+
+
+def follower_group_mass(spring_key):
+    """Follower + drum + spacer rings (PETG, solid) + coil + axle (steel), grams."""
+    import assembly as A
+    st = A._static(spring_key)
+    s = P.SPRINGS[spring_key]
+    petg = st["follower"].Volume() + st["drum"].Volume() + sum(x.Volume() for x in st["spacers"])
+    steel = s.L * s.W * s.T + math.pi * (P.PIN_D / 2) ** 2 * P.AXLE_L
+    return petg * P.RHO_PETG + steel * P.RHO_STEEL
+
+
+def feed_margins():
+    """§9.10 feed margin = spring force at -13 % / stack drag, 8 x 10 g bites at mu 0.6 on the
+    rails (with the rail contact-angle factor) + the follower group at FEED_MU_FOLLOWER.
+    Drag at incline t (mouth uphill): g[(mu k m_b + mu_f m_f) cos t + (m_b + m_f) sin t]."""
+    out = {}
+    m_b = P.N_BITES * P.FEED_BITE_MASS_G / 1000
+    for sk, s in P.SPRINGS.items():
+        Fa = s.F * (1 - P.SPRING_F_LO)
+        m_f = follower_group_mass(sk) / 1000
+        for bk, b in P.BITES.items():
+            kf = contact_factor(b.W)
+            a_ = P.FEED_MU * kf * m_b + P.FEED_MU_FOLLOWER * m_f
+            b_ = m_b + m_f
+            worst = math.degrees(math.atan2(b_, a_))
+            r = dict(k=kf, m_f_g=m_f * 1000, F_avail=Fa, worst_incline_deg=worst)
+            for gname, g in (("earth", P.G_EARTH), ("moon", P.G_MOON)):
+                r[f"{gname}_level"] = Fa / (g * a_)
+                r[f"{gname}_vertical"] = Fa / (g * b_)
+                r[f"{gname}_incline"] = Fa / (g * math.hypot(a_, b_))
+            out[(sk, bk)] = r
+    return out
+
+
+def drag_up_margins():
+    """Bite 2 dragged up by bite 1 in state B: bite 1's face friction mu_b P vs bite 2's
+    weight + rear-face friction mu_b (P - its own rail friction, worst sign).  Min width."""
+    out = {}
+    m = P.FEED_BITE_MASS_G / 1000
+    kf = contact_factor(P.BITES["min"].W)
+    for sk, s in P.SPRINGS.items():
+        for gname, g in (("earth", P.G_EARTH), ("moon", P.G_MOON)):
+            W = m * g
+            out[(sk, gname)] = (P.MU_BITE * s.F + W) / (P.MU_BITE * (s.F + P.FEED_MU * kf * W))
+    return out
+
+
+def step_down():
+    """§9.11 (v1.1): rail seat of every bite with the clip centred and resting on its socket
+    floor must be >= CUP_TOP_Z (the bridge and the cup at rest), so no bite climbs into the
+    receiver.  Also the leaning-bite pose from lean.py."""
+    import lean
+    rows = []
+    for bk, b in P.BITES.items():
+        seat = K.rail_seat(b.W)
+        ln = lean.rest_pose(b)
+        for dz in (0.0, -P.SOCKET_FLOOR_CLR):
+            rows.append(dict(bites=bk, W=b.W, dz=dz, seat=seat + dz, step=seat + dz - P.CUP_TOP_Z,
+                             lean=ln["lean_deg"], com_drop=ln["com_drop"], lowest=ln["lowest"] + dz,
+                             lowest_y=ln["lowest_y"], lean_step=ln["lowest"] + dz - P.CUP_TOP_Z))
+    return rows
+
+
+def latch():
+    """§6.2 latch tooth engagement with the clip on its socket floor, centred, and floated up."""
+    tooth_bot = P.SOCKET_IN_Z1 - P.TOOTH_H
+    notch_floor = P.TOP_Z - P.LATCH_NOTCH_D
+    up = P.SOCKET_IN_Z1 - P.TOP_Z                          # clip top on the socket roof
+    floor = -P.SOCKET_FLOOR_CLR
+    L_c = P.TONGUE_ROOT_X - (P.TOOTH_X0 + P.TOOTH_X1) / 2
+    strain = lambda d: 3 * P.TONGUE_T * d / (2 * L_c ** 2)
+    return dict(engage_floor=P.TOP_Z + floor - tooth_bot, engage_centre=P.TOP_Z - tooth_bot,
+                engage_up=P.TOP_Z + up - tooth_bot, floor_clr_up=tooth_bot - (notch_floor + up),
+                play_x=P.TOOTH_X0 - P.LATCH_NOTCH_X0, L_c=L_c,
+                strain_floor=strain(P.TOP_Z + floor - tooth_bot), strain_up=strain(P.TOP_Z + up - tooth_bot))
 
 
 def envelope_mass():
     import cadquery as cq
     import assembly as A
-    st = A.build("A", "A", "nom")
+    st = A.build("A", P.DEFAULT_SPRING, "nom")
     bb = None
     vols = {}
     for bd in st.bodies:
         b = bd.shape.BoundingBox()
         bb = b if bb is None else bb.add(b)
-    stat = A._static("A")
+    stat = A._static(P.DEFAULT_SPRING)
     printed = {
         "clip_tube": ("clip", "PETG"), "end_cap": ("clip", "PETG"), "gate": ("clip", "PETG"),
         "follower": ("clip", "PETG"), "drum": ("clip", "PETG"), "ribbon_clamp": ("clip", "PETG"),
+        "drum_spacers": ("clip", "PETG"),
         "receiver_left": ("receiver", "PETG"), "receiver_right": ("receiver", "PETG"),
         "elevator": ("receiver", "PETG"), "lever": ("receiver", "PETG"), "plunger": ("receiver", "PETG"),
         "paddle_pad": ("receiver", "TPU"), "ring_hook": ("receiver", "PETG"),
     }
     rho = {"PETG": P.RHO_PETG, "TPU": P.RHO_TPU}
     for n, (grp, mat) in printed.items():
-        v = stat[n].Volume()
+        if n == "drum_spacers":
+            if not stat["spacers"]:
+                continue
+            v = sum(x.Volume() for x in stat["spacers"])
+        else:
+            v = stat[n].Volume()
         vols[n] = dict(group=grp, material=mat, volume=v, mass=v * rho[mat])
     # steel hardware (pins, spring ribbon, screws) - rough
     pin_len = P.PIVOT_PIN_L + P.CUP_PIN_L + P.PLUNGER_PIN_L + P.AXLE_L + 3 * P.DOWEL_L
     steel = pin_len * math.pi * (P.PIN_D / 2) ** 2 * P.RHO_STEEL
-    s = P.SPRINGS["A"]
+    s = P.SPRINGS[P.DEFAULT_SPRING]
     steel += s.L * s.W * s.T * P.RHO_STEEL
     steel += 4 * 0.55 + 4 * 0.05 + 6 * 0.15  # M2x20 + nuts + small screws (g)
+    D = P.RS_OD - P.RS_WIRE                    # return spring: wire length ~ (n + 3) coils x pi D
+    n = P.RS_G * P.RS_WIRE ** 4 / (8 * D ** 3 * P.SPRINGS[P.DEFAULT_SPRING].rs_k) + P.RS_DEAD_COILS
+    steel += n * math.pi * D * math.pi * (P.RS_WIRE / 2) ** 2 * P.RHO_STEEL
     return dict(bbox=(bb.xmin, bb.xmax, bb.ymin, bb.ymax, bb.zmin, bb.zmax), parts=vols, steel_g=steel)
 
 
@@ -208,7 +322,7 @@ def run_parallel(configs, jobs=3):
 
 def main():
     quick = "--quick" in sys.argv
-    configs = [("A", "nom")] if quick else [(s, b) for s in ("A", "B") for b in ("min", "nom", "max")]
+    configs = [(P.DEFAULT_SPRING, "nom")] if quick else [(s, b) for s in ("B", "A") for b in ("min", "nom", "max")]
     t0 = time.time()
     results = run_parallel(configs)
     t_geo = time.time() - t0
@@ -217,10 +331,12 @@ def main():
     em = envelope_mass()
     fr = forces()
     margins, cup_rng, plg_rng = slot_margins()
-    write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, quick)
+    extra = dict(feed=feed_margins(), drag=drag_up_margins(), steps=step_down(), latch=latch(),
+                 solid=solid_table())
+    write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, quick, extra)
 
 
-def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, quick):
+def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, quick, extra):
     import hardware as Hw
     L = []
     w = L.append
@@ -308,7 +424,7 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
     hp = K.with_hole_play()
     lift_eff = hp["lift"]
     c97 = lift_eff >= 13.5 and nom_m[0] >= 0 and nom_m[1] >= 0 and abs(stroke - P.PADDLE_STROKE) < 1e-6 \
-        and abs(rest.elev_top - P.RAIL_TOP_Z) < 1e-9
+        and abs(rest.elev_top - P.CUP_TOP_Z) < 1e-9
     checks.append(("9.7", "Kinematics", c97, f"lift {prs.lift:.2f} model / {hp['lift']:.2f} with pin-hole play (≥ 13.5), stroke {stroke:.2f}, pins inside slots "
                    f"(min margin {min(nom_m):.2f} at nominal X)"))
     c98 = all(r["watertight"] and r["winding"] and r["wall_ok"] for r in pr_rows)
@@ -318,17 +434,38 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
                    f"{len(pr_rows)} STLs all watertight, walls ≥ 0.8 except listed spec features; "
                    + (f"NEEDS SUPPORT: {', '.join(need_sup)} (OPEN_ISSUES #2)" if need_sup else "no supports needed")))
     checks.append(("9.9", "Envelope / mass report", True, "reported below"))
-    c910 = fr["A"]["paddle_end"] > 0
+    fd = extra["feed"]
+    fB = min((v for (sk, bk), v in fd.items() if sk == P.DEFAULT_SPRING), key=lambda v: v["earth_incline"])
     checks.append(("9.10", "Force report", True,
-                   f"A {fr['A']['paddle_start']:.1f}-{fr['A']['paddle_end']:.1f} N (> 6 N flagged), "
-                   f"B {fr['B']['paddle_start']:.1f}-{fr['B']['paddle_end']:.1f} N"))
+                   f"B {fr['B']['paddle_start']:.1f}-{fr['B']['paddle_end']:.1f} N, uneaten bite returns "
+                   f"{fr['B']['return_margin']:.2f}x (sticky {fr['B']['sticky_margin']:.2f}x); "
+                   f"A {fr['A']['paddle_start']:.1f}-{fr['A']['paddle_end']:.1f} N (> 6 N flagged, does not return); "
+                   f"B feed margin (min width) {fB['earth_level']:.2f}x level / {fB['earth_vertical']:.2f}x vertical / "
+                   f"{fB['earth_incline']:.2f}x at {fB['worst_incline_deg']:.0f}° / Moon {fB['moon_level']:.1f}x level, "
+                   f"{fB['moon_incline']:.1f}x worst"))
+    st_ = extra["steps"]
+    smin = min(st_, key=lambda r: r["step"])
+    c911 = smin["step"] >= -1e-9 and abs(rest.elev_top - P.CUP_TOP_Z) < 1e-9
+    checks.append(("9.11", "Bites step down into the receiver (v1.1)", c911,
+                   f"smallest step-down {smin['step']:.2f} ({smin['bites']} width, clip dz {smin['dz']:+.1f}); "
+                   f"bridge and cup at rest both Z {P.CUP_TOP_Z:.2f}"))
+    sB = fr[P.DEFAULT_SPRING]
+    c912 = all(d["solid_ok"] for d in fr.values())
+    checks.append(("9.12", "Return-spring solid length (v1.1)", c912,
+                   f"B {fr['B']['solid']:.1f} / A {fr['A']['solid']:.1f} (≤ {P.RS_SOLID_MAX:.0f}, pressed length "
+                   f"{sB['L_press']:.1f}) for Ø{P.RS_WIRE} wire, OD {P.RS_OD}"))
+    lt = extra["latch"]
+    c913 = lt["engage_floor"] > 0 and lt["floor_clr_up"] >= -1e-9
+    checks.append(("9.13", "Latch engagement (v1.1)", c913,
+                   f"{lt['engage_floor']:.2f} with the clip on its floor; tooth to notch floor "
+                   f"{lt['floor_clr_up']:.2f} with the clip floated up {P.SOCKET_IN_Z1 - P.TOP_Z:.1f}"))
 
     # ------------------------------------------------------------------ markdown
-    w("# VERIFICATION - EBD Clip v1\n")
+    w("# VERIFICATION - EBD Clip v1.1\n")
     w(f"Generated by `cad/verify.py` on {time.strftime('%Y-%m-%d %H:%M')} "
-      f"({'QUICK: spring A nominal only' if quick else 'full run: springs A and B x bites min/nom/max'}; "
+      f"({'QUICK: default spring, nominal bites only' if quick else 'full run: springs B (default) and A x bites min/nom/max'}; "
       f"geometry checks took {t_geo:.0f} s). Every number comes from the CAD model or from `params.py`.\n")
-    w("Spec: EBD_Build_Spec.md Rev B, section 9. Units mm, N. Bites: min 12.2 x 18.0 x 24.4, "
+    w("Spec: EBD_Build_Spec.md Rev C, section 9, plus the v1.1 follow-up checks (§9.11-9.13). Units mm, N. Bites: min 12.2 x 18.0 x 24.4, "
       "nom 12.7 x 19.0 x 25.4, max 13.2 x 20.0 x 26.4 (T x W x H).\n")
     w("## Summary\n")
     w("| § | Check | Result | Key numbers |\n|---|---|---|---|")
@@ -338,13 +475,16 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
             res = "**FLAG** (supports)"
         if cid == "9.10":
             res = "REPORT (A flagged > 6 N)" if fr["A"]["paddle_end"] > 6 else "REPORT"
+        if cid == "9.13" and passed:
+            res = "PASS (report)"
         w(f"| {cid} | {title} | {res} | {detail} |")
     w("")
 
     w("## 9.1 Interference\n")
     w(f"Exact B-rep booleans (OpenCascade) between every pair of bodies whose bounding boxes come within "
       f"1 mm, in states A, B, B', C, D, D-taken, E, plus {N_SWEEP - 2} intermediate lever angles for each of the "
-      f"B, B' and D strokes, plus states C and D-taken with the clip shifted ±0.3 in Y and in Z inside its socket, "
+      f"B, B' and D strokes, plus states C and D-taken with the clip shifted ±0.3 in Y, down {P.SOCKET_FLOOR_CLR:.1f} "
+      f"(on its socket floor) and up {P.SOCKET_IN_Z1 - P.TOP_Z:.1f} (against the socket roof), "
       f"for each configuration. Threshold {OVERLAP_TOL} mm³. "
       f"Intended overlaps are excluded and listed: " +
       "; ".join(f"{a} / {b}: {why}" for a, b, why in __import__('collide').INTENDED) + ".\n")
@@ -374,10 +514,10 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
         w(f"| {p['cfg']} | {fmt(p['roof_gap'])} | {fmt(p['roof_gap_Bp'])} | {fmt(p['bite2_seat_A'], 3)} | "
           f"{fmt(p['m_nom'])} / {fmt(p['m_worst'])} | {fmt(p['expo'])} | {fmt(p['below'])} | {fmt(p['win_x'])} | "
           f"{fmt(p['win_y'])} | {fmt(p['under_win'])} |")
-    w("\nNotes: bites stay upright and settle vertically onto the highest support (rails 4.0/4.29/4.45, "
-      "bridge 4.5). A min-width bite 2 half on the bridge is lifted to Z 4.44 in state A (a real rigid bite "
-      "would tilt ~2° instead). \"Elevator top rear edge → bite 2\" is the X gap between the cup floor's rear "
-      "edge and bite 2's front face in states A/B; it must stay ≥ 0 so the cup is never under bite 2.\n")
+    w(f"\nNotes: bites stay upright and settle vertically onto the highest support (rails 4.0/4.29/4.45, "
+      f"bridge and cup {P.CUP_TOP_Z}). A bite overhanging the bridge stays on the rails (the bridge is below "
+      f"every rail seat). \"Elevator top rear edge → bite 2\" is the X gap between the cup floor's rear "
+      f"edge and bite 2's front face in states A/B; it must stay ≥ 0 so the cup is never under bite 2.\n")
     w("| Config | F (A) | F (B') | F (C) | F (E) | follower back → end cap (E) | ribbon free length: A / 2 bites / last bite / E / max (limit) | coil OD at E / pocket Ø | ribbon max Z |")
     w("|---|---|---|---|---|---|---|---|---|")
     for p in per:
@@ -449,7 +589,7 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
     w(f"| **clip (cartridge) total** | | | {tot['clip'][0] / 1000:.1f} | {tot['clip'][1]:.1f} |")
     w(f"| **receiver total** | | | {tot['receiver'][0] / 1000:.1f} | {tot['receiver'][1]:.1f} |")
     w(f"| **clip + receiver, printed** | | | **{v_all / 1000:.1f}** | **{m_all:.1f}** |")
-    w(f"| steel hardware (pins, spring A ribbon, screws, nuts) | | steel | | {em['steel_g']:.1f} |")
+    w(f"| steel hardware (pins, spring {P.DEFAULT_SPRING} ribbon, return spring, screws, nuts) | | steel | | {em['steel_g']:.1f} |")
     w(f"| **empty device** | | | | **{m_all + em['steel_g']:.1f}** |")
     w(f"| **loaded, + 8 x {P.BITE_MASS_G:.0f} g bites** | | | | **{m_all + em['steel_g'] + 8 * P.BITE_MASS_G:.1f}** |")
     w("\nSolid mass (100 % density, upper bound). At 4 perimeters + 30 % gyroid the printed mass is roughly "
@@ -457,28 +597,122 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
       f"{tot['clip'][0] / 1000:.0f} cm³ of plastic and {tot['clip'][1] + 8 * P.BITE_MASS_G:.0f} g loaded (solid).\n")
 
     w("## 9.10 Force report\n")
+    d0 = fr[P.DEFAULT_SPRING]
     w(f"Paddle force = μ_wall·F + μ_bite·F + return-spring force, μ_wall = {P.MU_WALL}, μ_bite = {P.MU_BITE}. "
-      f"Return spring installed length {fr['A']['L_rest']:.1f} at rest, {fr['A']['L_press']:.1f} pressed "
-      f"(free {P.SPRINGS['A'].rs_free:.0f}; must not go solid above ~10).\n")
-    w("| Spring | F (N) | friction (N) | return spring k (N/mm) | return force rest / pressed (N) | **paddle force start / end (N)** | > 6 N? | uneaten raised bite returns? (rest force > 0.5 F) | empty elevator returns? (> 0.2 F) |")
-    w("|---|---|---|---|---|---|---|---|---|")
-    for k, d in fr.items():
-        s = P.SPRINGS[k]
+      f"The return spring is taken at the **real rest pose** (pins on the loaded side of their holes, plunger bottom "
+      f"{K.with_hole_play()['rest_bot']:.2f}): installed length **{d0['L_rest']:.1f}** at rest "
+      f"({d0['L_rest_model']:.1f} with pins centred), **{d0['L_press']:.1f}** at the hard stop. Rest is the weakest "
+      f"point of the return stroke, so the sink-back check uses it.\n")
+    w("| Spring | F (N) | friction (N) | return spring k / free | return force rest / pressed (N) | **paddle force start / end (N)** | > 6 N? | uneaten bite returns? rest force ÷ 0.5 F | sticky: ÷ 0.7 × 1.1 F | empty elevator returns? (> 0.2 F) |")
+    w("|---|---|---|---|---|---|---|---|---|---|")
+    for k in (P.DEFAULT_SPRING, "A" if P.DEFAULT_SPRING == "B" else "B"):
+        d, s = fr[k], P.SPRINGS[k]
         flag = "**FLAG**" if d["paddle_end"] > 6 else "no"
-        w(f"| {k} | {d['F']:.2f} | {d['friction']:.2f} | {s.rs_k:.2f} | {d['rs_rest']:.2f} / {d['rs_pressed']:.2f} | "
-          f"**{d['paddle_start']:.2f} / {d['paddle_end']:.2f}** | {flag} | {'yes' if d['bite_returns'] else '**no**'} | "
-          f"{'yes' if d['elevator_returns'] else 'no'} |")
-    w("\nAs the spec predicts: spring A needs up to ~7.8 N of chin force and an uneaten raised bite will NOT "
-      "sink back (the sandwich friction beats the return spring); spring B passes both. Build and test both, "
-      "expect B (or ~0.3-0.5 lb) to be the final spring.\n")
-    w("## Latch (§6.2) - computed\n")
-    ramp = P.TOOTH_H / math.tan(math.radians(P.TOOTH_RAMP_DEG))
-    L_c = P.TONGUE_ROOT_X - (P.TOOTH_X0 + P.TOOTH_X1) / 2
-    strain = 3 * P.TONGUE_T * (P.TOP_Z - (P.SOCKET_IN_Z1 - P.TOOTH_H)) / (2 * L_c ** 2)
-    w(f"Tooth engages {P.TOP_Z - (P.SOCKET_IN_Z1 - P.TOOTH_H):.2f} into the 1.0 notch with "
-      f"{P.TOOTH_X0 - P.LATCH_NOTCH_X0:.2f} play; docking deflection {P.TOP_Z - (P.SOCKET_IN_Z1 - P.TOOTH_H):.2f} at "
-      f"{L_c:.1f} from the root → bending strain ≈ {100 * strain:.2f} % (PETG yield ~4 %). "
-      f"Tongue is 4.0 wide in the -Y half only (see OPEN_ISSUES #1).\n")
+        w(f"| {k} | {d['F']:.2f} | {d['friction']:.2f} | {s.rs_k:.2f} / {s.rs_free:.0f} | {d['rs_rest']:.2f} / {d['rs_pressed']:.2f} | "
+          f"**{d['paddle_start']:.2f} / {d['paddle_end']:.2f}** | {flag} | "
+          f"{'yes' if d['bite_returns'] else '**no**'} ({d['return_margin']:.2f}x) | "
+          f"{'yes' if d['sticky_returns'] else '**no**'} ({d['sticky_margin']:.2f}x) | {'yes' if d['elevator_returns'] else 'no'} |")
+    sB_ = P.SPRINGS[P.DEFAULT_SPRING]
+    w(f"Return spring bought anywhere in the BOM range (spring {P.DEFAULT_SPRING}): installed {d0['L_rest']:.1f} at rest, {d0['L_press']:.1f} pressed.\n")
+    w("| free length | k (N/mm) | rest / pressed force (N) | paddle force start / end (N) | uneaten bite returns (÷ 0.5 F) | sticky (÷ 0.7 × 1.1 F) |\n|---|---|---|---|---|---|")
+    for fl in P.RS_FREE_RANGE:
+        for kk in P.RS_K_RANGE:
+            r0, r1 = kk * (fl - d0["L_rest"]), kk * (fl - d0["L_press"])
+            w(f"| {fl:.0f} | {kk:.2f} | {r0:.2f} / {r1:.2f} | {d0['friction'] + r0:.2f} / {d0['friction'] + r1:.2f} | "
+              f"{r0 / d0['friction']:.2f}x | {r0 / d0['sticky_drag']:.2f}x |")
+    w("")
+    w("\nSpring B (final) passes: chin force well under 6 N, and an uneaten raised bite sinks back even with "
+      "sticky food (μ_bite 0.6) and the spring 10 % strong. Spring A needs up to ~7.9 N and an uneaten bite does "
+      "NOT sink back (keep A for high-force feed tests only).\n")
+    w(f"### Feed margin (spring force at −{100 * P.SPRING_F_LO:.0f} % ÷ stack drag)\n")
+    w(f"{P.N_BITES} × {P.FEED_BITE_MASS_G:.0f} g bites at μ {P.FEED_MU} on the rails, times the rail contact-angle "
+      f"factor k (normal force on the R0.5 rail edges ÷ weight), plus the follower group (follower, drum, spacer "
+      f"rings, coil, axle; solid mass, an upper bound) at μ {P.FEED_MU_FOLLOWER} on the rail tops. Drag at an "
+      f"incline t (mouth uphill) = g·[(μ·k·m_bites + μ_f·m_f)·cos t + (m_bites + m_f)·sin t]; the worst incline is "
+      f"where that peaks.\n")
+    w("| Spring | Bite width | k | follower group g | Earth level | Earth vertical (mouth up) | **Earth worst incline** | Moon level | Moon worst incline |")
+    w("|---|---|---|---|---|---|---|---|---|")
+    for (sk, bk), r in sorted(fd.items(), key=lambda kv: (kv[0][0] != P.DEFAULT_SPRING, kv[0][1] != "min", kv[0][1])):
+        w(f"| {sk} | {bk} ({P.BITES[bk].W:.0f}) | {r['k']:.2f} | {r['m_f_g']:.1f} | {r['earth_level']:.2f}x | "
+          f"{r['earth_vertical']:.2f}x | **{r['earth_incline']:.2f}x** at {r['worst_incline_deg']:.0f}° | "
+          f"{r['moon_level']:.1f}x | {r['moon_incline']:.1f}x |")
+    w(f"\n**Flag (1-g worst case):** with spring B the Earth margin is lowest with the mouth tilted "
+      f"~{fB['worst_incline_deg']:.0f}° uphill ({fB['earth_incline']:.2f}x for min-width bites). Run the "
+      f"\"any orientation\" demo knowing that tilt is the hardest. On the Moon the margin is ≥ "
+      f"{min(v['moon_incline'] for (sk, bk), v in fd.items() if sk == P.DEFAULT_SPRING):.1f}x in any orientation "
+      f"(the often-quoted ~12x is the level case).\n")
+    dg = extra["drag"]
+    w("### Bite 2 dragged up in state B\n")
+    w("Bite 1 rising pulls bite 2 up by face friction μ_bite·P; bite 2 resists with its weight plus friction on its "
+      "rear face, which carries P less its own rail friction in the worst case. Margin = resistance ÷ drag "
+      f"(> 1: bite 2 stays down), {P.FEED_BITE_MASS_G:.0f} g min-width bite:\n")
+    w("| Spring | Earth | Moon |\n|---|---|---|")
+    for sk in (P.DEFAULT_SPRING, "A" if P.DEFAULT_SPRING == "B" else "B"):
+        w(f"| {sk} | {dg[(sk, 'earth')]:.3f} | {dg[(sk, 'moon')]:.3f} |")
+    w("\nBelow ~1.05 it is marginal, but harmless: the rise is capped by the 0.65 gap to the clip roof and bite 2 "
+      "drops back as soon as bite 1 stops moving.\n")
+
+    w("## 9.11 Bites step down into the receiver (v1.1)\n")
+    w(f"The bridge (X −2.1 → 0) and the cup at rest are both at Z {P.CUP_TOP_Z} (`CUP_TOP_Z`), with a "
+      f"{P.BRIDGE_LEADIN} edge break at X 0. A bite on the clip rails sits on the rails' R0.5 inner edges; under "
+      f"gravity the clip rests on its socket floor, {P.SOCKET_FLOOR_CLR} below centre. The rule: every rail seat ≥ "
+      f"`CUP_TOP_Z`, so a bite only ever steps **down** (a rigid upright bite climbing a 45° lead-in self-locks "
+      f"once bite-to-bite friction reaches ~0.43, however hard the spring pushes).\n")
+    w("| Bite width | Clip | Rail seat Z | **Step down to the bridge** |\n|---|---|---|---|")
+    for r in st_:
+        where = "centred" if r["dz"] == 0 else f"on its floor ({r['dz']:+.1f})"
+        w(f"| {r['bites']} ({r['W']:.0f}) | {where} | {r['seat']:.3f} | **{r['step']:.2f}** {ok(r['step'] >= -1e-9)} |")
+    w("\n**Leaning bites (not covered by the rule above).** The rule assumes upright, centred bites. A rigid "
+      "2-D check (`cad/lean.py`) lets a bite shift and lean about X; a whole stack can lean together because "
+      "rotating about the stacking axis does not slide one face on the next. Gravity rest pose, clip on its floor:\n")
+    w("| Bite width | Lean | CoM lower than upright by | Lowest bottom point Z (at Y) | vs bridge top |\n|---|---|---|---|---|")
+    for r in st_:
+        if r["dz"] == 0:
+            continue
+        w(f"| {r['bites']} ({r['W']:.0f}) | {abs(r['lean']):.1f}° | {r['com_drop']:.2f} | {r['lowest']:.2f} "
+          f"(Y {abs(r['lowest_y']):.1f}) | {r['lean_step']:+.2f} |")
+    w("\nAn 18-wide (min) bite on two rail edges 16 apart is unstable upright: it rolls until it wedges between "
+      "the side walls, and its low bottom corner hangs into the gap between the rails, about 1 mm below the bridge "
+      "top (v1: 1.8 mm below the 4.5 bridge). Nominal bites lean ~3° and stay flush; max bites stay upright. A "
+      "leaning bite meets the bridge edge with one rounded R2 corner, which rolls it upright about its high-side "
+      "rail rather than lifting it bodily, so this is not the self-locking climb above, but no rigid-upright "
+      "model covers it. **Bench go/no-go #1 (sticky 18-wide bites, clip resting in the socket, all 8 cycled) is "
+      "the real test** (OPEN_ISSUES #14).\n")
+
+    w("## 9.12 Return-spring solid length (v1.1)\n")
+    w(f"Solid length = (n_active + {P.RS_DEAD_COILS})·d with n_active = G·d⁴ / (8·D³·k) (closed, unground ends; "
+      f"G = {P.RS_G / 1000:.1f} GPa music wire; 302 SS is ~13 % softer, so fewer coils and shorter). It must be "
+      f"≤ {P.RS_SOLID_MAX:.0f} and below the {d0['L_press']:.1f} pressed length, or the spring coil-binds before "
+      f"the flange reaches its hard stop and the lift is lost.\n")
+    w("| Spring config | wire / OD / k | Solid length | ≤ 10 and < pressed? |\n|---|---|---|---|")
+    for k in (P.DEFAULT_SPRING, "A" if P.DEFAULT_SPRING == "B" else "B"):
+        d = fr[k]
+        w(f"| {k} | {P.RS_WIRE} / {P.RS_OD} / {P.SPRINGS[k].rs_k} | {d['solid']:.1f} | {ok(d['solid_ok'])} |")
+    w(f"\nOver the BOM range for the spring-B return spring (k {P.RS_K_RANGE[0]} → {P.RS_K_RANGE[1]} N/mm):\n")
+    w("| OD | wire | solid length at k " + f"{P.RS_K_RANGE[0]} / {P.RS_K_RANGE[1]}" + " | |\n|---|---|---|---|")
+    for od, wire, sl in extra["solid"]:
+        worst = max(sl)
+        note = ("**coil-binds** (≥ pressed length)" if worst >= d0["L_press"] else
+                ("**over 10**" if worst > P.RS_SOLID_MAX else "OK"))
+        w(f"| {od} | {wire} | {sl[0]:.1f} / {sl[1]:.1f} | {note} |")
+    bad = [(od, wire, max(sl)) for od, wire, sl in extra["solid"] if max(sl) > P.RS_SOLID_MAX]
+    good40 = all(max(sl) <= P.RS_SOLID_MAX for od, wire, sl in extra["solid"] if wire == P.RS_WIRE)
+    w(f"\n**{P.RS_WIRE} wire meets the rule everywhere in the range{'' if good40 else ' - NOT'}.** "
+      + ("Out of range: " + "; ".join(f"OD {od} with {wire} wire reaches {sl:.1f}"
+                                     + (" (coil-binds)" if sl >= d0["L_press"] else "") for od, wire, sl in bad)
+         + f". So the \"{P.RS_WIRE_MAX} max\" wire is only safe on a larger OD or a stiffer spring - buy {P.RS_WIRE}.\n"
+         if bad else "\n"))
+    w("## 9.13 Latch (§6.2, v1.1)\n")
+    w(f"Socket clearance {P.SOCKET_FLOOR_CLR} below the clip, {P.SOCKET_IN_Z1 - P.TOP_Z:.1f} above. Tooth "
+      f"bottom Z {P.SOCKET_IN_Z1 - P.TOOTH_H:.2f}, notch floor Z {P.TOP_Z - P.LATCH_NOTCH_D:.2f} (clip centred).\n")
+    w("| Clip position | Tooth engagement in the 1.0 notch | Tooth bottom → notch floor | Tongue strain when docking |\n|---|---|---|---|")
+    w(f"| on its socket floor (rest, gravity) | **{lt['engage_floor']:.2f}** | {P.LATCH_NOTCH_D - lt['engage_floor']:.2f} | {100 * lt['strain_floor']:.2f} % |")
+    w(f"| centred | {lt['engage_centre']:.2f} | {P.LATCH_NOTCH_D - lt['engage_centre']:.2f} | |")
+    w(f"| floated up against the socket roof | {lt['engage_up']:.2f} | **{lt['floor_clr_up']:.2f}** | {100 * lt['strain_up']:.2f} % |")
+    w(f"\nFloated up, the tooth reaches the notch floor at exactly the moment the clip top reaches the socket roof: "
+      f"they touch, they never overlap (the clip-float poses in §9.1 confirm it), and the clip cannot rise "
+      f"further. Play in X {lt['play_x']:.2f}; strain at {lt['L_c']:.1f} from the tongue root, PETG yield ~4 %. "
+      f"The tongue is 4.0 wide, in the -Y half only (OPEN_ISSUES #1).\n")
 
     with open(os.path.join(OUTDIR, "VERIFICATION.md"), "w") as f:
         f.write("\n".join(L) + "\n")

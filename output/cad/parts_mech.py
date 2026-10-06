@@ -9,10 +9,10 @@ from geom import box, cyl_y, cyl_z, prism_xz, prism_yz, slot_y
 
 
 def elevator() -> cq.Workplane:
-    """§6.3  Block X -14.0 -> -2.4, Y ±9.95, Z -15.5 -> 4.5 at rest.
+    """§6.3  Block X -14.0 -> -2.4, Y ±9.95, Z -15.5 -> 3.7 (CUP_TOP_Z) at rest.
     Cup floor = top face.  Rear-top 0.5 / front-top 0.3 / side-top 0.3 chamfers."""
     x0, x1, hw = P.ELEV_X0, P.ELEV_X1, P.ELEV_HW
-    z0, z1 = P.LEDGE_Z, P.RAIL_TOP_Z
+    z0, z1 = P.LEDGE_Z, P.LEDGE_Z + P.ELEV_H
     cf, cr = P.ELEV_FRONT_CHAMFER, P.ELEV_REAR_CHAMFER
     b = P.SMALL_CHAMFER          # bottom (bed) edges: elephant-foot relief
     prof = [(x0 + b, z0), (x1 - b, z0), (x1, z0 + b), (x1, z1 - cr), (x1 - cr, z1), (x0 + cf, z1),

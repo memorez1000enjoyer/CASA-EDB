@@ -92,7 +92,7 @@ def with_hole_play():
     cup_end = 2 * c - plg_end
     cup_pin = cup_end - re
     elev_top = cup_pin - _UP + P.ELEV_H
-    return dict(rest_bot=rest_bot, stroke=rest_bot - press_bot, lift=elev_top - P.RAIL_TOP_Z, elev_top=elev_top,
+    return dict(rest_bot=rest_bot, stroke=rest_bot - press_bot, lift=elev_top - P.CUP_TOP_Z, elev_top=elev_top,
                 flange_rest=rest_bot + P.FLANGE_OFFSET)
 
 
@@ -120,16 +120,17 @@ def _raise(d, R):
 
 
 def _bridge_top(x):
-    """Top profile of the receiver bridge X -2.1 -> 0 (chamfered both ends); -inf outside."""
+    """Top profile of the receiver bridge X -2.1 -> 0 (top CUP_TOP_Z, 0.3 rear chamfer,
+    BRIDGE_LEADIN edge break at X 0); -inf outside."""
     x = np.asarray(x, float)
     top = np.full_like(x, -np.inf)
     rc, li = P.BRIDGE_REAR_CHAMFER, P.BRIDGE_LEADIN
     m = (x >= P.BRIDGE_X0) & (x <= 0)
-    top[m] = P.RAIL_TOP_Z
+    top[m] = P.CUP_TOP_Z
     m1 = m & (x < P.BRIDGE_X0 + rc)
-    top[m1] = P.RAIL_TOP_Z - rc + (x[m1] - P.BRIDGE_X0)
+    top[m1] = P.CUP_TOP_Z - rc + (x[m1] - P.BRIDGE_X0)
     m2 = m & (x > -li)
-    top[m2] = P.RAIL_TOP_Z - (x[m2] + li)
+    top[m2] = P.CUP_TOP_Z - (x[m2] + li)
     return top
 
 

@@ -151,11 +151,12 @@ class Spring:
 SPRINGS = {
     # A: 1.48 lb, 0.38" wide, 0.0059" thick, 20.98" total, 17.99" extended
     "A": Spring("A", F=6.6, W=9.65, T=0.15, L=533.0, max_ext=457.0, rs_k=0.20, rs_free=35.0),
-    # B: 0.33 lb, 0.25" wide, 0.0039" thick, 15" total, 12" extended.
-    # §6.6: with B a lighter return spring (~1.0 N at rest) is enough -> k 0.12 N/mm
-    "B": Spring("B", F=1.47, W=6.35, T=0.10, L=381.0, max_ext=305.0, rs_k=0.12, rs_free=35.0),
+    # B: 0.33 lb, 0.25" wide, 0.0039" thick, 15" total, 12" extended (Amazon B0DL4KCGVB) - FINAL spring.
+    # CHANGED (v1.1) return spring k 0.12 -> 0.13, free 35 -> 38: with real pin play the rest
+    # installed length is 27.0, and free 35 at 0.12 left only ~1.0 N for sticky food.
+    "B": Spring("B", F=1.47, W=6.35, T=0.10, L=381.0, max_ext=305.0, rs_k=0.13, rs_free=38.0),
 }
-DEFAULT_SPRING = "A"
+DEFAULT_SPRING = "B"    # CHANGED (v1.1) A -> B: the team bought B (final). A = optional high-force tests
 
 # convenience names for the default config (spec PARAM names)
 SPRING_F = SPRINGS[DEFAULT_SPRING].F
@@ -172,7 +173,7 @@ DRUM_BORE_D = PIN_FREE_D  # 2.3 free on the axle
 DRUM_CHAMFER = 0.3
 # spacer rings for a narrow ribbon (see CHANGES.md: spec said "Ø10 x 1.5 washers",
 # which cannot fit - they are rings that slip over the drum instead)
-SPACER_ID_CLR = 0.15    # ADDED radial clearance on the drum
+SPACER_ID_CLR = 0.25    # CHANGED (v1.1) 0.15 -> 0.25 radial clearance on the drum (small vertical hole: prints undersize)
 SPACER_OD_OVER_COIL = 0.3  # ADDED spacer OD = max coil OD + this
 SPACER_AXIAL_CLR = 0.05    # ADDED gap to the ribbon edge
 
@@ -210,14 +211,26 @@ def pocket_d(spring: Spring) -> float:
     return coil_od(spring, 0.0) + POCKET_CLR   # DERIVED A 17.06, B 15.31
 
 
-# CHANGED (derived): the pocket keeps the spec's BOTTOM height for every spring, so a
-# smaller coil sits lower.  With the centre fixed at Z 8.85 the spring-B ribbon
-# tangent rose to Z 2.08 (§9.5 requires < 2.0).  Spring A is unchanged (centre 8.85).
-POCKET_BOT_Z = POCKET_CZ - (coil_od(Spring("ref", 0, 0, 0.15, 533.0, 0, 0, 0)) + POCKET_CLR) / 2  # 0.318
+# CHANGED: the pocket keeps a fixed BOTTOM height for every spring, so a smaller coil
+# sits lower (with the centre fixed at Z 8.85 the spring-B ribbon tangent rose to
+# Z 2.08; §9.5 requires < 2.0).  CHANGED (v1.1) 0.318 (derived from the spring-A coil
+# through DRUM_D, so a bigger drum pushed the pocket below the groove floor) -> 0.3
+# constant: pocket centre Z = pocket radius + 0.3 (spec Rev B.2).
+POCKET_BOT_Z = 0.3
+POCKET_REAR_WALL_MIN = MIN_WALL   # rear wall = F + 28.0 - pocket rear edge (§5.3)
 
 
 def pocket_cz(spring: Spring) -> float:
-    return POCKET_BOT_Z + pocket_d(spring) / 2   # DERIVED A 8.85, B 7.97
+    return POCKET_BOT_Z + pocket_d(spring) / 2   # DERIVED A 8.83, B 7.96
+
+
+def pocket_rear_wall(spring: Spring) -> float:
+    return FOLLOWER_L - (POCKET_CX + pocket_d(spring) / 2)   # DERIVED A 1.47, B 2.35
+
+
+for _s in SPRINGS.values():
+    assert pocket_rear_wall(_s) >= POCKET_REAR_WALL_MIN - 1e-9, \
+        f"spring {_s.name}: follower rear wall {pocket_rear_wall(_s):.2f} < {POCKET_REAR_WALL_MIN} (drum/coil too big)"
 
 
 # =============================================================================
@@ -251,8 +264,13 @@ ELEV_X0 = STOP_X + CLR_SLIDE      # DERIVED -14.0
 ELEV_X1 = BRIDGE_X0 - CLR_SLIDE   # DERIVED -2.4
 ELEV_CX = (ELEV_X0 + ELEV_X1) / 2  # DERIVED -8.2
 ELEV_HW = BORE_W / 2 - CLR_SLIDE  # DERIVED 9.95
-ELEV_H = 20.0           # DEFAULT
-LEDGE_Z = RAIL_TOP_Z - ELEV_H     # DERIVED -15.5 (elevator top flush with the bridge at rest)
+# CHANGED (v1.1, Rev C) bridge top = cup rest top 4.5 -> 3.7, below the lowest bite seat on the
+# rails (min-width bite 4.0, 3.9 with the clip resting on its socket floor): every bite steps
+# DOWN into the receiver.  Climbing the old 0.6 x 45° lead-in self-locks once bite-to-bite
+# friction reaches ~0.43, however hard the spring pushes.  §9.11 checks the step.
+CUP_TOP_Z = 3.7         # PARAM
+LEDGE_Z = RAIL_TOP_Z - 20.0       # DERIVED -15.5, unchanged from v1 (spec: 20.0 elevator on a 4.5 cup)
+ELEV_H = CUP_TOP_Z - LEDGE_Z      # CHANGED (v1.1) 20.0 -> 19.2: ledge, pivot, lever, plunger stay put
 ELEV_REAR_CHAMFER = 0.5
 ELEV_FRONT_CHAMFER = 0.3
 ELEV_SIDE_CHAMFER = 0.3  # ADDED (bite-touchable)
@@ -323,10 +341,23 @@ PAD_SNAP = (1.2, 0.0, 0.0)   # ADDED bead centre below the flange top, height, d
 # =============================================================================
 # §6.6 Return spring (purchased) - geometry for the model
 # =============================================================================
-RS_OD = 6.0             # 5.5-6.5
-RS_WIRE = 0.6
-RS_SOLID_MAX = 10.0     # must not go solid above ≈10
+RS_OD = 6.0             # 5.5-6.5 (ID >= 3.4 to fit over the Ø3 spigot)
+RS_OD_RANGE = (5.5, 6.5)
+RS_WIRE = 0.40          # CHANGED (v1.1) 0.6 -> 0.40 (0.45 max): 0.5-0.6 wire goes solid before the stroke ends
+RS_WIRE_MAX = 0.45
+RS_K_RANGE = (0.12, 0.15)  # N/mm, buyable range for spring B (Rev C)
+RS_FREE_RANGE = (37.0, 40.0)  # mm, buyable free length for spring B (Rev C)
+RS_G = 79300.0          # N/mm^2 shear modulus, music wire (302 SS ~69000 gives fewer coils: shorter solid)
+RS_DEAD_COILS = 3       # closed, not ground: solid = (n_active + 3) d  (ground ends: + 2)
+RS_SOLID_MAX = 10.0     # MUST not go solid above 10 (pressed installed length is 12.1)
 RS_WELL_D = 6.8         # DEFAULT
+
+
+def rs_solid_length(k: float, wire: float = RS_WIRE, od: float = RS_OD, g: float = RS_G) -> float:
+    """Solid length of a compression spring of rate k: n_active = G d^4 / (8 D^3 k)."""
+    D = od - wire
+    n = g * wire ** 4 / (8 * D ** 3 * k)
+    return (n + RS_DEAD_COILS) * wire
 
 # =============================================================================
 # §6.1 Receiver body
@@ -336,7 +367,7 @@ RCV_HW = CLIP_HW + CLR_SLIDE + SOCKET_WALL   # DERIVED 14.55
 RCV_X0 = PADDLE_X - 16.8  # DEFAULT -53.0
 RCV_BOT_Z = -20.0       # DEFAULT
 RCV_EDGE_CHAMFER = 0.5  # ADDED outer edges
-BRIDGE_LEADIN = 0.6     # DEFAULT 0.6 x 45° on the bridge +X top edge
+BRIDGE_LEADIN = 0.2     # CHANGED (v1.1) 0.6 x 45° lead-in -> 0.2 edge break: the bridge is below every bite seat
 BRIDGE_REAR_CHAMFER = 0.3  # DEFAULT -X top edge
 RELIEF_X1 = -5.0        # DEFAULT lever-tip relief pocket in the ledge
 RELIEF_HW = 3.6
@@ -392,9 +423,11 @@ DOWELS = [(-2.6, -17.75), ((PADDLE_X + PLUNGER_CH_HW_X + FRONT_WALL_X0) / 2, 19.
 # =============================================================================
 SOCKET_L = 28.0         # DEFAULT
 SOCKET_IN_HW = CLIP_HW + CLR_SLIDE          # DERIVED 12.55
-SOCKET_IN_Z0 = CLIP_BOT_Z - CLR_SLIDE       # DERIVED -2.3
+SOCKET_FLOOR_CLR = 0.10  # CHANGED (v1.1, Rev C) 0.30 -> 0.10: the clip always rests on the floor under
+                         # gravity; latch engagement 0.4 -> 0.6, smaller bite step into the receiver
+SOCKET_IN_Z0 = CLIP_BOT_Z - SOCKET_FLOOR_CLR  # DERIVED -2.1
 SOCKET_IN_Z1 = TOP_Z + CLR_SLIDE            # DERIVED 33.8
-SOCKET_OUT_Z0 = SOCKET_IN_Z0 - SOCKET_WALL  # DERIVED -4.3
+SOCKET_OUT_Z0 = SOCKET_IN_Z0 - SOCKET_WALL  # DERIVED -4.1
 SOCKET_OUT_Z1 = SOCKET_IN_Z1 + SOCKET_WALL  # DERIVED 35.8
 SOCKET_ENTRY_CHAMFER = 0.5  # ADDED lead-in at X 28
 TONGUE_HW = 4.0         # DEFAULT
@@ -451,6 +484,13 @@ RHO_TPU = 1.21e-3
 RHO_STEEL = 7.9e-3
 MU_WALL = 0.1           # PTFE-taped wall
 MU_BITE = 0.4           # bite on bite
+MU_BITE_STICKY = 0.6    # sticky food (Rev C sink-back check, with SPRING_F_HI)
+SPRING_F_LO = 0.13      # constant-force spring tolerance: -13 % (feed margin)
+SPRING_F_HI = 0.10      # +10 % (sink-back check)
+FEED_BITE_MASS_G = 10.0  # §9.10 feed margin: 8 x 10 g sticky bites
+FEED_MU = 0.6           # bite on the rails (sticky)
+FEED_MU_FOLLOWER = 0.4  # ADDED follower (PETG) on the PETG rail tops, dry
+G_EARTH, G_MOON = 9.81, 1.62
 
 # =============================================================================
 # Kinematics derived from the above (slot play taken up in the loaded direction)

@@ -3,7 +3,7 @@
 1. export.py  - STL per part (print orientation), STEP per part, state assemblies
 2. render.py  - PNG renders (needs a display; on Linux run under `xvfb-run -a`)
 3. verify.py  - §9 checks -> ../VERIFICATION.md
-4. zip the output folder -> ../../EBD_Clip_v1_output.zip
+4. zip the output folder -> ../../EBD_Clip_v1.1_output.zip
 """
 import os
 import sys
@@ -30,7 +30,7 @@ def main():
         else:
             print("no display and no xvfb-run: skipping renders")
     run([py, "verify.py"] + (["--quick"] if "--quick" in sys.argv else []))
-    zip_base = os.path.join(os.path.dirname(ROOT), "EBD_Clip_v1_output")
+    zip_base = os.path.join(os.path.dirname(ROOT), "EBD_Clip_v1.1_output")
     shutil.make_archive(zip_base, "zip", os.path.dirname(ROOT), os.path.basename(ROOT))
     print("wrote", zip_base + ".zip")
 

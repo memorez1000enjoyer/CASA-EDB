@@ -22,7 +22,7 @@ BED_EDGE_H = 0.8        # fillets/chamfers rising from the bed up to this height
 # Spec-defined features thinner than 0.8 (device-frame boxes) -> reported, not failed.
 ALLOWED_THIN = {
     "follower": [((-0.1, 0.8, -10, 10, z - 0.4, z + 0.4), f"push rib (spec: 0.5 tall x 0.6)") for z in P.PUSH_RIB_Z],
-    "follower_springB": [((-0.1, 0.8, -10, 10, z - 0.4, z + 0.4), "push rib (spec: 0.5 tall x 0.6)") for z in P.PUSH_RIB_Z],
+    "follower_springA": [((-0.1, 0.8, -10, 10, z - 0.4, z + 0.4), "push rib (spec: 0.5 tall x 0.6)") for z in P.PUSH_RIB_Z],
     "clip_tube": [
         ((-0.1, 1.3, -10, 10, 2.0, 4.6), "rail stub in front of the gate slot: 1.2 lip with the spec 0.5 rail chamfer"),
         ((-0.1, 1.3, -12.3, 12.3, 32.8, 33.6), "top corner of the 1.2 mouth lip with the spec 0.5 mouth chamfer"),
@@ -39,8 +39,10 @@ ALLOWED_THIN["clip_tube_viewslots"] = ALLOWED_THIN["clip_tube"]
 def _device_mesh(name):
     """Tessellate the part in the device frame (for thickness + allowlists)."""
     import export
-    parts = export._parts("B" if name.endswith("_springB") else "A")
-    base = name.replace("_springB", "")
+    import re as _re
+    m = _re.search(r"_spring([AB])$", name)
+    parts = export._parts(m.group(1) if m else P.DEFAULT_SPRING)
+    base = _re.sub(r"_spring[AB]$", "", name)
     w = parts[base][0]
     shp = w.val() if len(w.vals()) == 1 else __import__("cadquery").Compound.makeCompound(w.vals())
     vs, fs = shp.tessellate(0.01, 0.1)

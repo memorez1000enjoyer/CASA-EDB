@@ -41,17 +41,17 @@ def receiver_full() -> cq.Workplane:
 
     cuts = []
     # bite path: bore continuation above the bridge/elevator, and the elevator channel
-    cuts.append(box(P.STOP_X, 0.01, -bw, bw, P.RAIL_TOP_Z, P.BORE_TOP_Z))
+    cuts.append(box(P.STOP_X, 0.01, -bw, bw, P.CUP_TOP_Z, P.BORE_TOP_Z))
     cuts.append(box(P.STOP_X, P.BRIDGE_X0, -bw, bw, P.LEDGE_Z, P.BORE_TOP_Z))
     # lever-tip relief in the ledge
     cuts.append(box(P.STOP_X, P.RELIEF_X1, -P.RELIEF_HW, P.RELIEF_HW, P.RELIEF_Z0, P.LEDGE_Z + 0.01))
-    # bridge +X lead-in 0.6 x 45° (Z 3.9 at X 0 -> 4.5 at X -0.6) and -X 0.3 chamfer
+    # bridge top CUP_TOP_Z (below every bite seat): +X edge break BRIDGE_LEADIN x 45°, -X 0.3 chamfer
     li = P.BRIDGE_LEADIN
-    cuts.append(prism_xz([(0.01, P.RAIL_TOP_Z - li - 0.01), (0.01, P.RAIL_TOP_Z + 0.01),
-                          (-li - 0.01, P.RAIL_TOP_Z + 0.01)], -bw, bw))
+    cuts.append(prism_xz([(0.01, P.CUP_TOP_Z - li - 0.01), (0.01, P.CUP_TOP_Z + 0.01),
+                          (-li - 0.01, P.CUP_TOP_Z + 0.01)], -bw, bw))
     rc = P.BRIDGE_REAR_CHAMFER
-    cuts.append(prism_xz([(P.BRIDGE_X0 - 0.01, P.RAIL_TOP_Z - rc - 0.01), (P.BRIDGE_X0 - 0.01, P.RAIL_TOP_Z + 0.01),
-                          (P.BRIDGE_X0 + rc + 0.01, P.RAIL_TOP_Z + 0.01)], -bw, bw))
+    cuts.append(prism_xz([(P.BRIDGE_X0 - 0.01, P.CUP_TOP_Z - rc - 0.01), (P.BRIDGE_X0 - 0.01, P.CUP_TOP_Z + 0.01),
+                          (P.BRIDGE_X0 + rc + 0.01, P.CUP_TOP_Z + 0.01)], -bw, bw))
     # window through the roof; rear edge X -0.8 is the sharp stripper edge
     cuts.append(box(P.STOP_X, P.STRIPPER_X, -bw, bw, P.BORE_TOP_Z - 0.01, P.TOP_Z + 1))
     wc = P.WINDOW_TOP_CHAMFER
@@ -115,8 +115,8 @@ def receiver_full() -> cq.Workplane:
     li2 = P.BORE_LEADIN
     for s in (+1, -1):   # lead-in on the bore opening's vertical edges at the stop face
         tri = [(0.01, s * (bw - 0.01)), (0.01, s * (bw + li2)), (-li2, s * (bw - 0.01))]
-        cuts.append(cq.Workplane("XY", origin=(0, 0, P.RAIL_TOP_Z - P.BRIDGE_LEADIN)).polyline(tri).close()
-                    .extrude(P.BORE_TOP_Z - P.RAIL_TOP_Z + P.BRIDGE_LEADIN))
+        cuts.append(cq.Workplane("XY", origin=(0, 0, P.CUP_TOP_Z - P.BRIDGE_LEADIN)).polyline(tri).close()
+                    .extrude(P.BORE_TOP_Z - P.CUP_TOP_Z + P.BRIDGE_LEADIN))
     for c in cuts:
         r = r.cut(c)
 

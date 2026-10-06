@@ -1,4 +1,4 @@
-# OPEN ISSUES - EBD Clip v1
+# OPEN ISSUES - EBD Clip v1.1
 
 Things the spec asks for that cannot be built exactly as written, and decisions that belong to the
 team. Where the model had to pick something to stay printable, it says what was picked and why.
@@ -75,11 +75,12 @@ lower −Y face, so take the Velcro off for bench tests.
 `RING_FLANGE_T = 4.0`, `RING_HOOK_REACH = 6.0` and `RING_HOOK_Z = 8.0` are still **placeholders**. Measure
 the real flange in `HUT – Largest.stl` (NTRS 20260000671), set them in `params.py`, and rebuild.
 
-## 5. Spring A is too stiff for the final design (as the spec predicted)
+## 5. Spring A is too stiff for the final design (resolved in v1.1: spring B is the default)
 
-With the 1.48 lb spring the chin force is about **4.9 → 7.9 N** (flagged > 6 N). An uneaten raised bite
-**does not sink back**: about 1.6 N of return force vs 3.3 N of sandwich friction. With spring B the chin
-force is about **1.7 → 3.5 N** and the bite returns. Build and test both; plan on B (or about 0.3-0.5 lb).
+With the 1.48 lb spring the chin force is about **4.9 → 7.9 N** (flagged > 6 N), and an uneaten raised bite
+**does not sink back** (1.6 N of return force vs 3.3 N of sandwich friction). The team bought spring B, and
+v1.1 makes it the default. With the v1.1 return spring (k 0.13, free 38) the chin force is **2.2 → 4.1 N** and an
+uneaten bite returns with a 1.95× margin (1.26× with sticky food). Keep A for high-force feed tests only.
 
 ## 6. Undocking a clip that still has bites in it
 
@@ -103,11 +104,11 @@ on the bench and decide whether v2 needs a second gate at the receiver side.
 
   The old flat strip broke at about 1.3 N. Push-test the printed halves at the window centre with 20 N.
   v2: key or bond the halves there.
-- **Bite 2 dragged up in state B:** bite 1's friction can lift bite 2 (about a 3 % margin). The roof caps
-  the rise. Test with min-height bites and spring A.
-- **Min-width bite onto the bridge:** it rests half on the bridge and tilts about 2° (modelled as a 0.44
-  lift). With the clip sitting 0.3 low it is a 0.8 step with a thin friction margin under spring B. Test
-  W-min bites with spring B.
+- **Bite 2 dragged up in state B:** with spring B this is a **Moon** effect and harmless. The margin is 1.11 on
+  Earth and 1.02 on the Moon (spring A: 1.03 on Earth). Even if it does rise, the 0.65 gap to the clip roof caps it, and
+  bite 2 drops back when bite 1 stops (VERIFICATION §9.10).
+- **Bites onto the bridge:** fixed in v1.1 for upright bites (they step down ≥ 0.2, §9.11). Leaning min-width
+  bites are #14.
 - **Lift margin:** real lift ≈ 13.9 with hole play (≥ 13.5). Lever bending under an 8 N chin (6 × 5 PETG,
   14 mm arms) costs roughly another 0.1, which leaves about 0.3 of margin. Holes printed undersize and then
   reamed give the same; holes left oversize eat the margin.
@@ -118,11 +119,15 @@ on the bench and decide whether v2 needs a second gate at the receiver side.
 
 ## 8. The last bite can be launched in lunar gravity (review finding, not fixed)
 
-With a min-thickness last bite (states C/D), nothing clamps it against the front wall: there is a 0.5 gap,
-and the follower sits on its stop. At the hard stop the elevator stops dead. At 1/6 g, a chin tuck of about
-0.22 m/s is enough to throw the bite clear of the 15 mm retention (0.55 m/s at 1 g, so bench tests won't
-show it). The spec accepts the gap (§7 C). Suggested fixes: TPU cup lips on the window side walls, as the
-Gameplan proposed (about 0.3 N grip), or a flexure finger on the follower.
+This applies to **any last bite 12.7 thick or thinner**, not only min thickness. The follower is on its stop
+at F = −1.6, which holds a 12.7 bite with exactly zero preload and leaves a gap for anything thinner (0.5
+for a min bite). Only a thicker bite (up to 13.2) is still clamped by the spring. At the hard stop the elevator
+stops dead. At 1/6 g, a chin tuck of about 0.22 m/s is enough to throw the bite clear of the ~16 mm retention
+(0.55 m/s at 1 g, so bench tests won't show it). The spec accepts the gap (§7 C).
+
+**v1.1 candidate:** TPU lips on the window side walls, as the Gameplan proposed, gripping the bite with about
+0.3 N. That doesn't break the sink-back check: 1.43 N of return force against 0.74 + 0.3 N, a 1.4× margin.
+Alternative: a flexure finger on the follower.
 
 ## 9. Paddle pad retention
 
@@ -150,9 +155,11 @@ window is about **+7 mm** (`PADDLE_X` ≥ −29).
 
 ## 12. Clip in its socket
 
-The one-sided latch and the ribbon clamp make a small yaw couple, so the clip can sit up to 0.3 off-centre,
-and 0.3 low under bench gravity. The follower's front chamfer and underside relief, and the bore lead-in,
-handle this. `verify.py` checks states C and D-taken with the clip moved ±0.3 in Y and in Z.
+The one-sided latch and the ribbon clamp make a small yaw couple, so the clip can sit up to 0.3 off-centre in
+Y. In Z it rests on the socket floor, **0.1** low (v1.1; it was 0.3), and can float up to 0.3 against the roof. The
+follower's front chamfer and underside relief, and the bore lead-in, handle this. `verify.py` checks states C
+and D-taken with the clip moved ±0.3 in Y, −0.1 and +0.3 in Z. Floated up, the latch tooth just touches the
+notch floor, at exactly the moment the clip reaches the roof (§9.13).
 
 ## 13. Review coverage
 
@@ -165,3 +172,24 @@ handle this. `verify.py` checks states C and D-taken with the clip moved ±0.3 i
   (pin-hole parameters, follower relief, screw head type, stale numbers) fixed in CHANGES.md section E.
 - **Round 4:** convergence check of the round-3 fixes. No geometry finding; four documentation fixes
   (CHANGES.md section F). The loop stopped here: the last two rounds found nothing structural.
+- **Team model review (Oct 2 2026):** an independent rebuild found 182 of 182 spec coordinates matching, and a
+  second collision engine (manifold3d) found 0 collisions. Its findings became v1.1 (CHANGES.md section G).
+
+## 14. Leaning min-width bites (found while checking v1.1, needs the bench test)
+
+The step-down rule (§9.11) assumes bites stand upright and centred on the rails. They don't have to. An
+18-wide (min) bite rests on two R0.5 rail edges 16 apart, which makes it **unstable upright**. A 2-D rigid-body
+check (`cad/lean.py`, in VERIFICATION §9.11) finds:
+- It rolls about 7° until it wedges between the side walls, with its centre of mass 0.49 mm lower.
+- Its low bottom corner then hangs into the gap between the rails, about **1.0 below the bridge top** (v1: 1.8).
+- A whole stack can lean together, because rotating about the stacking axis doesn't slide one bite face on
+  the next.
+- Nominal (19-wide) bites lean about 3° and stay flush with the bridge. Max bites stay upright.
+
+When a leaning bite reaches the bridge, the edge meets one rounded R2 corner and rolls the bite upright
+about its high-side rail. It doesn't have to lift the bite bodily, so this probably isn't the self-locking
+climb that v1.1 fixed. But no rigid-upright model covers it, and the CAD can't settle it.
+
+**What to do:** go/no-go test #1 in the README (sticky 18-wide dummy bites, clip resting in the socket, all 8
+cycled) is the real test. If min-width bites stall at the mouth, the v2 fix is to stop them leaning: flat rail
+tops wider than a min bite's flat bottom (±7.0), which means a narrower ribbon groove.
