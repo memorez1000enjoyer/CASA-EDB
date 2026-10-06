@@ -651,8 +651,8 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
     w(f"Usable force = spring force at −{100 * P.SPRING_F_LO:.0f} %, less the drum turning on its steel axle "
       f"(μ {P.FEED_AXLE_MU} × pin radius ÷ coil radius = {100 * fB['axle_loss']:.1f} % for B). Drag: "
       f"{P.N_BITES} × {P.FEED_BITE_MASS_G:.0f} g bites at μ {P.FEED_MU}, times the contact factor k (sum of the "
-      f"contact normal forces ÷ weight: upright on the two R0.5 rail edges, or **leaning** and wedged between the "
-      f"walls, see §9.11), plus the follower group (follower, drum, spacer rings, coil, axle; solid mass, an upper "
+      f"contact normal forces ÷ weight: upright on the two R0.5 rail edges, or **leaning** and wedged against a "
+      f"side wall, see §9.11), plus the follower group (follower, drum, spacer rings, coil, axle; solid mass, an upper "
       f"bound) at μ {P.FEED_MU_FOLLOWER} on the rail tops. Drag at an incline t (mouth uphill) = "
       f"g·[(μ·k·m_bites + μ_f·m_f)·cos t + (m_bites + m_f)·sin t]; the worst incline is where that peaks. "
       f"Not modelled: the follower's pitch moment (the ribbon pulls through the axle at Z ≈ {P.pocket_cz(P.SPRINGS[P.DEFAULT_SPRING]):.0f}, "
@@ -713,6 +713,7 @@ def write_report(results, pr_rows, em, fr, margins, cup_rng, plg_rng, t_geo, qui
         w(f"| {r['bites']} ({r['W']:.0f}) | {'yes' if ln['upright_stable'] else '**no**'} "
           f"({-ln['upright_drop_um']:+.2f} µm) | {abs(r['lean']):.2f}° | {r['com_drop']:.3f} | "
           f"{', '.join(ln['contacts'])} | {k_txt} | {r['lowest']:.2f} (Y {abs(r['lowest_y']):.1f}) | {r['lean_step']:+.2f} |")
+    w("")
     for bk, b in P.BITES.items():
         r = next(x for x in st_ if x["bites"] == bk and x["dz"] != 0)
         ln = r["ln"]
