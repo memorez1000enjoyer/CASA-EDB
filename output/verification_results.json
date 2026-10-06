@@ -46,7 +46,7 @@
    "9.8",
    "Printability",
    true,
-   "21 STLs all watertight, walls \u2265 0.8 except listed spec features; NEEDS SUPPORT: receiver_left, receiver_right, plunger (OPEN_ISSUES #2)"
+   "22 STLs all watertight, walls \u2265 0.8 except listed spec features; NEEDS SUPPORT: receiver_left, receiver_right, plunger (OPEN_ISSUES #2)"
   ],
   [
    "9.9",
@@ -58,7 +58,7 @@
    "9.10",
    "Force report",
    true,
-   "B 2.2-4.1 N, uneaten bite returns 1.95x (sticky 1.26x); A 4.9-7.9 N (> 6 N flagged, does not return); B feed margin, min width: 1.82x level / 1.24x vertical / **1.02x at 56\u00b0**, leaning bites **0.91x at 47\u00b0**; Moon \u2265 5.5x any orientation"
+   "B 2.2-4.1 N, uneaten bite returns 1.95x (sticky 1.26x); A 4.9-7.9 N (> 6 N flagged, does not return); B feed margin, min width: 1.82x level / 1.24x vertical / **1.02x at 56\u00b0**, leaning bites **0.66x at 32\u00b0** (worst width 18.59: **0.79x level**); Moon \u2265 4.0x any orientation"
   ],
   [
    "9.11",
@@ -111,7 +111,7 @@
    "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 101.52352046966553
+   "time": 103.38343691825867
   },
   {
    "cfg": "B/nom",
@@ -144,7 +144,7 @@
    "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 101.25123763084412
+   "time": 103.09305167198181
   },
   {
    "cfg": "B/max",
@@ -177,7 +177,7 @@
    "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 100.74610662460327
+   "time": 103.27047181129456
   },
   {
    "cfg": "A/min",
@@ -210,7 +210,7 @@
    "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 95.24782061576843
+   "time": 95.73216032981873
   },
   {
    "cfg": "A/nom",
@@ -243,7 +243,7 @@
    "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 96.15071177482605
+   "time": 94.14337468147278
   },
   {
    "cfg": "A/max",
@@ -276,7 +276,7 @@
    "elev_rest": 3.6999999999999993,
    "push_rib_gap_Dt": 0.8000000000000003,
    "push_rib_gap_Dt_worst": 0.5000000000000004,
-   "time": 95.96649742126465
+   "time": 95.12961864471436
   }
  ],
  "clearance": {
@@ -749,8 +749,8 @@
      "bbox": [
       67.6,
       69.2,
-      10.2,
-      12.2
+      -12.2,
+      -10.2
      ]
     },
     {
@@ -761,8 +761,8 @@
      "bbox": [
       67.6,
       69.2,
-      -12.2,
-      -10.2
+      10.2,
+      12.2
      ]
     },
     {
@@ -785,13 +785,13 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 33373.72192823499,
+   "volume": 33373.721928235,
    "min_wall": 0.8148289345253811,
    "wall_ok": true,
    "overhang_ok": true,
    "flags": [
     "spec feature: top corner of the 1.2 mouth lip with the spec 0.5 mouth chamfer 0.71",
-    "spec feature: clamp notch (X 3.1-3.9) meets the \u00d82.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall 0.12",
+    "spec feature: clamp notch (X 3.1-3.9) meets the \u00d82.3 screw holes (X 3.85-6.15): spec overlap 0.05, not a wall 0.03",
     "longest bridge 20.5"
    ],
    "regions": [
@@ -1104,7 +1104,7 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 32265.92168021353,
+   "volume": 32265.921680213534,
    "min_wall": 0.7998999999999996,
    "wall_ok": true,
    "overhang_ok": false,
@@ -1259,15 +1259,15 @@
      ]
     },
     {
-     "area": 2.7,
+     "area": 3.4,
      "bad_frac": 0.0,
      "bridge": 0.0,
-     "z": 11.2,
+     "z": 11.3,
      "bbox": [
       13.7,
       15.3,
       24.6,
-      26.3
+      26.6
      ]
     },
     {
@@ -1281,6 +1281,78 @@
       24.6,
       26.6
      ]
+    },
+    {
+     "area": 1.5,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 0.29,
+     "bbox": [],
+     "note": "bed-edge fillet"
+    },
+    {
+     "area": 0.4,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 0.3,
+     "bbox": [],
+     "note": "bed-edge fillet"
+    },
+    {
+     "area": 1.4,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 0.3,
+     "bbox": [],
+     "note": "bed-edge fillet"
+    },
+    {
+     "area": 0.4,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 0.5,
+     "bbox": [],
+     "note": "bed-edge fillet"
+    },
+    {
+     "area": 3.5,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 0.29,
+     "bbox": [],
+     "note": "bed-edge fillet"
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 11.3,
+     "bbox": [
+      13.4,
+      13.7,
+      26.3,
+      26.6
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 11.3,
+     "bbox": [
+      15.3,
+      15.6,
+      26.3,
+      26.6
+     ]
+    },
+    {
+     "area": 3.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 0.29,
+     "bbox": [],
+     "note": "bed-edge fillet"
     },
     {
      "area": 2.8,
@@ -1314,7 +1386,7 @@
    "watertight": true,
    "winding": true,
    "bodies": 1,
-   "volume": 31699.91100532886,
+   "volume": 31699.911005328864,
    "min_wall": 0.7998999999999996,
    "wall_ok": true,
    "overhang_ok": false,
@@ -1335,30 +1407,6 @@
       -31.6,
       14.8,
       26.2
-     ]
-    },
-    {
-     "area": 0.1,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 6.8,
-     "bbox": [
-      -18.4,
-      -17.9,
-      -25.2,
-      -24.8
-     ]
-    },
-    {
-     "area": 0.1,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
-     "z": 6.8,
-     "bbox": [
-      -29.5,
-      -29.0,
-      -25.2,
-      -24.8
      ]
     },
     {
@@ -1395,6 +1443,30 @@
       -1.8,
       5.2,
       22.2
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 6.8,
+     "bbox": [
+      -18.4,
+      -17.9,
+      -25.2,
+      -24.8
+     ]
+    },
+    {
+     "area": 0.1,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 6.8,
+     "bbox": [
+      -29.5,
+      -29.0,
+      -25.2,
+      -24.8
      ]
     },
     {
@@ -1497,24 +1569,24 @@
      "area": 3.5,
      "bad_frac": 0.0,
      "bridge": 0.0,
-     "z": 5.3,
-     "bbox": [
-      -12.2,
-      -10.1,
-      -11.8,
-      -9.7
-     ]
-    },
-    {
-     "area": 3.5,
-     "bad_frac": 0.0,
-     "bridge": 0.0,
      "z": 13.6,
      "bbox": [
       -10.8,
       -8.7,
       12.7,
       14.8
+     ]
+    },
+    {
+     "area": 3.5,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 5.3,
+     "bbox": [
+      -12.2,
+      -10.1,
+      -11.8,
+      -9.7
      ]
     }
    ]
@@ -1884,6 +1956,28 @@
    "regions": [
     {
      "area": 97.2,
+     "bad_frac": 0.0,
+     "bridge": 0.0,
+     "z": 0.64,
+     "bbox": [],
+     "note": "bed-edge fillet"
+    }
+   ]
+  },
+  {
+   "name": "bite_wedge_test",
+   "orient": "plusX_down",
+   "watertight": true,
+   "winding": true,
+   "bodies": 1,
+   "volume": 5815.73213409778,
+   "min_wall": 12.6999,
+   "wall_ok": true,
+   "overhang_ok": true,
+   "flags": [],
+   "regions": [
+    {
+     "area": 91.6,
      "bad_frac": 0.0,
      "bridge": 0.0,
      "z": 0.64,

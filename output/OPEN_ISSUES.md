@@ -200,7 +200,7 @@ rails. A rigid, frictionless 2-D check (`cad/lean.py`, VERIFICATION §9.11) show
     falls (1.75 at 19.0, 1.34 at 19.5, 1.14 at 20.0).
 - **Feed margin with spring B and sticky bites:** upright 1.02-1.07× at the worst Earth tilt (~56-60°
   mouth-up). Leaning min or nominal bites: about 0.91× at ~47°. **At the worst width (~18.6): about 0.79× even
-  level, 0.66× at ~32°.** A margin below 1 means a stall is predicted. On the Moon it stays at 3.9× or more in any
+  level, 0.66× at ~32°.** A margin below 1 means a stall is predicted. On the Moon it stays at 4.0× or more in any
   orientation.
 - These numbers stack every worst case: μ 0.6 on rails and walls, 10 g bites, the spring 13 % weak, and a rigid,
   frictionless lean. The jump at ~18.6 is a sharp, geometry-sensitive feature of the rigid model. Real food

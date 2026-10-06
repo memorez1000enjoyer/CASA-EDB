@@ -208,6 +208,17 @@
    13.2
   ]
  },
+ "bite_wedge_test": {
+  "orientation": "plusX_down",
+  "material": "PETG/PLA",
+  "note": "print 8: 18.6 wide, the worst leaning width (bench test #1)",
+  "volume_mm3": 5816.0,
+  "print_bbox": [
+   25.4,
+   18.6,
+   12.7
+  ]
+ },
  "drum_spacer": {
   "orientation": "plusY_down",
   "material": "PETG",
