@@ -7,7 +7,9 @@ and the lowest point of the bite in that pose.  Used by verify.py §9.11 to show
 below CUP_TOP_Z a leaning bite's bottom corner can hang when it reaches the receiver.
 """
 import math
+from functools import lru_cache
 import numpy as np
+from scipy.optimize import minimize_scalar
 import params as P
 
 
@@ -94,54 +96,64 @@ def normal_forces(contacts, com):
     return sol, float(np.abs(A @ sol - rhs).max())
 
 
-def _centre_at(pts, th_deg):
-    """Lowest centre height over shift y at lean angle th (the two-rail rocking path)."""
+def _rot(pts, th_deg):
     c, s = math.cos(math.radians(th_deg)), math.sin(math.radians(th_deg))
-    rp = np.c_[pts[:, 0] * c - pts[:, 1] * s, pts[:, 0] * s + pts[:, 1] * c]
-    hw = (P.BORE_W - (pts[:, 0].max() - pts[:, 0].min())) / 2 + 1.0
-    zs = [r[0] for r in (_pose(rp, y) for y in np.linspace(-hw, hw, 801)) if r is not None]
-    return min(zs) if zs else math.inf
+    return np.c_[pts[:, 0] * c - pts[:, 1] * s, pts[:, 0] * s + pts[:, 1] * c]
 
 
-def upright_drop(b: P.Bite, th_deg=0.5):
-    """Energy test of the centred upright pose: how much LOWER (mm) the centre of mass gets
-    when the bite leans th degrees and rolls on its rail contacts.  > 0: upright is unstable.
-    (The R2-corner-on-R0.5-edge contacts make a four-bar linkage; crossing contact normals
-    alone do not decide it.)"""
+def _min_over_y(rp, walls=True):
+    """Lowest centre height (and its y) of the posed outline resting on the rails, over every
+    shift y the walls allow (walls=False: the free two-rail rocking path, no walls)."""
+    if walls:
+        hw = P.BORE_W / 2
+        lo, hi = -hw - rp[:, 0].min(), hw - rp[:, 0].max()
+        if lo > hi + 1e-12:
+            return math.inf, None
+    else:
+        lo, hi = -1.5, 1.5
+    f = lambda y: float(np.max(rail_profile(rp[:, 0] + y) - rp[:, 1]))
+    ys = np.linspace(lo, hi, 201)
+    zs = [f(y) for y in ys]
+    k = int(np.argmin(zs))
+    a, b = ys[max(k - 2, 0)], ys[min(k + 2, len(ys) - 1)]
+    if b - a < 1e-9:
+        return zs[k], ys[k]
+    r = minimize_scalar(f, bounds=(a, b), method="bounded", options=dict(xatol=1e-7))
+    return (r.fun, r.x) if r.fun < zs[k] else (zs[k], ys[k])
+
+
+def upright_drop(b: P.Bite, th_deg=0.25):
+    """Energy test of the centred upright pose with NO walls (the free four-bar formed by the
+    R2 corners on the R0.5 rail edges): how much LOWER (mm) the centre of mass gets when the
+    bite leans th degrees and rolls.  > 0: upright is unstable; the walls only decide where
+    the roll stops (rest_pose)."""
     pts = _outline(b.W, b.H, b.R, step=0.005)
-    z0 = _centre_at(pts, 0.0)
-    return z0 - min(_centre_at(pts, th_deg), _centre_at(pts, -th_deg))
+    z0 = _min_over_y(pts, walls=False)[0]
+    return z0 - min(_min_over_y(_rot(pts, t), walls=False)[0] for t in (th_deg, -th_deg))
 
 
+@lru_cache(None)
 def rest_pose(b: P.Bite):
-    """Gravity rest pose: minimise the centre height over shift y and lean angle."""
+    """Gravity rest pose (frictionless): minimise the centre height over lean angle and every
+    wall-allowed shift y."""
     pts = _outline(b.W, b.H, b.R)
     best = None
-
-    def scan(ths, ys):
-        nonlocal best
-        for th in ths:
-            c, s = math.cos(th), math.sin(th)
-            rp = np.c_[pts[:, 0] * c - pts[:, 1] * s, pts[:, 0] * s + pts[:, 1] * c]
-            for y in ys:
-                r = _pose(rp, y)
-                if r is not None and (best is None or r[0] < best[0] - 1e-9):
-                    best = (r[0], y, math.degrees(th), r[1], r[2])
-
-    hw = (P.BORE_W - b.W) / 2 + 0.3
-    if best is None:
-        pass
-    scan(np.radians(np.arange(-12, 12.01, 0.5)), np.linspace(-hw, hw, 41))
-    _, y0, t0, _, _ = best
-    scan(np.radians(np.linspace(t0 - 0.5, t0 + 0.5, 21)), np.linspace(y0 - 0.1, y0 + 0.1, 21))
-    _, y0, t0, _, _ = best
-    scan(np.radians(np.linspace(t0 - 0.05, t0 + 0.05, 41)), np.linspace(y0 - 0.01, y0 + 0.01, 41))
-    zc, y, th, low, low_y = best
+    for th in np.arange(-12, 12.0001, 0.1):
+        z, y = _min_over_y(_rot(pts, th))
+        if y is not None and (best is None or z < best[0] - 1e-12):
+            best = (z, y, th)
+    t0 = best[2]
+    for th in np.linspace(t0 - 0.1, t0 + 0.1, 41):
+        z, y = _min_over_y(_rot(pts, th))
+        if y is not None and z < best[0] - 1e-12:
+            best = (z, y, th)
+    zc, y, th = best
+    rp = _rot(pts, th)
+    low = zc + float(rp[:, 1].min())
+    low_y = float(rp[np.argmin(rp[:, 1]), 0] + y)
     upright = _pose(pts, 0.0)
-    c, s_ = math.cos(math.radians(th)), math.sin(math.radians(th))
-    rp = np.c_[pts[:, 0] * c - pts[:, 1] * s_, pts[:, 0] * s_ + pts[:, 1] * c]
     cts = _contacts(b, y, zc, th)
-    k_lean, resid = (None, None)
+    k_lean = None
     if len(cts) in (2, 3):
         f, resid = normal_forces(cts, (y, zc))
         if (f > -1e-6).all() and resid < 1e-3:
@@ -149,8 +161,9 @@ def rest_pose(b: P.Bite):
     drop = upright_drop(b)
     return dict(centre=zc, y=y, lean_deg=th, lowest=low, lowest_y=low_y,
                 upright_centre=upright[0], upright_bottom=upright[1],
-                com_drop=upright[0] - zc, contacts=[c_[0] for c_ in cts], k_lean=k_lean,
-                upright_stable=drop <= 1e-6, upright_drop_um=1000 * drop)
+                com_drop=upright[0] - zc, contacts=[c_[0] for c_ in cts],
+                walls=sum(1 for c_ in cts if c_[0].startswith("wall")), k_lean=k_lean,
+                upright_stable=drop <= 1e-7, upright_drop_um=1000 * drop)
 
 
 if __name__ == "__main__":
@@ -161,4 +174,4 @@ if __name__ == "__main__":
         b = P.Bite("w", P.BITE_T, W, P.BITE_H)
         r = rest_pose(b)
         print("W", W, "lean", round(r["lean_deg"], 2), "k_lean", r["k_lean"] and round(r["k_lean"], 3),
-              "upright stable", r["upright_stable"], round(r["upright_drop_um"], 1), "um", r["contacts"])
+              "upright stable", r["upright_stable"], round(r["upright_drop_um"], 2), "um", r["contacts"])
